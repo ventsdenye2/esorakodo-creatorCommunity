@@ -1,0 +1,47 @@
+# KTU Co-Creation Platform — project instructions
+
+## Source of truth
+
+- `docs/KTU_CoCreation_Platform_Design_v0.1.docx` is the product and engineering baseline.
+- This file records long-lived implementation constraints. If a later user request conflicts with it, follow the user and update the relevant documentation.
+- Preserve migrations, code, and decisions in Git. Do not make production-only schema changes in the Supabase dashboard.
+
+## Product model
+
+- The site is the digital campus of Kongtian University, not an external fandom community or a reskinned social network.
+- Creator/Profile is a real authenticated author. Student is an in-world person. Forum Account is an in-world internet identity. Never collapse these three concepts.
+- One Creator may create many Students and Forum Accounts. A Forum Account may optionally reference one Student and may remain unknown or represent an organization/bot.
+- The three eventual creative media are Campus Forum, Press/Publications, and Event Archives. Keep their layouts and domain models distinct.
+- Student, College, Place, and Event are stable-ID wiki entities. Store relationships by UUID, not by display name.
+- Published works tell stories; Wiki records traceable shared canon. Using a character in a work is not the same operation as editing that character's Wiki.
+- Wiki changes require revision history. Do not add direct client-side wiki updates that bypass a revision-producing transaction.
+- Event main archives have one maintaining Creator; other Creators extend them through Event Supplements.
+
+## Engineering baseline
+
+- TypeScript strict mode and App Router semantics are mandatory.
+- The current Sites deployment uses Vinext's App Router-compatible runtime. Keep route and component code compatible with standard Next.js APIs; isolate runtime-specific behavior so a later move to canonical Next.js remains bounded.
+- Use Supabase PostgreSQL + Auth + RLS. Keep `service_role` keys server-only and out of browser bundles.
+- Use `@supabase/ssr`; do not reintroduce deprecated Supabase Auth Helpers.
+- Use explicit relational tables. Do not replace the domain with a universal Entity/JSON table.
+- Database migrations live in `supabase/migrations`. Every client-accessible table needs grants, RLS, indexes for its foreign keys, and a documented ownership policy.
+- Cloudflare R2 is deferred. When introduced, PostgreSQL stores metadata/object keys and R2 stores bytes.
+- Route files should stay thin. Put reusable UI in `src/components`, domain workflows in `src/features`, infrastructure in `src/lib`, and shared types in `src/types`.
+- Prefer Server Components and server-side authorization. Add Client Components only for real browser interaction.
+
+## UI direction (provisional and replaceable)
+
+- Preserve the conceptual direction: Institutional × Editorial × Space × Living Archive.
+- Avoid generic SaaS dashboards, uniform card waterfalls, dark neon HUDs, and component-library default themes.
+- Current colors, fonts, spacing, and imagery are M0 placeholders. Product art direction is expected to change.
+- Keep design decisions behind CSS custom properties, semantic component names, and layout primitives. Do not encode visual styling into domain models or database fields.
+- Different media should retain different information structures even if the visual theme is replaced later.
+
+## Security and delivery
+
+- Treat hidden buttons as UX only, never authorization. Enforce ownership and permissions in server code and RLS.
+- Validate untrusted input at the server boundary.
+- Never commit `.env.local`, secrets, generated credentials, or production dumps.
+- Do not implement later milestones speculatively. Prefer the smallest vertical slice that proves the current domain boundary.
+- Before handoff, run `npm run lint`, `npm run typecheck`, and `npm run build`; fix failures rather than documenting them away.
+- For each independent stage, leave a concise change note or Git commit explaining scope, migrations, and verification.
