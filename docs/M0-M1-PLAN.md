@@ -2,6 +2,8 @@
 
 This plan turns the product baseline into a deliberately small, extensible first engineering slice.
 
+> Historical stage record: ongoing milestone and task status now lives in `ROADMAP.md` and `engineering/DPS.md`. Keep this file for the original M0/M1 scope and exit criteria.
+
 ## M0 — engineering skeleton
 
 - [x] Initialize a Git-backed TypeScript App Router project for Sites.

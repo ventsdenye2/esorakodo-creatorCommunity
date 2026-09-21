@@ -81,6 +81,6 @@ docs/                  产品基线与阶段计划
 
 ## 长期约束
 
-开发前先阅读 [AGENTS.md](./AGENTS.md) 与 `docs/KTU_CoCreation_Platform_Design_v0.1.docx`。里程碑状态见 [docs/M0-M1-PLAN.md](./docs/M0-M1-PLAN.md)。
+开发前先阅读 [AGENTS.md](./AGENTS.md) 与 `docs/KTU_CoCreation_Platform_Design_v0.1.docx`。完整里程碑、依赖和质量门禁见 [docs/ROADMAP.md](./docs/ROADMAP.md)，具体任务状态见 [docs/engineering/DPS.md](./docs/engineering/DPS.md)，断点续作从 [docs/engineering/progress.md](./docs/engineering/progress.md) 开始。早期 M0/M1 记录保留在 [docs/M0-M1-PLAN.md](./docs/M0-M1-PLAN.md)。
 
 当前视觉令牌与页面样式是功能优先阶段的临时基线，预期会在后续前端美术阶段调整；领域边界和数据库模型不应依赖这些视觉细节。

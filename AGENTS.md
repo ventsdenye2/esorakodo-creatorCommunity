@@ -36,6 +36,8 @@
 - Current colors, fonts, spacing, and imagery are M0 placeholders. Product art direction is expected to change.
 - Keep design decisions behind CSS custom properties, semantic component names, and layout primitives. Do not encode visual styling into domain models or database fields.
 - Different media should retain different information structures even if the visual theme is replaced later.
+- Before creating or substantially reshaping user-facing UI, invoke the `frontend-design` skill. Record the page subject, audience, single job, compact token/type/layout plan, one justified signature element, and a critique against generic templates before implementation.
+- Functionality remains the first priority, but every UI batch must still cover responsive behavior, keyboard focus, reduced motion, and loading/empty/error/unauthorized/conflict states. Verify representative desktop and mobile renders before marking the batch complete.
 
 ## Security and delivery
 
@@ -45,3 +47,4 @@
 - Do not implement later milestones speculatively. Prefer the smallest vertical slice that proves the current domain boundary.
 - Before handoff, run `npm run lint`, `npm run typecheck`, and `npm run build`; fix failures rather than documenting them away.
 - For each independent stage, leave a concise change note or Git commit explaining scope, migrations, and verification.
+- Use `docs/ROADMAP.md` as the milestone entrypoint and `docs/engineering/{RAS,RDS,DPS,progress,verification}.md` for requirement, design, task, recovery, and evidence tracking. Update the documents when scope, contracts, status, or verification changes.
