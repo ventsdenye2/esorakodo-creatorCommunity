@@ -59,10 +59,11 @@ M6 only: server upload service ─────► Cloudflare R2
 ### M2 Wiki
 
 - 保留 `students`、`colleges`、`places` 显式表，不抽象成万能实体表。
-- 给实体增加可用于并发控制的版本字段或严格使用 `updated_at` 前置条件。
-- `apply_wiki_revision(entity_type, entity_id, expected_version, patch, summary, source_work_id)` 由数据库事务完成：验证身份 → 锁定实体 → 检查版本 → 更新允许字段 → 写 snapshot → 返回新版本。
-- `wiki_revisions` 不允许客户端绕过函数直接构造不一致历史；根据最终 RPC 方案收紧 INSERT grant/policy。
-- rollback 读取历史快照，再通过同一函数写入新 Revision，不删除历史。
+- 三类实体使用单调递增的 `version bigint` 做乐观锁；陈旧版本返回 `WIKI_VERSION_CONFLICT`，不自动合并。
+- 第一版允许字段：Student 为 `name/college_id/signature/summary`，College 为 `name/summary`，Place 为 `name/college_id/summary`；`id/slug/created_by/created_at` 不可修改。
+- `create_wiki_entity` 在同一事务创建实体与首个 Revision；`apply_wiki_revision(entity_type, entity_id, expected_version, patch, summary, source_work_id)` 完成身份验证 → 锁定实体 → 检查版本与字段白名单 → 更新实体 → 写 snapshot → 返回新版本。
+- `wiki_revisions` 与三类实体撤销 authenticated 直接写权限；客户端只能通过 security-definer RPC 写入，RPC 仅授予 authenticated。
+- `rollback_wiki_revision` 读取历史快照，再调用同一修订链路写入新 Revision，不删除或覆盖历史。
 
 ### M3 Forum
 
@@ -137,7 +138,7 @@ M6 only: server upload service ─────► Cloudflare R2
 └───────────────────────────────┴────────────────────┘
 ```
 
-记忆点是 `Campus Trace`：一个克制的实体与来源轨迹区，将档案编号、Wiki 修订、作品引用和跨页面路径变成真正有用的导航，而不是装饰性轨道动画。移动端折叠为正文后的“继续探索”。这是唯一重点视觉风险，其他区域保持安静、精确。
+记忆点是 `Campus Trace`：一个克制的动态档案标签区，将档案编号、人物、机构、事件和论坛来源变成可切换、可继续探索的真实导航。轨道动效只反馈当前标签状态，并支持键盘和 reduced-motion；在校园建筑设定完成前，不展示任何具体建筑形象。移动端改为两列标签和单列内容。这是唯一重点视觉风险，其他区域保持安静、精确。
 
 ### 自我批评与修正
 

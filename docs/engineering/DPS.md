@@ -43,15 +43,15 @@
 
 | 任务 ID | 需求 ID | 文件或符号 | 实现意图 | 依赖 | 验收 | 状态 |
 | --- | --- | --- | --- | --- | --- | --- |
-| KTU-M200 | KTU-WIKI-001 | `docs/design/wiki-foundation.md`（新建） | 调用 frontend-design skill 定义 Wiki 任务、令牌、线框和状态 | M1 | 通过非模板化批评；含桌面/移动与可访问性计划 | 待做 |
-| KTU-M201 | KTU-WIKI-001, KTU-WIKI-004 | 产品决策记录、Wiki 字段契约 | 确认可编辑字段和乐观锁策略 | M1 | 字段、来源、冲突文案与版本规则明确 | 待做 |
-| KTU-M202 | KTU-WIKI-002, KTU-WIKI-004 | 新 migration：实体版本与 `apply_wiki_revision` | 原子更新实体并写 Revision，禁止无历史覆盖 | KTU-M201 | 成功/冲突/越权/回滚 SQL 测试通过 | 待做 |
-| KTU-M203 | KTU-WIKI-001 | `src/features/wiki/schemas.ts`、`queries.ts`、`actions.ts`（新建） | 建立服务端校验、读取与写入边界 | KTU-M202 | 无客户端直接 update；错误映射稳定 | 待做 |
-| KTU-M204 | KTU-LINK-001 | `src/components/entity-link/`（新建） | 统一实体类型、URL 和可访问链接 | KTU-M201 | 所有支持类型正确解析；未知类型安全失败 | 待做 |
-| KTU-M205 | KTU-WIKI-001 | `app/(public)/wiki/**`、`app/create/wiki/**`（新建） | 实现目录、详情、创建与编辑页面 | KTU-M200, KTU-M203, KTU-M204 | 可创建三类实体并从目录进入详情 | 待做 |
-| KTU-M206 | KTU-WIKI-003 | Revision 历史与回滚 action/page | 实现历史查看和回滚 | KTU-M202, KTU-M205 | 回滚产生新 Revision，历史不被删除 | 待做 |
-| KTU-M207 | KTU-WIKI-001..004 | `supabase/tests/wiki*`、应用测试 | 覆盖原子性、RLS、冲突、回滚和页面状态 | KTU-M206 | 双用户权限、陈旧版本和失败路径通过 | 待做 |
-| KTU-M208 | KTU-UX-002 | 浏览器截图与键盘检查 | 验证 Wiki 桌面/移动、焦点和空错载状态 | KTU-M205 | 关键页面无溢出；操作名称和结果文案一致 | 待做 |
+| KTU-M200 | KTU-WIKI-001 | `docs/design/wiki-foundation.md`（新建） | 调用 frontend-design skill 定义 Wiki 任务、令牌、线框和状态 | M1 | 通过非模板化批评；含桌面/移动与可访问性计划 | 已验证 |
+| KTU-M201 | KTU-WIKI-001, KTU-WIKI-004 | 产品决策记录、Wiki 字段契约 | 确认可编辑字段和乐观锁策略 | M1 | 字段、来源、冲突文案与版本规则明确 | 已验证 |
+| KTU-M202 | KTU-WIKI-002, KTU-WIKI-004 | 新 migration：实体版本与 `apply_wiki_revision` | 原子更新实体并写 Revision，禁止无历史覆盖 | KTU-M201 | 成功/冲突/越权/回滚 SQL 测试通过 | 已实现待验证：需开发库执行与权限测试 |
+| KTU-M203 | KTU-WIKI-001 | `src/features/wiki/schemas.ts`、`queries.ts`、`actions.ts`（新建） | 建立服务端校验、读取与写入边界 | KTU-M202 | 无客户端直接 update；错误映射稳定 | 已实现待验证：真实 RPC 错误路径待联调 |
+| KTU-M204 | KTU-LINK-001 | `src/components/entity-link/`（新建） | 统一实体类型、URL 和可访问链接 | KTU-M201 | 所有支持类型正确解析；未知类型安全失败 | 已实现待验证：跨媒介接入留待后续里程碑 |
+| KTU-M205 | KTU-WIKI-001 | `app/(public)/wiki/**`、`app/create/wiki/**`（新建） | 实现目录、详情、创建与编辑页面 | KTU-M200, KTU-M203, KTU-M204 | 可创建三类实体并从目录进入详情 | 已实现待验证：空库状态已验，真实创建待开发库 |
+| KTU-M206 | KTU-WIKI-003 | Revision 历史与回滚 action/page | 实现历史查看和回滚 | KTU-M202, KTU-M205 | 回滚产生新 Revision，历史不被删除 | 已实现待验证：需真实 Revision 数据 |
+| KTU-M207 | KTU-WIKI-001..004 | `supabase/tests/wiki*`、应用测试 | 覆盖原子性、RLS、冲突、回滚和页面状态 | KTU-M206 | 双用户权限、陈旧版本和失败路径通过 | 阻塞：需要独立 Supabase 开发项目 |
+| KTU-M208 | KTU-UX-002 | 浏览器截图与键盘检查 | 验证 Wiki 桌面/移动、焦点和空错载状态 | KTU-M205 | 关键页面无溢出；操作名称和结果文案一致 | 已实现待验证：空库目录/创建已验，真实数据页待验 |
 
 ## M3 校园论坛
 

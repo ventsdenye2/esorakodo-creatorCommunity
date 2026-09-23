@@ -29,3 +29,36 @@
 - M1 的 Profile trigger、RLS、邮箱确认和服务端会话仍需要独立 Supabase 开发项目。
 - 提供开发项目 URL、public anon key 与 project ref 后，从 DPS 的 KTU-M100 继续。
 - 任何数据库相关任务在真实/本地 Supabase 测试通过前只能标记为“已实现待验证”。
+
+## 2026-09-22 Campus Trace 与 M2 Wiki 批次
+
+| 验收项 | 方法或命令 | 实际结果 | 证据 | 未验证边界 |
+| --- | --- | --- | --- | --- |
+| Campus Trace 语义与内容 | Playwright snapshot；点击“人物”；焦点标签按 ArrowRight | 通过 | 人物显示 `林若岚 / PER-00427 / 02`，键盘切换后机构显示 `玄学院 / ORG-0003 / 03` | 静态示例尚未连接真实实体查询 |
+| Campus Trace 减弱动效 | Playwright `emulateMedia({ reducedMotion: 'reduce' })` 与 computed style | 通过 | 查询命中；轨道与面板 `animationDuration` 均为 `1e-05s` | 未覆盖不同浏览器引擎 |
+| Wiki 未配置/空状态 | Playwright `1440x900` 与 `375x812`；`npm test` | 通过 | 目录显示开发库提示和空状态；创建页按钮 disabled；移动页面 `scrollWidth=innerWidth=375` | 真实数据详情/编辑/历史页待开发库 |
+| 浏览器控制台 | Playwright `console error` | 通过 | Wiki 桌面页 0 error、0 warning | 仅覆盖本批访问页面 |
+| Wiki 写入边界源码契约 | migration 人工审查与 Node 契约测试 | 通过 | 直接写 grant 被撤销；RPC public/anon execute 被撤销；expected version 与非空 patch 检查存在 | 未证明 SQL 可执行、RLS 或事务行为 |
+| Lint | `npm run lint` | 通过 | ESLint 退出码 0 | 仅静态检查 |
+| TypeScript | `npm run typecheck` | 通过 | `tsc --noEmit` 退出码 0 | 不证明数据库返回值与手工类型完全一致 |
+| 生产构建与回归测试 | `npm test` | 通过 | Vinext 五阶段构建完成；5/5 测试成功 | Vinext 提示部分路由静态分类未知，不影响构建 |
+| Git 空白错误 | `git diff --check` | 通过 | 退出码 0 | LF/CRLF 提示不是内容错误 |
+
+### 修改边界检查
+
+- Creator、Student 与 Forum Account 仍是分离概念。
+- Student、College 与 Place 保持显式表，没有引入万能 JSON 实体表。
+- Wiki 所有写入通过服务端 Action 调用 RPC；浏览器组件没有直接更新数据库。
+- 创建、编辑和回滚都要求生成 Revision；历史记录没有删除路径。
+- 当前 Wiki 与首页 CSS 使用现有语义令牌，未让领域逻辑依赖临时视觉实现。
+- 未写入 `.env.local`，未接触任何生产或开发 Supabase/R2 凭据。
+
+### 截图证据
+
+- 仓库外桌面截图：`D:/esorakodo/site build/ktu-wiki-desktop.png`
+- 仓库外移动截图：`D:/esorakodo/site build/ktu-wiki-create-mobile.png`
+
+### 恢复条件
+
+- 提供独立 Supabase 开发项目 URL、public anon key 与 project ref 后，应用 migration 并建立 `supabase/tests/wiki*`。
+- 数据库层至少验证：无 Profile 拒绝、三类创建、字段白名单、陈旧版本冲突、Revision 原子性、回滚产生新 Revision、anon/跨用户越权拒绝。

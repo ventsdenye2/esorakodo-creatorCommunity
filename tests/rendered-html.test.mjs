@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 async function render(pathname) {
@@ -28,7 +29,10 @@ test("server-renders the campus homepage", async () => {
   const html = await response.text();
   assert.match(html, /空天大学共创平台/);
   assert.match(html, /这所大学/);
+  assert.match(html, /切换校园档案类型/);
+  assert.match(html, /ACTIVE TRACE/);
   assert.match(html, /校园论坛/);
+  assert.doesNotMatch(html, /campus-trace\.png/i);
   assert.doesNotMatch(html, /codex-preview|SkeletonPreview|react-loading-skeleton/i);
 });
 
@@ -57,4 +61,34 @@ test("renders auth foundations without leaking configuration", async () => {
     assert.match(html, new RegExp(heading), pathname);
     assert.doesNotMatch(html, /SUPABASE_SERVICE_ROLE_KEY|your-anon-or-publishable-key/i);
   }
+});
+
+test("server-renders the wiki empty and create states without a configured database", async () => {
+  const indexResponse = await render("/wiki");
+  assert.equal(indexResponse.status, 200);
+  const indexHtml = await indexResponse.text();
+  assert.match(indexHtml, /校园档案/);
+  assert.match(indexHtml, /等待连接开发数据库/);
+  assert.match(indexHtml, /还没有校园档案/);
+
+  const createResponse = await render("/create/wiki");
+  assert.equal(createResponse.status, 200);
+  const createHtml = await createResponse.text();
+  assert.match(createHtml, /建立校园档案/);
+  assert.match(createHtml, /创建并记录 Revision/);
+  assert.match(createHtml, /disabled/);
+});
+
+test("wiki migration preserves the RPC-only write contract", async () => {
+  const migration = await readFile(
+    new URL("../supabase/migrations/202609220001_m2_wiki_revisions.sql", import.meta.url),
+    "utf8",
+  );
+
+  assert.match(migration, /revoke insert, update, delete on public\.colleges, public\.places, public\.students from authenticated/i);
+  assert.match(migration, /revoke insert, update, delete on public\.wiki_revisions from authenticated/i);
+  assert.match(migration, /revoke execute on function public\.apply_wiki_revision[\s\S]*from public, anon/i);
+  assert.match(migration, /grant execute on function public\.apply_wiki_revision[\s\S]*to authenticated/i);
+  assert.match(migration, /p_expected_version is null or p_expected_version <= 0/i);
+  assert.match(migration, /p_patch is null or jsonb_typeof\(p_patch\) <> 'object' or p_patch = '\{\}'::jsonb/i);
 });

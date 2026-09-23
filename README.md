@@ -2,7 +2,7 @@
 
 空天大学共创平台是一座以虚构大学数字校园为界面的 IP 共创空间。现实中的 Creator 通过校园论坛、校刊/部刊与事件专题讲故事，人物、学院、地点与事件则在可追溯的 Wiki 网络中持续生长。
 
-当前仓库完成 M0 工程骨架与 M1 账户基础，不包含复杂创作业务。
+当前仓库完成 M0 工程骨架、M1 账户基础与 M2 Wiki 的代码骨架。Wiki 的真实迁移、RPC 与 RLS 仍需在独立 Supabase 开发项目中验收，不能视为数据库层已验证。
 
 ## 当前能力
 
@@ -12,7 +12,9 @@
 - 邮箱注册、密码登录、确认回调、退出登录与受保护 Creator 页面
 - 第一版 PostgreSQL migration、索引、Grants 与 RLS
 - `profiles`（Creator）、`students`、`colleges`、`places`、`forum_accounts`、`wiki_revisions` 核心模型
-- Forum / Press / Events / Wiki 的信息架构占位路由
+- Wiki 目录、详情、创建、编辑、Revision 历史与回滚页面
+- Wiki 创建、编辑和回滚的原子 RPC，以及基于 `version` 的乐观锁
+- Forum / Press / Events 的信息架构占位路由
 
 ## 技术说明
 
@@ -71,7 +73,7 @@ npm run build
 ```text
 app/                   App Router 页面、Server Actions 入口与 Route Handlers
 src/components/        可复用 Layout 与 UI
-src/features/          领域功能（当前为 Auth）
+src/features/          领域功能（当前为 Auth、Wiki）
 src/lib/supabase/      Supabase client/server 配置边界
 src/types/             数据库与领域类型
 supabase/migrations/   可复现数据库结构、索引、Grants 与 RLS
