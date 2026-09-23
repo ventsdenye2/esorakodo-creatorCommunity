@@ -2,23 +2,24 @@
 
 空天大学共创平台是一座以虚构大学数字校园为界面的 IP 共创空间。现实中的 Creator 通过校园论坛、校刊/部刊与事件专题讲故事，人物、学院、地点与事件则在可追溯的 Wiki 网络中持续生长。
 
-当前仓库完成 M0 工程骨架、M1 账户基础与 M2 Wiki 的本地开发验收；本地迁移、RPC、RLS、Auth/API 和 Student 浏览器主路径已有证据，独立线上 Supabase 项目与公开发布尚未验收。首页当前为 v1 功能型视觉基线；下一版 Living Campus v2 仍是拟实施设计，见 `docs/design/living-campus-v2.md`。
+当前仓库已完成 M0 工程骨架、M1 账户、M2 Wiki 和 M3 论坛的本地主要路径；数据库 82/82 pgTAP、Auth/API、三类 Wiki 与论坛发布浏览器流程已有证据。Living Campus v2 的概念沙盘与校园视界已实施首批，真实 3D 与关系数据仍待后续。线上 Supabase、邮件确认、域名 HTTPS 和自有 Ubuntu 服务器尚未验收，网站尚未公开上线。
 
 ## 当前能力
 
 - App Router 路由结构与 TypeScript strict 模式
-- 可替换的基础校园 Layout，以及首页、登录、注册和 Creator 页面骨架
+- 校园首页概念沙盘、可访问的校园视界、登录/注册与 Creator 创作入口
 - Supabase 浏览器端 / 服务端 SSR client 封装
 - 邮箱注册、密码登录、确认回调、退出登录与受保护 Creator 页面
 - 第一版 PostgreSQL migration、索引、Grants 与 RLS
-- `profiles`（Creator）、`students`、`colleges`、`places`、`forum_accounts`、`wiki_revisions` 核心模型
+- `profiles`（Creator）、`students`、`colleges`、`places`、`forum_accounts`、`wiki_revisions` 核心模型，以及论坛 Topic、楼层与标签模型
 - Wiki 目录、详情、创建、编辑、Revision 历史与回滚页面
 - Wiki 创建、编辑和回滚的原子 RPC，以及基于 `version` 的乐观锁
-- Forum / Press / Events 的信息架构占位路由
+- Forum Account 创建/编辑、论坛草稿编排与预览、发布、版面/标签浏览、Student 档案反向链接
+- Press / Events 的明确占位路由
 
 ## 技术说明
 
-本仓库由 OpenAI Sites starter 初始化，使用 Vinext 提供 App Router 兼容运行时，并通过 `@openai/sites-vite-plugin` 输出 Cloudflare Worker-compatible ESM。应用代码保持标准 Next.js App Router API 边界，以便后续在需要时迁移到 canonical Next.js runtime。
+本仓库由 OpenAI Sites starter 初始化，使用 Vinext 提供 App Router 兼容运行时，并通过 `@openai/sites-vite-plugin` 输出 Cloudflare Worker-compatible ESM。自有 Ubuntu 服务器另用 Node standalone 输出与 Nginx 反代；操作和已验证范围见 [Ubuntu 部署说明](./docs/deploy/ubuntu.md)。应用代码保持标准 Next.js App Router API 边界。
 
 业务数据与 Auth 使用 Supabase；Sites 自带的 D1 与 R2 绑定均保持关闭。媒体资源后续使用 Cloudflare R2，本阶段不实现。
 
@@ -78,16 +79,16 @@ npm run build
 npx supabase test db --local
 ```
 
-`npm test` 会在构建后检查渲染结果，兼容未配置和已连接本地 Supabase 的状态。pgTAP 覆盖 Profile trigger、双用户 Profile 所有权、表 Grants、Wiki RPC 写入边界、Revision、冲突与回滚；它需要已启动并应用迁移的本地 Supabase。`src/types/database.ts` 的数据库主体由本地已迁移 schema 生成，文件末尾保留应用使用的领域别名。
+`npm test` 会在构建后检查渲染结果，兼容未配置和已连接本地 Supabase 的状态。pgTAP 覆盖 Profile、Wiki 和论坛草稿隔离、账号归属、发布后冻结；它需要已启动并应用迁移的本地 Supabase。`src/types/database.ts` 的数据库主体由本地已迁移 schema 生成，文件末尾保留应用使用的领域别名。
 
-本地 Auth/API 集成测试还可运行 `node tests/local-api.test.mjs`。该测试只接受 `.env.local` 中的 `http://127.0.0.1:54321`，需要临时环境变量 `SUPABASE_SERVICE_ROLE_KEY` 清理一次性用户和 Wiki 数据；可从 `npx supabase status -o env` 取得本地服务密钥，运行后清除该环境变量，切勿写入 `.env.local` 或 Git。本地浏览器已验注册、Creator 会话、Student Wiki 创建/编辑/历史/回滚与退出；邮件确认链路和独立开发项目仍待验证。
+本地 Auth/API 集成测试还可运行 `node tests/local-api.test.mjs`。该测试只接受 `.env.local` 中的 `http://127.0.0.1:54321`，需要临时环境变量 `SUPABASE_SERVICE_ROLE_KEY` 清理一次性用户和 Wiki 数据；可从 `npx supabase status -o env` 取得本地服务密钥，运行后清除该环境变量，切勿写入 `.env.local` 或 Git。本地浏览器已验注册、Creator 会话、Student/College/Place Wiki、论坛身份与主题发布、匿名阅读及 Student 反向链接；邮件确认、线上项目和服务器仍待验证。上线前步骤与外部输入见 [发布检查单](./docs/deploy/release-checklist.md)。
 
 ## 目录
 
 ```text
 app/                   App Router 页面、Server Actions 入口与 Route Handlers
 src/components/        可复用 Layout 与 UI
-src/features/          领域功能（当前为 Auth、Wiki）
+src/features/          领域功能（Auth、Wiki、Forum、Forum Account、Campus）
 src/lib/supabase/      Supabase client/server 配置边界
 src/types/             数据库与领域类型
 supabase/migrations/   可复现数据库结构、索引、Grants 与 RLS
@@ -99,4 +100,4 @@ docs/                  产品基线与阶段计划
 
 开发前先阅读 [AGENTS.md](./AGENTS.md) 与 `docs/KTU_CoCreation_Platform_Design_v0.1.docx`。完整里程碑、依赖和质量门禁见 [docs/ROADMAP.md](./docs/ROADMAP.md)，具体任务状态见 [docs/engineering/DPS.md](./docs/engineering/DPS.md)，断点续作从 [docs/engineering/progress.md](./docs/engineering/progress.md) 开始。早期 M0/M1 记录保留在 [docs/M0-M1-PLAN.md](./docs/M0-M1-PLAN.md)。
 
-当前视觉令牌与页面样式是功能优先阶段的临时基线，预期会在后续前端美术阶段调整；领域边界和数据库模型不应依赖这些视觉细节。
+目前的轻量校园沙盘只作空间交互示意，不代表已确认的校内地点或正式 3D 模型；领域边界和数据库模型不依赖这些视觉细节。

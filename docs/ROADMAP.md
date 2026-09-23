@@ -7,7 +7,7 @@
 - M0 工程骨架已经完成。
 - M1 本地迁移、Profile trigger、Grants 与 RLS 的 pgTAP 验收通过；本地 GoTrue 注册/登录、浏览器 Creator 会话与退出已通过，邮件确认链路及独立开发项目待验。
 - M2 Wiki 本地 RPC、并发冲突、回滚与 RLS 的 pgTAP 验收通过；Student、College、Place 创建/编辑/历史/回滚、移动有数据页面与浏览器冲突反馈均已验。线上 Auth 邮件仍待验。
-- M3 本地数据库 51/51 pgTAP、论坛注册至发布、匿名阅读、标签筛选及 Student 反向链接的浏览器主路径通过；生产 Supabase 与第二 Creator 浏览器权限路径待验。M4 到 M7 仍按依赖实施。
+- M3 本地数据库 51/51 pgTAP、论坛注册至发布、匿名阅读、标签筛选及 Student 反向链接的浏览器主路径通过；双 Creator API 权限与楼层重排/删除的浏览器引用保持专项已验，生产 Supabase 待验。M4 到 M7 仍按依赖实施。
 - 第一个必须完整跑通的业务闭环是：注册 → Student → Forum Account → Forum Topic → 多账号楼层 → 发布 → Forum Account → Student Wiki。
 - Living Campus v2 的首页概念沙盘与可访问 Campus Layer 已交付首批，详见 `docs/design/living-campus-implementation.md`；真实关系图、Entity Peek 和正式 3D 校园仍是拟实施。每批设计、代码、状态和实际验收都同步到工程文档。
 
@@ -18,11 +18,15 @@
 | M0 工程骨架 | App Router、TypeScript、Sites 运行时、基础 Layout、Git | 无 | 本地可安装、构建和渲染公共页面 | 已完成 |
 | M1 账户基础 | Supabase Auth、Creator Profile、SSR 会话、首批 schema 与 RLS | M0 | 真实开发库中注册、登录、退出、Profile trigger 和会话读取全部通过 | 本地 Auth/API 与浏览器主路径已验，邮件确认待验 |
 | M2 Wiki 基础 | Student、College、Place 的创建、详情、编辑、Revision、回滚 | M1 验收 | 所有 Wiki 修改通过原子事务生成 Revision；历史可查；实体可互链 | 本地数据库、三类浏览器页面与冲突/移动已验；线上待验 |
-| M3 校园论坛 | Topic、Message、Forum Account、Hashtag、草稿与发布 | M2 实体链接稳定 | 首条端到端垂直切片通过；A 不能修改 B 的作品 | 本地数据库与单 Creator 浏览器闭环已验；双 Creator 浏览器、生产待验 |
+| M3 校园论坛 | Topic、Message、Forum Account、Hashtag、草稿与发布 | M2 实体链接稳定 | 首条端到端垂直切片通过；A 不能修改 B 的作品 | 本地数据库、双 Creator API 权限与浏览器楼层编排已验；完整第二用户界面及生产待验 |
 | M4 校刊与部刊 | Article、稳定标签、结构化正文、实体引用 | M3 权限与发布模型稳定 | 长文可创作、预览、发布；正文实体引用可跳转和反查 | 待做 |
 | M5 事件专题 | Event、Timeline、实体关联、Event Supplement | M4 实体引用可复用 | 主档案单一维护者；补充独立署名；时间线与反向关系可浏览 | 待做 |
 | M6 媒体与运营 | R2 直传、媒体元数据、举报、隐藏、审计 | 作品模型稳定 | 上传凭证不泄露；隐藏不破坏数据；管理动作可审计 | 待做 |
 | M7 搜索与完善 | 中文搜索、关系推荐、首页策展、最终体验收敛 | 内容量与查询样本可用 | 搜索有相关性与性能证据；核心路径通过桌面和移动端验收 | 待做 |
+
+## 公开测试版发布门禁
+
+M1–M3 是首发范围；M4–M7 不阻塞本次账户、Wiki、论坛公开测试。发布前先完成本地论坛双 Creator 权限与草稿状态补验，再按 `docs/deploy/release-checklist.md` 对线上 Supabase migration/Auth/邮件、域名 DNS/TLS、Ubuntu Node standalone/Nginx、真实 HTTPS 端到端流程逐项留证。现阶段域名 NXDOMAIN，云 CLI 授权和服务器 SSH 尚未就绪；本地完成不等于已上线。
 
 ## 依赖顺序
 

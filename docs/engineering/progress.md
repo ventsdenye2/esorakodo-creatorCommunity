@@ -1,6 +1,16 @@
 # KTU 平台工程进度
 
-## 当前状态（2026-09-23，本地调试与并行开发）
+## 续作状态（2026-09-23，公开测试版上线准备）
+
+- 用户重启后要求继续并尽快完成；解除上一轮暂停。起点提交 `ddc5864`、工作树干净。目标仍是账户、Wiki、论坛公开测试版与 `campus.kongtian.university`。
+- 本轮并行补验：论坛双 Creator 浏览器权限及草稿恢复、Ubuntu 正式 Node 运行目标、线上 Supabase/DNS/配置只读审计。主线负责应用集成、工程文档与最终门禁。
+- Docker Desktop daemon 已可连接（29.7.2）；首次检查时本地 DB/Auth/站点端口未监听，正在恢复。线上数据库/服务器仍未修改；待准备好迁移、环境与验证步骤后再部署。
+- 本地 Supabase DB/Auth/REST 随后已恢复。只读发布审计确认 `campus.kongtian.university` 当前 NXDOMAIN；本机没有云 Supabase CLI access token/link，服务器 SSH 地址与账户也未提供。需在本地验收完成后取得这些外部配置才可部署。
+- 修正注册邮件回调 URL 优先使用 `NEXT_PUBLIC_SITE_URL`，并阻止 Auth callback `next=/\\外部域名` 被解析为站外跳转；此批 lint/typecheck 通过，生产 HTTPS 邮件确认仍待验。
+- Ubuntu 发布入口已改为 Vinext standalone Node；补齐构建产物的 React/运行依赖，提供 systemd、Nginx HTTP 签证引导与 HTTPS 配置。隔离 Linux 容器完成构建、SSR、静态图片与无效登录 Server Action 冒烟；真实服务器及云端未触及。
+- 主线复跑本地数据库 82/82 pgTAP、lint、typecheck、生产构建、渲染与回调测试 6/6 均通过。论坛双 Creator API、楼层引用重排/删除与错误恢复通过；手动提交 FormData 后，浏览器确认失败保存仍保留发言身份、标签与正文，修正输入后能成功保存。一次性测试数据已精确清理并复查为零。
+
+## 上一阶段交付（已提交 `ddc5864`）
 
 - 用户恢复开发，首发范围为账户、Wiki、论坛的公开测试版；目标域名 `campus.kongtian.university`，境外 Ubuntu 自有服务器与托管 Supabase 项目 `sttghkavzjeqeuignpwi`。本地调试完成后再进行服务器部署。
 - M3 数据库已完成，本地 51/51 M3 与全库 82/82 pgTAP；M2 Wiki 补验已完成；Living Campus 首批首页/导航/Campus Layer 通过桌面与手机浏览器检查。Forum Account、草稿、发布、匿名列表/标签/详情和 Student Wiki 反向入口已走通本地浏览器主路径。
@@ -14,7 +24,7 @@
 1. 启动 Docker Desktop 和本地 Supabase，确认本地 DB/Auth/REST 可用；当前工作进度从 M3 双用户浏览器权限、草稿部分保存恢复与正式部署宿主评估继续。
 2. 本地预览需要 `npm run dev -- --port 3002`（或空闲端口），浏览器使用 `http://localhost:3002/`。重启电脑后不假定旧 dev server 仍运行。
 3. 上线前取得 Ubuntu SSH 地址、用户名与连接方式，确认 `campus.kongtian.university` DNS；核对托管 Supabase 的迁移、anon key、Auth Site URL/回调、SMTP，再验证正式生产运行方式、Nginx/HTTPS 和线上端到端流程。密钥只放本地/服务器环境文件，不贴入文档或聊天。
-4. 以上工作当前暂停，等待用户重启后继续。
+4. 本轮本地开发和发布准备提交后按用户要求暂停，重启后从上线清单继续。尚未部署线上服务。
 
 ## 上一轮暂停记录（历史）
 

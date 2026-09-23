@@ -7,9 +7,10 @@
   },
   "scripts": {
     "dev": "vinext dev",
-    "build": "vinext build",
+    "build": "vinext build && node scripts/complete-standalone.mjs",
     "start": "vinext start",
-    "test": "npm run build && node --test tests/rendered-html.test.mjs",
+    "start:node": "node dist/standalone/server.js",
+    "test": "npm run build && node --test tests/rendered-html.test.mjs tests/auth-redirect.test.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "typecheck": "tsc --noEmit"
   },

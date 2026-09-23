@@ -130,3 +130,16 @@
 目标是 `campus.kongtian.university` 与托管 Supabase ref `sttghkavzjeqeuignpwi`；本批未连接云项目或自有服务器，也未申请证书、改 DNS 或部署。
 
 本阶段最终 `npm run lint`、`npm run typecheck`、`git diff --check`、`npm run build` 和构建后 `node --test tests/rendered-html.test.mjs` 全部通过（5/5）。用户要求重启电脑，本地阶段至此暂停；未来的生产部署验收不应以本地结果替代。
+
+## 2026-09-23 续作证据（进行中）
+
+- Docker Desktop daemon 29.7.2 可连接；本地 Supabase DB/Auth/REST 已恢复，论坛剩余双 Creator 与编辑器状态验证正在进行。
+- `next=/\\evil.test` 经 URL 解析会变成外站 URL；Auth callback 增加反斜杠拒绝和同源检查，注册链接以配置的站点地址优先并使用 `new URL` 拼接回调路径。`node --test tests/auth-redirect.test.mjs` 1/1 通过，覆盖正常站内路径、协议相对地址与反斜杠；lint、typecheck 通过。生产邮件确认尚未验证。
+- DNS 查询 `campus.kongtian.university` 当前 NXDOMAIN；未发现云 Supabase CLI access token 或项目 link。Ubuntu SSH 未提供，尚未连接或写入云端。详细步骤和阻塞项见 `docs/deploy/release-checklist.md`。
+- 主线复跑 `supabase test db --local`：M1/M2/M3 共 82/82 通过。`npm run lint`、`npm run typecheck`、`npm run build` 均通过；构建生成 standalone 产物并补入 15 个运行依赖包。构建后 `node --test tests/rendered-html.test.mjs tests/auth-redirect.test.mjs` 为 6/6 通过。首次普通沙箱对 Docker 与 Node 测试子进程报 EPERM，获准执行后通过。
+- Ubuntu runtime 专项：Windows 隔离目录，以及 `node:22-bookworm-slim` 中 `npm ci`/构建后复制到脱离源码和原 `node_modules` 的目录，Node standalone 的首页、登录、论坛、Wiki、静态校徽均返回 200；无效登录表单的 Server Action 返回 303 并携带校验错误。未在目标 Ubuntu 上测试 Nginx 新配置的语法、systemd 重启、真实邮件登录、TLS 或云端写入。
+- 论坛双 Creator 本地 API：两位用户的草稿互不可见、非所有者无法覆盖/发布、不能借用他人 Forum Account；失败替换保持旧楼层，重排后回复仍指向原实体、删除目标后引用符合新编排；发布后匿名与第二 Creator 可读，作者亦不能重写已发布楼层。测试脚本退出码 0；真实浏览器中的第二 Creator 全界面路径仍未验。
+- 论坛楼层浏览器专项：三层 Alpha/Beta/Gamma，Gamma 初始回复 Alpha（提交 floor_no 1）；将 Alpha 移到第二层后顺序 Beta/Alpha/Gamma，Gamma 仍回复 Alpha（提交 floor_no 2）；删除 Alpha 后提示清空 1 条引用且 Gamma 变为独立发言。提交 9 个标签收到“最多添加 8 个标签”；原生 Form Action 重置造成发言身份下拉视觉为空，改为手动提交 FormData 后复验，身份仍选中，9 个标签与正文保留；改成 2 个标签后“保存草稿”成功，正文和身份仍正确。
+- 一次性浏览器数据精确清理：仅目标草稿 `9fd05148-cb01-40b0-ac1a-b7aeb65a38b1`、论坛身份 `9ad887c9-074e-4be5-acdd-fe0b7732eb67` 与测试用户 `forum-browser-qa-923@example.test`；本地事务输出 DELETE 0 楼层 / 0 标签 / 1 主题 / 1 身份 / 1 用户并提交。API 脚本自清理；最终零残留计数未留证。未重置数据库。
+- 第二次 UI 复验的草稿 `3903092d-57ca-4881-8eba-87b7090220c3`、身份 `67ec22bc-cee4-40a7-92c8-46b5240f0525` 与 `forum-reset-qa-923@example.test` 经归属核对后在本地事务删除，1 主题 / 1 身份 / 1 用户；该次证实阻止 reset 与延迟重挂载无效，最终实现已替换。
+- 最终 UI 复验的草稿 `9a49fbfa-ae66-4ee7-b9d2-698d104a130b`、身份 `a3f63efc-0f54-44de-bd83-1bde6ec7d2f0` 与 `forum-final-qa-923@example.test` 经归属核对；本地事务删除 1 楼层 / 2 关联 / 1 主题 / 2 个无其他引用的测试标签 / 1 身份 / 1 用户，提交后按 ID 复查四类对象均为 0。API 测试重跑通过；首次运行的 service key 解析含引号，业务断言通过但清理账号 JWT 失败，残留两名测试用户和身份随后按 UUID/邮箱精确删除；修正解析后复跑完整通过，API 测试邮箱残留计数为 0。

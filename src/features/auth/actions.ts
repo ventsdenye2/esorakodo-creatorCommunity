@@ -48,16 +48,14 @@ export async function signUp(formData: FormData) {
   }
 
   const requestHeaders = await headers();
-  const origin =
-    requestHeaders.get("origin") ??
-    process.env.NEXT_PUBLIC_SITE_URL ??
-    "http://localhost:3000";
+  const origin = process.env.NEXT_PUBLIC_SITE_URL ??
+    requestHeaders.get("origin") ?? "http://localhost:3000";
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
     email: parsed.data.email,
     password: parsed.data.password,
     options: {
-      emailRedirectTo: `${origin}/auth/callback`,
+      emailRedirectTo: new URL("/auth/callback", origin).toString(),
       data: {
         handle: parsed.data.handle,
         display_name: parsed.data.displayName,

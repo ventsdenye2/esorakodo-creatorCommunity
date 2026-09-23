@@ -1,39 +1,57 @@
-# Ubuntu + Nginx 部署可行性与预备配置
+# Ubuntu + Nginx: campus.kongtian.university
 
-状态：**Linux 构建与 Nginx HTTP 反代已实测；公开生产运行仍未验收。** 本页是面向公开测试版的准备材料，不代表已有云服务器、HTTPS、Supabase 云项目或域名验收。当前 `vite.config.ts` 使用 Vinext、Sites 插件及 Cloudflare Vite 插件，`worker/index.ts` 使用 Cloudflare `ASSETS`、`IMAGES` 绑定；不要把 `dist/server/index.js` 当作普通 Node HTTP 程序直接执行。
+状态：**Node standalone 产物已在本机和隔离 Linux 容器中验证；线上服务器、DNS、TLS 和托管 Supabase 尚未验收。** 域名为 `campus.kongtian.university`，Supabase project ref 为 `sttghkavzjeqeuignpwi`。不要把本地 Supabase 的 `127.0.0.1:54321` 编进公开构建。
 
-## 已有证据（2026-09-23）
+## 已验证范围（2026-09-23）
 
-- 隔离的官方 `node:22-bookworm-slim`（Debian/glibc，Node v22.23.2）容器中，从源码快照执行 `npm ci --no-audit --no-fund`、`npm run build`，构建通过。快照排除了 `.env.local` 等本地密钥和缓存。
-- 同一 Linux 镜像运行 `npm run start -- -H 127.0.0.1 -p 3037`，日志确认 `http://127.0.0.1:3037`；Nginx `nginx -t` 通过，从 Nginx 代理请求首页与 `/login`，HTTP 均为 200。
-- 仅设置 `HOST=127.0.0.1` 的另一次实测显示监听 `0.0.0.0`；服务模板使用显式 `-H 127.0.0.1`。WSL Ubuntu 本机有 Node v24.19.0，但 `npm ci` 因 WSL DNS `EAI_AGAIN` 未完成，因此没有宣称 Ubuntu 发行版实测通过。
-- `vinext` 随包 README 把 `vinext start` 定义为本地生产预览，用于测试；它说明 Node standalone 需要 `next.config.*` 的 `output: 'standalone'`，或经 Nitro Node 预设构建。本仓库尚未启用这些生产部署目标。Nginx 能代理现有预览服务，是协议层可行性证据，不等于长期生产可用性或官方生产支持证明。
-- 未验证 TLS、外网 DNS、Supabase 云 Auth 邮件与回调、Server Action 登录写入、持续运行后的重启恢复、图片优化和高并发。`/_vinext/image` 的 Worker `IMAGES` 绑定须单独检查；不要以首页 200 推断图片处理路径通过。
+- `next.config.ts` 配置 `output: "standalone"`；`npm run build` 产生 `dist/standalone/server.js`、客户端资源和 `public`。Vinext 1.0.0-beta.2 漏打包 React peer dependencies，`scripts/complete-standalone.mjs` 在构建后从锁定的本地安装补齐应用运行依赖。运行入口不依赖 `vinext start` 的本地预览命令。
+- Windows Node v22.21.0 把产物复制到仓库之外、没有项目 `node_modules` 的临时目录后启动，首页、`/login`、`/forum`、`/wiki` 和校徽图片返回 200；未登录访问 `/creator` 返回 307；无效登录表单经 Server Action 返回 303 和校验错误。这验证了 HTTP 入口、SSR、静态资源与表单动作，但不代表线上 Auth 成功。
+- 使用 `node:22-bookworm-slim` Linux 容器和排除 `.env.local`、`node_modules`、`dist` 的源码快照运行 `npm ci --no-audit --no-fund`、`npm run build`。将产物复制到 `/tmp/release` 独立运行：`smoke-standalone.mjs` 验证首页、登录、论坛、Wiki 和校徽图片均返回 200，登录 Server Action 的无效输入返回 303。此前 Nginx 反代 HTTP 已做可行性验证；本批未测试线上 TLS 或真实服务器。
+- 尚未验证真实账号登录/邮件确认、云数据库写入、重启恢复、图片优化和长期负载。`worker/index.ts` 中的 Cloudflare `IMAGES` 绑定用于 Worker 目标，不能假设 Node 目标具备相同图片转码行为；目前品牌图片为静态 PNG。
 
-## 模板及使用前提
+## 上线前条件
 
-- [环境变量样例](../../deploy/ubuntu/env.example)：只含浏览器公开配置。实际文件放 `/etc/ktu-community/ktu-community.env`，替换域名与 Supabase 云项目；**不要使用本地 `127.0.0.1:54321`**，也不要把 service-role key 放入 `NEXT_PUBLIC_*` 或 Git。
-- [systemd 样例](../../deploy/ubuntu/ktu-community.service)：假设 Node/npm 安装于 `/usr/bin`、发布目录为 `/srv/ktu-community/current`、专用服务用户为 `ktu`。在目标主机核对 `command -v npm`、`node --version`、目录/文件权限后调整路径。
-- [Nginx 样例](../../deploy/ubuntu/ktu-community.nginx.conf)：需替换 `server_name` 与证书路径。模板的 TLS 证书位置是假设，不会自动签发证书；Nginx 仅监听公网 80/443，Node 只监听本机 127.0.0.1:3000。
+1. DNS 添加 `campus` 的 A 记录指向 Ubuntu 公网 IPv4；若添加 AAAA，IPv6 也必须可达。确认该域名的 80/443 入站端口允许访问。
+2. 在托管 Supabase 先核对并执行仓库迁移、Auth 的 Site URL `https://campus.kongtian.university`、允许重定向 URL `https://campus.kongtian.university/auth/callback`、邮件 SMTP/确认模板与公开注册策略。anon/publishable key 从项目设置取得，不在聊天或 Git 中记录。
+3. Ubuntu 安装 Node >=22.13、Nginx 和 Certbot；建立服务用户 `ktu`。发布目录 `/srv/ktu-community/current`，配置目录 `/etc/ktu-community`，按实际系统路径调整 systemd 的 `/usr/bin/node`。
+4. 构建与运行环境的 `NEXT_PUBLIC_SUPABASE_URL`、`NEXT_PUBLIC_SUPABASE_ANON_KEY`、`NEXT_PUBLIC_SITE_URL` 必须一致；前端变量在构建时被内联。线上密钥只放服务主机，绝不提交 `.env.local` 或 `service_role`。`deploy/ubuntu/env.example` 是非秘密样例。
 
-部署时保留完整依赖，当前 `vinext`、Vite 和 Cloudflare 插件在 `devDependencies` 中；仅做 `npm ci --omit=dev` 后运行现有 `npm run start` 不具备依据。构建时与运行时均提供相同的 `NEXT_PUBLIC_SUPABASE_URL`、`NEXT_PUBLIC_SUPABASE_ANON_KEY`、`NEXT_PUBLIC_SITE_URL`；不要将运行时环境替换为不同项目后沿用旧客户端构建。Supabase Auth 站点 URL 与允许的确认回调 URL 也应为实际 HTTPS 域名的 `/auth/callback`。
+## Ubuntu 操作顺序
 
-一个目标主机上的验收顺序示例（先备份并独立准备云数据库迁移）：
+在目标主机完成云数据库备份与迁移检查，并将代码部署到 `/srv/ktu-community/current` 后：
 
 ```bash
-node --version  # >=22.13.0
+node --version
+command -v node
 sudo install -d -o ktu -g ktu -m 750 /srv/ktu-community/current
 sudo install -d -o root -g ktu -m 750 /etc/ktu-community
-# 放入代码及已替换值的 /etc/ktu-community/ktu-community.env；文件权限 640。
+# 写入真实 anon key，/etc/ktu-community/ktu-community.env 归 root:ktu、权限 640。
 cd /srv/ktu-community/current
 set -a; . /etc/ktu-community/ktu-community.env; set +a
 npm ci --include=dev
 npm run lint && npm run typecheck && npm run build
+test -f dist/standalone/server.js
 sudo install -m 644 deploy/ubuntu/ktu-community.service /etc/systemd/system/ktu-community.service
 sudo systemctl daemon-reload
 sudo systemctl enable --now ktu-community
 curl -fSI http://127.0.0.1:3000/login
-# 证书准备完成并替换域名后安装 Nginx 模板，先运行 nginx -t，再 reload。
+node deploy/ubuntu/smoke-standalone.mjs http://127.0.0.1:3000
 ```
 
-真实放行还应在 HTTPS 域名下测试注册/确认/登录/退出、Wiki 与论坛写入及权限拒绝、静态资源和图片、桌面与移动端，并检查 `journalctl -u ktu-community`、Nginx 日志、systemd 重启及备份恢复。当前方案仍使用 Vinext 预览进程；如公开流量要求稳定生产宿主，应先评估显式 Node standalone/Nitro 部署目标或 Cloudflare Worker 正式部署，并把对应配置和端到端证据纳入仓库。
+运行入口仅需要 `dist/standalone` 目录、Node 运行时和环境文件。`smoke-standalone.mjs` 只提交无效登录数据，验证表单错误重定向，不建立账号或修改数据库。若将构建产物从其他主机复制过来，必须在 Linux/glibc 兼容环境构建，不要把 Windows 产物直接传给 Ubuntu。每次修改公开环境变量后重新构建，并检查 `journalctl -u ktu-community -n 100 --no-pager`。
+
+先使用仅监听 HTTP 的 [引导配置](../../deploy/ubuntu/ktu-community.bootstrap.nginx.conf) 签发证书，再切换到 [HTTPS 配置](../../deploy/ubuntu/ktu-community.nginx.conf)。两份配置的 ACME 路径相同，可支持自动续期；若服务器已有其他 Nginx 站点，只添加此域名对应的站点，不覆盖现有配置。
+
+```bash
+sudo install -d -m 755 /var/www/letsencrypt/.well-known/acme-challenge
+sudo install -m 644 deploy/ubuntu/ktu-community.bootstrap.nginx.conf /etc/nginx/sites-available/ktu-community.conf
+sudo ln -s /etc/nginx/sites-available/ktu-community.conf /etc/nginx/sites-enabled/ktu-community.conf
+sudo nginx -t && sudo systemctl reload nginx
+sudo certbot certonly --webroot -w /var/www/letsencrypt -d campus.kongtian.university
+sudo install -m 644 deploy/ubuntu/ktu-community.nginx.conf /etc/nginx/sites-available/ktu-community.conf
+sudo nginx -t && sudo systemctl reload nginx
+curl -fSI https://campus.kongtian.university/login
+sudo certbot renew --dry-run
+```
+
+如果 `sites-enabled/ktu-community.conf` 已存在，核对目标后更新，避免盲目重建符号链接。签证书前先确认 HTTP DNS 从公网能访问；现成证书可以跳过引导阶段。安装/更新后确认浏览器在 HTTPS 域名下可完成注册、邮件确认、登录/退出、Wiki 修订、论坛发布与权限拒绝；查 Nginx 和 systemd 日志，重启服务并重复检查，再对桌面与移动页面验收。未完成这些检查前不宣称上线。
