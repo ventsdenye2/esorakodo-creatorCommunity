@@ -43,6 +43,17 @@ npm run dev
 
 ## Supabase 设置
 
+可以先用本机 Docker Desktop + Supabase CLI 做隔离验证。在仓库目录执行：
+
+```powershell
+npx supabase start
+npx supabase test db
+```
+
+`supabase start` 会在本机启动 Auth、PostgreSQL 与 API，并应用 `supabase/migrations` 中的迁移。`supabase test db` 执行 `supabase/tests/database` 下的 pgTAP 测试；测试用事务回滚，不保留测试用户。只做 SQL 验收时可先执行 `npx supabase db start`；从仅数据库模式切到完整服务时，先执行普通 `npx supabase stop`（保留本地数据卷），再执行 `npx supabase start`。将启动结果中的本地 API URL 与 **anon/publishable key** 写入 `.env.local`，供浏览器和服务端联调；不要把 service role key 写进公开变量或 Git。
+
+若改用独立的托管开发项目：
+
 1. 创建一个仅用于开发的 Supabase 项目。
 2. 将 Project URL 与 anon/publishable key 写入 `.env.local`。
 3. 使用 Supabase CLI 关联项目并应用 migration：
@@ -64,9 +75,12 @@ npx supabase db push
 npm run lint
 npm run typecheck
 npm run build
+npx supabase test db --local
 ```
 
-`npm test` 会在构建后检查渲染结果。连接真实 Supabase 开发项目后，还应为注册触发器与 RLS 增加集成测试。
+`npm test` 会在构建后检查渲染结果，兼容未配置和已连接本地 Supabase 的状态。pgTAP 覆盖 Profile trigger、双用户 Profile 所有权、表 Grants、Wiki RPC 写入边界、Revision、冲突与回滚；它需要已启动并应用迁移的本地 Supabase。`src/types/database.ts` 的数据库主体由本地已迁移 schema 生成，文件末尾保留应用使用的领域别名。
+
+本地 Auth/API 集成测试还可运行 `node tests/local-api.test.mjs`。该测试只接受 `.env.local` 中的 `http://127.0.0.1:54321`，需要临时环境变量 `SUPABASE_SERVICE_ROLE_KEY` 清理一次性用户和 Wiki 数据；可从 `npx supabase status -o env` 取得本地服务密钥，运行后清除该环境变量，切勿写入 `.env.local` 或 Git。本地浏览器已验注册、Creator 会话、Student Wiki 创建/编辑/历史/回滚与退出；邮件确认链路和独立开发项目仍待验证。
 
 ## 目录
 

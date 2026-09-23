@@ -7,9 +7,10 @@
 | `app/` | App Router 页面、Auth callback、Server Action 装配 | 首页、占位媒体路由、登录、注册、Creator 页面 | 保持路由薄，不在 page 中堆积业务写入 |
 | `src/features/auth/` | Auth 表单校验与 Server Actions | `actions.ts`、`schemas.ts` | 作为后续 feature 的结构样板 |
 | `src/lib/supabase/` | browser/server client 与环境配置 | `client.ts`、`server.ts`、`config.ts` | 所有 Supabase 初始化继续集中在此 |
-| `supabase/migrations/` | 数据模型、函数、索引、grants、RLS | `202608190001_m0_m1_core.sql` | 后续只通过追加 migration 演进 |
-| `src/types/database.ts` | 当前手写数据库类型 | 只完整覆盖 profiles、students、forum_accounts | M1 收尾改为由已应用 schema 生成并提交 |
-| `tests/rendered-html.test.mjs` | 构建后公共与 Auth 骨架渲染检查 | 当前只验证 HTML 与无密钥泄露 | 保留为 smoke test，补数据库和浏览器测试 |
+| `supabase/migrations/` | 数据模型、函数、索引、grants、RLS | M0/M1、M2 Wiki、M2 Grants hardening 三条 migration | 后续只通过追加 migration 演进 |
+| `src/types/database.ts` | 已从本地迁移后 schema 生成的数据库类型，末尾附应用别名 | 覆盖六张表与三个 Wiki RPC | schema 变更后重新生成并检查类型差异 |
+| `tests/rendered-html.test.mjs` | 构建后公共路由、Auth 跳转与 Wiki 页面渲染检查 | 已兼容未配置与已配置 Supabase；不验证数据库行为 | 保留为 smoke test，配合 pgTAP、真实 API 与浏览器测试 |
+| `tests/local-api.test.mjs` | 本地 GoTrue、Profile RLS、Wiki RPC 的双用户集成测试 | 已在本地 Auth/API 通过，测试数据由 service role 清理 | 仅允许本地 API URL；独立开发项目另行验证 |
 | `app/globals.css` | M0 临时视觉令牌与页面样式 | Institutional / Editorial 初稿 | 迁移为分层令牌与语义组件，不绑定领域字段 |
 
 ## 目标模块与依赖方向
@@ -53,7 +54,7 @@ M6 only: server upload service ─────► Cloudflare R2
 ### M1 账户
 
 - `auth.users` 是认证来源；`profiles.id` 与其一一对应。
-- 真实开发库应用 migration 后，从 schema 生成 `Database` 类型，禁止长期手工漏表。
+- 本地数据库应用 migration 后，已从 public schema 生成 `Database` 类型；后续 schema 变更应重新生成，独立开发库仍需核对迁移一致性。
 - Auth 错误对用户使用稳定中文文案；日志中保留可诊断的服务端上下文，但不记录密钥和密码。
 
 ### M2 Wiki
@@ -63,6 +64,7 @@ M6 only: server upload service ─────► Cloudflare R2
 - 第一版允许字段：Student 为 `name/college_id/signature/summary`，College 为 `name/summary`，Place 为 `name/college_id/summary`；`id/slug/created_by/created_at` 不可修改。
 - `create_wiki_entity` 在同一事务创建实体与首个 Revision；`apply_wiki_revision(entity_type, entity_id, expected_version, patch, summary, source_work_id)` 完成身份验证 → 锁定实体 → 检查版本与字段白名单 → 更新实体 → 写 snapshot → 返回新版本。
 - `wiki_revisions` 与三类实体撤销 authenticated 直接写权限；客户端只能通过 security-definer RPC 写入，RPC 仅授予 authenticated。
+- Supabase 默认表权限可能先给 `anon` 和 `authenticated` DML；追加 migration 必须显式撤销默认 Grants，再授予公开 SELECT 和授权写入，RLS 负责行级判断。
 - `rollback_wiki_revision` 读取历史快照，再调用同一修订链路写入新 Revision，不删除或覆盖历史。
 
 ### M3 Forum

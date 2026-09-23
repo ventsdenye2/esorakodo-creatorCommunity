@@ -53,7 +53,6 @@ test("renders auth foundations without leaking configuration", async () => {
   for (const [pathname, heading] of [
     ["/login", "返回校园"],
     ["/register", "建立 Creator 档案"],
-    ["/creator", "Creator 档案"],
   ]) {
     const response = await render(pathname);
     assert.equal(response.status, 200, pathname);
@@ -61,22 +60,37 @@ test("renders auth foundations without leaking configuration", async () => {
     assert.match(html, new RegExp(heading), pathname);
     assert.doesNotMatch(html, /SUPABASE_SERVICE_ROLE_KEY|your-anon-or-publishable-key/i);
   }
+
+  const creatorResponse = await render("/creator");
+  if (creatorResponse.status === 307) {
+    assert.match(creatorResponse.headers.get("location") ?? "", /\/login(?:\?|$)/);
+  } else {
+    assert.equal(creatorResponse.status, 200);
+    assert.match(await creatorResponse.text(), /Creator 档案/);
+  }
 });
 
-test("server-renders the wiki empty and create states without a configured database", async () => {
+test("server-renders the wiki directory and create states", async () => {
   const indexResponse = await render("/wiki");
   assert.equal(indexResponse.status, 200);
   const indexHtml = await indexResponse.text();
   assert.match(indexHtml, /校园档案/);
-  assert.match(indexHtml, /等待连接开发数据库/);
-  assert.match(indexHtml, /还没有校园档案/);
+  if (indexHtml.includes("等待连接开发数据库")) {
+    assert.match(indexHtml, /还没有校园档案/);
+  }
 
   const createResponse = await render("/create/wiki");
-  assert.equal(createResponse.status, 200);
-  const createHtml = await createResponse.text();
-  assert.match(createHtml, /建立校园档案/);
-  assert.match(createHtml, /创建并记录 Revision/);
-  assert.match(createHtml, /disabled/);
+  if (createResponse.status === 307) {
+    assert.match(createResponse.headers.get("location") ?? "", /\/login(?:\?|$)/);
+  } else {
+    assert.equal(createResponse.status, 200);
+    const createHtml = await createResponse.text();
+    assert.match(createHtml, /建立校园档案/);
+    assert.match(createHtml, /创建并记录 Revision/);
+    if (createHtml.includes("Supabase 尚未配置")) {
+      assert.match(createHtml, /disabled/);
+    }
+  }
 });
 
 test("wiki migration preserves the RPC-only write contract", async () => {

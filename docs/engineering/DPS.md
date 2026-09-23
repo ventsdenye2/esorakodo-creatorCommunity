@@ -32,12 +32,12 @@
 
 | 任务 ID | 需求 ID | 文件或符号 | 实现意图 | 依赖 | 验收 | 状态 |
 | --- | --- | --- | --- | --- | --- | --- |
-| KTU-M100 | KTU-AUTH-001, KTU-FND-002 | Supabase dev project、`.env.local` | 建立隔离开发项目和 Auth URL | M0 | 本地配置存在但不进入 Git；回调 URL 正确 | 阻塞：需要开发项目配置 |
-| KTU-M101 | KTU-FND-002 | `supabase/migrations/202608190001_m0_m1_core.sql` | 将现有 migration 应用到空开发库 | KTU-M100 | `supabase db push` 成功；库结构与 Git 一致 | 待做 |
-| KTU-M102 | KTU-FND-001 | `src/types/database.ts` | 用实际 schema 生成完整数据库类型 | KTU-M101 | profiles、colleges、places、students、forum_accounts、wiki_revisions 均有类型 | 待做 |
-| KTU-M103 | KTU-AUTH-001, KTU-AUTH-002 | `supabase/tests/`（新建） | 测试 Profile trigger、唯一 handle 与基础 RLS | KTU-M101 | 正反权限用例在干净测试库通过 | 待做 |
-| KTU-M104 | KTU-AUTH-001, KTU-AUTH-003 | `tests/e2e/auth.spec.*`（新建） | 验证注册、确认、登录、退出、受保护页面 | KTU-M100, KTU-M103 | 真实会话通过；第二用户和未登录路径被拒绝 | 待做 |
-| KTU-M105 | KTU-OPS-001 | `README.md`、`verification.md` | 记录开发库初始化与 Auth 验收 | KTU-M104 | 新开发者可重复步骤，未泄露凭据 | 待做 |
+| KTU-M100 | KTU-AUTH-001, KTU-FND-002 | 本地 Supabase 或独立 dev project、`.env.local` | 建立隔离开发环境和 Auth URL | M0 | 本地配置存在但不进入 Git；回调 URL 正确 | 已验证：本地 DB、Auth、REST、Kong 与 `.env.local` 可用；独立开发项目未配置 |
+| KTU-M101 | KTU-FND-002 | `supabase/migrations/202608190001_m0_m1_core.sql` 及后续 migration | 将现有 migration 应用到空开发库 | KTU-M100 | 本地 `supabase db start` 或开发库 `supabase db push` 成功；库结构与 Git 一致 | 已验证：三条 migration 已应用于隔离本地库 |
+| KTU-M102 | KTU-FND-001 | `src/types/database.ts` | 用实际 schema 生成完整数据库类型 | KTU-M101 | profiles、colleges、places、students、forum_accounts、wiki_revisions 均有类型 | 已验证：本地 schema 生成，TypeScript 检查通过 |
+| KTU-M103 | KTU-AUTH-001, KTU-AUTH-002 | `supabase/tests/database/m1_auth.test.sql` | 测试 Profile trigger、唯一 handle 与基础 RLS | KTU-M101 | 正反权限用例在干净测试库通过 | 已验证：12/12 pgTAP 通过；真实 Auth 邮箱流程属 KTU-M104 |
+| KTU-M104 | KTU-AUTH-001, KTU-AUTH-003 | `tests/local-api.test.mjs`、浏览器 Auth 验收 | 验证注册、确认、登录、退出、受保护页面 | KTU-M100, KTU-M103 | 真实会话通过；第二用户和未登录路径被拒绝 | 进行中：本地双用户注册/登录和浏览器注册/退出、未登录重定向已验；邮件确认与第二用户浏览器路径待验 |
+| KTU-M105 | KTU-OPS-001 | `README.md`、`verification.md` | 记录开发库初始化与 Auth 验收 | KTU-M104 | 新开发者可重复步骤，未泄露凭据 | 进行中：本地启动、pgTAP、API 测试步骤与边界已记录；邮件确认步骤待验 |
 
 ## M2 Wiki 基础
 
@@ -45,13 +45,13 @@
 | --- | --- | --- | --- | --- | --- | --- |
 | KTU-M200 | KTU-WIKI-001 | `docs/design/wiki-foundation.md`（新建） | 调用 frontend-design skill 定义 Wiki 任务、令牌、线框和状态 | M1 | 通过非模板化批评；含桌面/移动与可访问性计划 | 已验证 |
 | KTU-M201 | KTU-WIKI-001, KTU-WIKI-004 | 产品决策记录、Wiki 字段契约 | 确认可编辑字段和乐观锁策略 | M1 | 字段、来源、冲突文案与版本规则明确 | 已验证 |
-| KTU-M202 | KTU-WIKI-002, KTU-WIKI-004 | 新 migration：实体版本与 `apply_wiki_revision` | 原子更新实体并写 Revision，禁止无历史覆盖 | KTU-M201 | 成功/冲突/越权/回滚 SQL 测试通过 | 已实现待验证：需开发库执行与权限测试 |
-| KTU-M203 | KTU-WIKI-001 | `src/features/wiki/schemas.ts`、`queries.ts`、`actions.ts`（新建） | 建立服务端校验、读取与写入边界 | KTU-M202 | 无客户端直接 update；错误映射稳定 | 已实现待验证：真实 RPC 错误路径待联调 |
+| KTU-M202 | KTU-WIKI-002, KTU-WIKI-004 | Wiki RPC migration 与 Grants hardening migration | 原子更新实体并写 Revision，禁止无历史覆盖 | KTU-M201 | 成功/冲突/越权/回滚 SQL 测试通过 | 已验证：本地迁移与 19/19 Wiki pgTAP 通过 |
+| KTU-M203 | KTU-WIKI-001 | `src/features/wiki/schemas.ts`、`queries.ts`、`actions.ts`（新建） | 建立服务端校验、读取与写入边界 | KTU-M202 | 无客户端直接 update；错误映射稳定 | 进行中：Student 创建、编辑、回滚的 Server Action 已经真实浏览器验证；其他实体与错误页面待验 |
 | KTU-M204 | KTU-LINK-001 | `src/components/entity-link/`（新建） | 统一实体类型、URL 和可访问链接 | KTU-M201 | 所有支持类型正确解析；未知类型安全失败 | 已实现待验证：跨媒介接入留待后续里程碑 |
-| KTU-M205 | KTU-WIKI-001 | `app/(public)/wiki/**`、`app/create/wiki/**`（新建） | 实现目录、详情、创建与编辑页面 | KTU-M200, KTU-M203, KTU-M204 | 可创建三类实体并从目录进入详情 | 已实现待验证：空库状态已验，真实创建待开发库 |
-| KTU-M206 | KTU-WIKI-003 | Revision 历史与回滚 action/page | 实现历史查看和回滚 | KTU-M202, KTU-M205 | 回滚产生新 Revision，历史不被删除 | 已实现待验证：需真实 Revision 数据 |
-| KTU-M207 | KTU-WIKI-001..004 | `supabase/tests/wiki*`、应用测试 | 覆盖原子性、RLS、冲突、回滚和页面状态 | KTU-M206 | 双用户权限、陈旧版本和失败路径通过 | 阻塞：需要独立 Supabase 开发项目 |
-| KTU-M208 | KTU-UX-002 | 浏览器截图与键盘检查 | 验证 Wiki 桌面/移动、焦点和空错载状态 | KTU-M205 | 关键页面无溢出；操作名称和结果文案一致 | 已实现待验证：空库目录/创建已验，真实数据页待验 |
+| KTU-M205 | KTU-WIKI-001 | `app/(public)/wiki/**`、`app/create/wiki/**`（新建） | 实现目录、详情、创建与编辑页面 | KTU-M200, KTU-M203, KTU-M204 | 可创建三类实体并从目录进入详情 | 进行中：Student 创建、详情、编辑已在浏览器验证；College/Place 页面待验 |
+| KTU-M206 | KTU-WIKI-003 | Revision 历史与回滚 action/page | 实现历史查看和回滚 | KTU-M202, KTU-M205 | 回滚产生新 Revision，历史不被删除 | 已验证：Student 浏览器回滚生成 REV 003，REV 001/002 历史保留；SQL 用例覆盖三类实体 |
+| KTU-M207 | KTU-WIKI-001..004 | `supabase/tests/database/m2_wiki.test.sql`、应用测试 | 覆盖原子性、RLS、冲突、回滚和页面状态 | KTU-M206 | 双用户权限、陈旧版本和失败路径通过 | 进行中：19/19 pgTAP、真实 API 双用户/陈旧冲突和 Student 浏览器主路径通过；浏览器失败反馈待验 |
+| KTU-M208 | KTU-UX-002 | 浏览器截图与键盘检查 | 验证 Wiki 桌面/移动、焦点和空错载状态 | KTU-M205 | 关键页面无溢出；操作名称和结果文案一致 | 进行中：空库桌面/移动、Student 桌面主路径已验；移动端有数据页待验 |
 
 ## M3 校园论坛
 

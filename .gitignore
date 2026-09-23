@@ -40,3 +40,10 @@ yarn-error.log*
 /.wrangler/
 /outputs/
 /work/
+/.npm-cache/
+/.supabase/
+/.supabase-home/
+/supabase/.temp/
+/supabase/.branches/
+/.playwright-daemon/
+/.playwright-cli/

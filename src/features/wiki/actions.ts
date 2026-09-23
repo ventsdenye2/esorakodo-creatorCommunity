@@ -53,9 +53,9 @@ export async function createWikiEntity(formData: FormData) {
     p_entity_type: parsed.data.entityType,
     p_slug: parsed.data.slug,
     p_name: parsed.data.name,
-    p_summary: parsed.data.summary ?? null,
-    p_college_id: parsed.data.collegeId ?? null,
-    p_signature: parsed.data.signature ?? null,
+    ...(parsed.data.summary ? { p_summary: parsed.data.summary } : {}),
+    ...(parsed.data.collegeId ? { p_college_id: parsed.data.collegeId } : {}),
+    ...(parsed.data.signature ? { p_signature: parsed.data.signature } : {}),
   });
   if (error) withMessage("/create/wiki", "error", wikiErrorMessage(error));
 
@@ -97,7 +97,6 @@ export async function updateWikiEntity(formData: FormData) {
     p_expected_version: parsed.data.expectedVersion,
     p_patch: patch,
     p_summary: parsed.data.editSummary,
-    p_source_work_id: null,
   });
   if (error) withMessage(`${href}/edit`, "error", wikiErrorMessage(error));
 

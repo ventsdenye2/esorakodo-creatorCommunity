@@ -5,8 +5,8 @@
 ## 当前结论
 
 - M0 工程骨架已经完成。
-- M1 代码基础已经完成，但真实 Supabase 开发项目、迁移应用和数据库集成测试尚未验收。
-- M2 Wiki 的页面、服务端边界和 migration 已实现到代码层；真实创建、并发冲突、回滚与 RLS 仍等待开发库联调。
+- M1 本地迁移、Profile trigger、Grants 与 RLS 的 pgTAP 验收通过；本地 GoTrue 注册/登录、浏览器 Creator 会话与退出已通过，邮件确认链路及独立开发项目待验。
+- M2 Wiki 本地 RPC、并发冲突、回滚与 RLS 的 pgTAP 验收通过；真实 Auth/API 双用户集成测试与浏览器 Student 创建/编辑/历史/回滚通过，College/Place 页面和移动端有数据状态待补验。
 - M3 到 M7 按依赖顺序实施，不并行预建复杂业务。
 - 第一个必须完整跑通的业务闭环是：注册 → Student → Forum Account → Forum Topic → 多账号楼层 → 发布 → Forum Account → Student Wiki。
 - UI 以功能可用为先，但每个新页面或重大改版在编码前必须调用 `frontend-design` skill 形成小型设计方案，并完成响应式、键盘操作、状态反馈和截图检查。视觉令牌可以替换，领域模型不得依赖视觉细节。
@@ -16,8 +16,8 @@
 | 里程碑 | 主要结果 | 进入条件 | 退出条件 | 当前状态 |
 | --- | --- | --- | --- | --- |
 | M0 工程骨架 | App Router、TypeScript、Sites 运行时、基础 Layout、Git | 无 | 本地可安装、构建和渲染公共页面 | 已完成 |
-| M1 账户基础 | Supabase Auth、Creator Profile、SSR 会话、首批 schema 与 RLS | M0 | 真实开发库中注册、登录、退出、Profile trigger 和会话读取全部通过 | 实现完成，待外部联调 |
-| M2 Wiki 基础 | Student、College、Place 的创建、详情、编辑、Revision、回滚 | M1 验收 | 所有 Wiki 修改通过原子事务生成 Revision；历史可查；实体可互链 | 代码已实现，待数据库联调 |
+| M1 账户基础 | Supabase Auth、Creator Profile、SSR 会话、首批 schema 与 RLS | M0 | 真实开发库中注册、登录、退出、Profile trigger 和会话读取全部通过 | 本地 Auth/API 与浏览器主路径已验，邮件确认待验 |
+| M2 Wiki 基础 | Student、College、Place 的创建、详情、编辑、Revision、回滚 | M1 验收 | 所有 Wiki 修改通过原子事务生成 Revision；历史可查；实体可互链 | 本地数据库与 Student 浏览器路径已验，三类页面待补齐 |
 | M3 校园论坛 | Topic、Message、Forum Account、Hashtag、草稿与发布 | M2 实体链接稳定 | 首条端到端垂直切片通过；A 不能修改 B 的作品 | 待做 |
 | M4 校刊与部刊 | Article、稳定标签、结构化正文、实体引用 | M3 权限与发布模型稳定 | 长文可创作、预览、发布；正文实体引用可跳转和反查 | 待做 |
 | M5 事件专题 | Event、Timeline、实体关联、Event Supplement | M4 实体引用可复用 | 主档案单一维护者；补充独立署名；时间线与反向关系可浏览 | 待做 |

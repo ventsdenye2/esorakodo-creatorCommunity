@@ -43,7 +43,7 @@ export default async function CreateWikiPage({ searchParams }: PageProps) {
           <label><span>档案名称</span><input maxLength={100} name="name" required /></label>
           <label>
             <span>稳定 Slug</span>
-            <input autoCapitalize="none" maxLength={64} name="slug" pattern="[a-z0-9-]{2,64}" required />
+            <input autoCapitalize="none" maxLength={64} name="slug" pattern="(?:[a-z0-9]|-){2,64}" required />
             <small>创建后不可修改，只使用小写字母、数字和连字符。</small>
           </label>
           <label>
