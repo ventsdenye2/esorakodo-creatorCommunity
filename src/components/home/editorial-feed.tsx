@@ -22,7 +22,7 @@ export function EditorialFeed() {
     <section className="editorial-feed" aria-label="校园论坛和近期校刊">
       <article className="forum-feed">
         <div className="home-section-heading">
-          <div><h2>校园论坛</h2><p>校内正在发生的讨论、提问与传闻。</p></div>
+          <div><h2>校园论坛</h2><p>概念演示 · 以下条目不是已发布的帖子。</p></div>
           <SectionLink href="/forum">进入论坛</SectionLink>
         </div>
         <div className="forum-feed-head" aria-hidden="true">
@@ -41,7 +41,7 @@ export function EditorialFeed() {
 
       <article className="press-feed">
         <div className="home-section-heading">
-          <div><h2>近期校刊</h2><p>被记录下来的思想、个体与时代。</p></div>
+          <div><h2>校刊·部刊</h2><p>概念演示 · 以下刊物尚未发布。</p></div>
           <SectionLink href="/press">进入校刊</SectionLink>
         </div>
         <ol className="press-feed-list">

@@ -1,10 +1,34 @@
 # KTU 平台工程进度
 
-## 当前目标与阶段（2026-09-23）
+## 当前状态（2026-09-23，本地调试与并行开发）
+
+- 用户恢复开发，首发范围为账户、Wiki、论坛的公开测试版；目标域名 `campus.kongtian.university`，境外 Ubuntu 自有服务器与托管 Supabase 项目 `sttghkavzjeqeuignpwi`。本地调试完成后再进行服务器部署。
+- M3 数据库已完成，本地 51/51 M3 与全库 82/82 pgTAP；M2 Wiki 补验已完成；Living Campus 首批首页/导航/Campus Layer 通过桌面与手机浏览器检查。Forum Account、草稿、发布、匿名列表/标签/详情和 Student Wiki 反向入口已走通本地浏览器主路径。
+- 两条 M3 增量迁移已应用本地；数据库类型已从本地 schema 重新生成。`git diff --check`、`npm run lint`、`npm run typecheck`、`npm run build` 和构建后渲染 5/5 已通过。浏览器 375px 论坛详情无溢出、0 error/0 warning。测试数据清理状态见下方新验收记录。
+- Topic 楼层、标题/版面、标签通过独立 HTTP 请求保存，各自校验，但不共享一个事务。后续步骤失败时编辑页提示部分保存并要求重新载入；上线前需专项检查这一恢复路径。线上 Supabase 未迁移，生产变量、SMTP、DNS、Nginx、HTTPS 与服务器 SSH 尚未配置。Ubuntu Node 容器构建和 HTTP Nginx 代理可行性见 `docs/deploy/ubuntu.md`，但 `vinext start` 仍是预览目标，不能宣称生产宿主已验。
+- 本批从 `main` 的 `c9872c4` 开始，当前提交与工作树以 Git 状态为准。用户要求本阶段结束后暂停供其重启电脑；本地验证和文档同步完成后停止开发，不连接线上服务器。下面“暂停”章节是之前阶段的历史记录，不能代表当前状态。
+- 本轮一次性论坛测试数据已在单个带归属守卫的本地事务中精确清理：测试 Creator/Auth、Student、Revision、Forum Account、Topic、2 层楼层和 2 枚未复用标签。按 UUID、邮箱、handle、slug 复查均为 0；没有 reset 数据库。
+
+## 重启后恢复
+
+1. 启动 Docker Desktop 和本地 Supabase，确认本地 DB/Auth/REST 可用；当前工作进度从 M3 双用户浏览器权限、草稿部分保存恢复与正式部署宿主评估继续。
+2. 本地预览需要 `npm run dev -- --port 3002`（或空闲端口），浏览器使用 `http://localhost:3002/`。重启电脑后不假定旧 dev server 仍运行。
+3. 上线前取得 Ubuntu SSH 地址、用户名与连接方式，确认 `campus.kongtian.university` DNS；核对托管 Supabase 的迁移、anon key、Auth Site URL/回调、SMTP，再验证正式生产运行方式、Nginx/HTTPS 和线上端到端流程。密钥只放本地/服务器环境文件，不贴入文档或聊天。
+4. 以上工作当前暂停，等待用户重启后继续。
+
+## 上一轮暂停记录（历史）
+
+- 当前 `main` HEAD：`c9872c4 test: verify local Supabase auth and wiki flows`。本轮 Living Campus v2 指导文档改动尚未提交；不把它们写成已实现的页面。
+- 本轮已更新 `AGENTS.md`、`README.md`、`docs/ROADMAP.md`、`docs/engineering/RDS.md`、`DPS.md`、`progress.md`、`verification.md` 和 v1 设计记录，新增 `docs/design/living-campus-v2.md`。当前只修改文档，没有改变网站页面、Auth、数据库或部署；`git diff --check`、lint、typecheck、build 通过。
+- 用户确认首发为“账户＋Wiki＋论坛”的公开测试版，允许任何访客注册发帖；线上 Supabase 项目 ref 为 `sttghkavzjeqeuignpwi`，自定义域名尚待用户注册和提供。Site 当前仍为仅站点所有者可访问的旧版本，生产环境变量未配置，不可宣称公开上线。
+- 为优先处理前端指导文档，M3 论坛数据库与 M2 浏览器 QA 并行任务已中断。工作树存在未跟踪的 `202609230002_m3_forum.sql` 与 `m3_forum.test.sql` 草稿；**未验证、未提交，不应当作已应用 migration**。恢复时先审查草稿及本地 migration 状态，再决定是否继续。
+- 用户随后已恢复开发；每次改动、任务状态和实际验收继续同批同步到设计/工程文档。
+
+## 上一阶段目标与结果（2026-09-23）
 
 - 目标：收尾 M1/M2 的真实服务验收，再进入 M3。
 - 当前阶段：隔离本地 Supabase 的 DB、Auth 和 REST 已运行，31/31 pgTAP、真实双用户 API 集成与浏览器 Student 主路径通过；邮件确认、College/Place 页面和移动端有数据状态待补验。
-- 当前基线提交：`4aeb434 feat: build community wiki and homepage`；分支 `main`，本批测试与文档改动尚未提交。
+- 上一阶段 M1/M2 验收已由 `c9872c4` 提交；本节其余内容是该提交的实现记录。
 - 本机 Supabase CLI `2.117.0` 已可通过 `npx` 调用；Docker daemon 已连接，本地 DB/Auth/REST/Kong 服务已启动。
 
 ## 本批已完成（2026-09-23）

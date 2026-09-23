@@ -69,12 +69,15 @@ M6 only: server upload service ─────► Cloudflare R2
 
 ### M3 Forum
 
+- 实施契约和错误码以 `docs/design/forum-data-contract.md` 为准；`docs/design/forum.md` 记录 BBS 阅读与编排页面。Forum Account 仍由独立的现实 Creator 拥有，可选关联 Student。
 - `forum_topics`：creator_id、title、board、status、published_at、created_at、updated_at。
 - `forum_messages`：topic_id、forum_account_id、sort_order/floor_no、body、reply_to_message_id、in_world_time。
 - `hashtags` 与 `forum_topic_hashtags` 分离；规范化名称唯一。
 - 第一版 body 使用受限纯文本或安全的小型结构，不把 M4 富文本依赖提前带入。
-- 状态：`draft → published → hidden/removed`。作者可编辑 draft；published 的编辑策略在实现前明确为生成版本或受限修改，不能静默重写历史作品。
+- 状态：本版只提供 `draft → published`；`hidden/removed` 保留字段值但客户端没有转换权限。作者可编辑 draft，published 冻结。未来版本化修改和审核另立迁移。
 - Topic 发布使用事务校验至少一个楼层、楼层顺序唯一、所用 Forum Account 归当前 Creator 所有。
+- `replace_forum_draft_messages` 按 JSON 数组原子替换所有楼层，`replace_forum_draft_hashtags` 原子同步至多八个标签；Topic 标题/版面是第三个独立写请求。跨三个 HTTP 请求没有统一事务，失败后 UI 须提示部分保存并重新载入。
+- 公开列表按 board 与标签查询已发布 Topic；Student Wiki 由 `forum_accounts.student_id → forum_messages → forum_topics` 只反查 published 作品。
 
 ### M4 Press
 
@@ -108,48 +111,29 @@ M6 only: server upload service ─────► Cloudflare R2
 
 ### 设计命题
 
-- 具体对象：一座仍在被共同书写的空天大学数字校园。
-- 主要受众：阅读世界设定的访客，以及创建作品与实体的 Creator。
-- 页面共同任务：让用户知道自己正在看哪一种校内媒介、内容由谁维护，以及可以沿哪个实体继续探索。
+- 当前首页的概念沙盘和 Campus Layer 首批已实施，证据见 `docs/design/living-campus-implementation.md`。`homepage-concept-v1.md` 是旧基线，`living-campus-v2.md` 的真实关系图、Peek 与正式 3D 仍是拟实施范围。
+- 对象是一座仍在被共同书写的空天大学数字校园。访客能沿人物、地点、论坛讨论和档案探索；Creator 能识别创作入口及本人管理的内容。
+- v2 的 Entity / Relation / Space / Time 是前端浏览维度，不能据此新建通用 Entity 表或将模型 objectName 当作 Place 的主键。当前 2D 路由与普通链接始终是完整路径。
 
-### 临时令牌方向
+### 视觉与媒介契约
 
-这些令牌用于形成一致的功能阶段基线，不代表最终美术冻结：
+- 保留 Institutional × Editorial × Spatial × Living Archive；用大学、校刊、档案和建筑沙盘的真实结构形成识别度，避免统一卡片、全站霓虹 HUD、玻璃拟态和装饰性关系线。
+- `docs/design/living-campus-v2.md` 中的纸面、海军蓝、航空蓝、信号橙及夜间令牌是候选值，实施前后都要与真实渲染对照。字体仍区分宋体标题、无衬线操作、少量等宽元数据。
+- 主导航保留五类现有路由。Campus Layer 是可选空间探索模式；Forum 保持 BBS 行和有序楼层，Press 保持出版物版式，Event 保持档案/时间线与克制的夜间区，Wiki 保持修订档案感。
+- 未完成的业务入口、假搜索、假实时动态不得伪装成可用产品；演示地点、坐标和关系不能被写成已确认 Canon。
 
-| 角色 | 名称 | 建议值 |
-| --- | --- | --- |
-| 背景 | Archive White | `#F8FAFD` |
-| 主文字 | Orbital Navy | `#0A2147` |
-| 交互 | Altitude Blue | `#296CB7` |
-| 状态强调 | Signal Amber | `#C7662E` |
-| 次级文字 | Graphite | `#536178` |
-| 分隔 | Registry Line | `#CBD7E6` |
+### 空间与关系所有权
 
-- Display：思源宋体或可合法自托管的中文宋体，用于标题与叙事入口。
-- Body：思源黑体或系统中文无衬线，用于长文、表单和操作。
-- Utility：IBM Plex Mono 或兼容等宽字体，用于档案编号、时间和版本；未确认字体分发前使用可靠 fallback。
-
-### 布局语言
-
-```text
-┌─ 校级导航 ─────────────────────────────────────────┐
-│ 媒介身份 / 页面标题                   Creator 操作 │
-├───────────────────────────────┬────────────────────┤
-│ 主内容：论坛 / 文章 / 档案专属结构 │ Campus Trace      │
-│                               │ 实体、来源、修订、路径 │
-└───────────────────────────────┴────────────────────┘
-```
-
-记忆点是 `Campus Trace`：一个克制的动态档案标签区，将档案编号、人物、机构、事件和论坛来源变成可切换、可继续探索的真实导航。轨道动效只反馈当前标签状态，并支持键盘和 reduced-motion；在校园建筑设定完成前，不展示任何具体建筑形象。移动端改为两列标签和单列内容。这是唯一重点视觉风险，其他区域保持安静、精确。
+- 首版 Campus Layer 只用轻量 SVG/CSS 场景。未来 3D 的 `CampusSpatialBinding` 只把稳定 Place ID/slug 映射到模型 objectName、锚点与相机预设；业务事实依旧由数据库和各媒介拥有。
+- `EntityLink` 保持可直接访问的 `<a href>`，Peek 只做渐进增强；Relation Field 的连线只反映已有可读关系。用户浏览 Trace 与数据库事实明确分开。
+- 3D 不能成为登录、阅读、创作或导航的唯一入口。移动端首页保持轻量，打开 Layer 后才加载较重场景；未来模型到位后再评估 Three.js、资产预算与性能。
 
 ### 自我批评与修正
 
-- 风险：白底、宋体、细线容易落入通用“编辑部报纸”模板。
-- 修正：结构不靠仿报纸列线制造气质，而由真实的学院层级、档案编号、Revision、实体关系和媒介差异产生。
-- 风险：空天主题容易变成深色霓虹 HUD。
-- 修正：空间感来自尺度、轨迹与导航关系；不使用全站黑底、发光边框和无意义仪表盘。
-- 风险：过早追求视觉会拖慢功能闭环。
-- 修正：每个里程碑只做一次小型设计循环，先保证信息层级、状态和可用性；最终字体、插画和品牌资产在 M7 收敛。
+- 白底、宋体、细线容易成为通用报纸模板：只用承载真实顺序、来源与关系的结构线。
+- 空间场景容易成为科技噱头：Campus Layer 只承担地点探索，维持清楚的 2D 阅读主线和键盘路径。
+- 未确认的建筑示意容易固化错误世界观：演示点位必须标识，待 Place 与校园模型定义后才建立正式绑定。
+- 大型视觉重构容易拖慢首发：按 `living-campus-v2.md` 的七阶段实施，每阶段单独验证，M1–M3 的可用与权限证据仍是上线条件。
 
 ### 每个 UI 任务的执行顺序
 
@@ -159,6 +143,7 @@ M6 only: server upload service ─────► Cloudflare R2
 4. 先实现语义结构、状态、键盘与响应式，再补视觉细节。
 5. 检查 loading、empty、error、unauthorized、conflict、success 状态和界面文案一致性。
 6. 用真实浏览器截取桌面和移动端，检查焦点、对比度、溢出和 reduced motion。
+7. 同批更新设计记录、DPS 状态、`progress.md` 与 `verification.md`；未实施的 v2 事项持续标为 Proposed。
 
 ## 修改围栏
 

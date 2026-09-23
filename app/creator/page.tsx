@@ -37,7 +37,11 @@ export default async function CreatorPage() {
       <span className="archive-label">CREATOR PROFILE</span>
       <h1>{profile?.display_name ?? user.email ?? "Creator"}</h1>
       <p className="creator-handle">@{profile?.handle ?? "pending-profile"}</p>
-      <p>{profile?.bio ?? "Creator 档案已建立。个人简介与创作管理将在后续迭代开放。"}</p>
+      <p>{profile?.bio ?? "Creator 档案已建立。你可以从校园档案或论坛主题开始创作。"}</p>
+      <nav className="creator-toolbar" aria-label="创作入口">
+        <Link className="button button-primary" href="/create/wiki">建立校园档案</Link>
+        <Link className="button button-secondary" href="/create/forum">创作论坛主题</Link>
+      </nav>
     </main>
   );
 }

@@ -29,15 +29,17 @@
 - Route files should stay thin. Put reusable UI in `src/components`, domain workflows in `src/features`, infrastructure in `src/lib`, and shared types in `src/types`.
 - Prefer Server Components and server-side authorization. Add Client Components only for real browser interaction.
 
-## UI direction (provisional and replaceable)
+## UI direction: Living Campus v2 (proposed)
 
-- Preserve the conceptual direction: Institutional × Editorial × Space × Living Archive.
-- Avoid generic SaaS dashboards, uniform card waterfalls, dark neon HUDs, and component-library default themes.
-- Current colors, fonts, spacing, and imagery are M0 placeholders. Product art direction is expected to change.
-- Keep design decisions behind CSS custom properties, semantic component names, and layout primitives. Do not encode visual styling into domain models or database fields.
-- Different media should retain different information structures even if the visual theme is replaced later.
+- `docs/design/living-campus-v2.md` is the current **proposed** front-end design guide; `docs/design/homepage-concept-v1.md` records the **implemented** homepage baseline. Do not describe planned Campus Layer or 3D behavior as shipped.
+- Design the co-creation site as a campus that can be explored, read, traced and written: Entity (what), Relation/Trace (how connected), Campus/Space (where), Time (when). This is an interface model, not a universal Entity database table.
+- Preserve Institutional × Editorial × Spatial × Living Archive, grounded in a university, archive and publication system. Avoid generic SaaS dashboards, uniform card waterfalls, dark neon HUDs, glassmorphism and decorative relationship lines.
+- Keep the current five primary routes. Make Campus Layer a progressive, optional way to explore; 2D navigation and ordinary entity links must remain complete and accessible. Do not add inactive creation or search controls.
+- Start with a lightweight SVG/CSS campus preview. Do not add Three.js or canonical building locations before actual 3D assets and Place-to-object bindings exist. Model data and business ownership stay separate; illustrative locations must be marked as demos.
+- Preserve distinct structures: Forum as a BBS with ordered in-world floors, Press as an editorial publication, Events as an archive/timeline, Wiki as a revisioned record. Real Creator operations and fictional Forum Account speech must remain visibly separate.
+- Keep visual decisions behind CSS custom properties, semantic component names and layout primitives. The v2 token values are proposals, not a completed visual migration.
 - Before creating or substantially reshaping user-facing UI, invoke the `frontend-design` skill. Record the page subject, audience, single job, compact token/type/layout plan, one justified signature element, and a critique against generic templates before implementation.
-- Functionality remains the first priority, but every UI batch must still cover responsive behavior, keyboard focus, reduced motion, and loading/empty/error/unauthorized/conflict states. Verify representative desktop and mobile renders before marking the batch complete.
+- Implement the v2 guide in bounded stages. Every UI batch must cover responsive behavior, keyboard/touch access, focus return, reduced motion, and loading/empty/error/unauthorized/conflict states. Verify representative desktop and mobile renders before marking the stage complete.
 
 ## Security and delivery
 
@@ -47,4 +49,5 @@
 - Do not implement later milestones speculatively. Prefer the smallest vertical slice that proves the current domain boundary.
 - Before handoff, run `npm run lint`, `npm run typecheck`, and `npm run build`; fix failures rather than documenting them away.
 - For each independent stage, leave a concise change note or Git commit explaining scope, migrations, and verification.
-- Use `docs/ROADMAP.md` as the milestone entrypoint and `docs/engineering/{RAS,RDS,DPS,progress,verification}.md` for requirement, design, task, recovery, and evidence tracking. Update the documents when scope, contracts, status, or verification changes.
+- Sync **every** code, configuration, UI, migration and test change with the relevant design/engineering documents in the same batch. Record progress, blockers, current commit/working-tree state, next step and actual verification in `docs/engineering/progress.md` and `docs/engineering/verification.md`; never let a code-only batch appear complete while its documents are stale.
+- Use `docs/ROADMAP.md` as the milestone entrypoint and `docs/engineering/{RAS,RDS,DPS,progress,verification}.md` for requirement, design, task, recovery, and evidence tracking. Update the documents whenever scope, contracts, status, decisions or verification changes, including before pausing unfinished work.

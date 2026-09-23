@@ -12,7 +12,7 @@ export function EventArchive() {
     <section className="event-archive" aria-labelledby="event-title">
       <div className="event-archive-inner">
         <div className="event-heading-row">
-          <span>EVENT ARCHIVE · #2187-0417</span>
+          <span>概念演示 / EVENT ARCHIVE · #2187-0417</span>
           <Link href="/events">查看事件档案<ArrowIcon /></Link>
         </div>
         <div className="event-intro">

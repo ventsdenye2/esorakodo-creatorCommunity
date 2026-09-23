@@ -2,7 +2,7 @@
 
 空天大学共创平台是一座以虚构大学数字校园为界面的 IP 共创空间。现实中的 Creator 通过校园论坛、校刊/部刊与事件专题讲故事，人物、学院、地点与事件则在可追溯的 Wiki 网络中持续生长。
 
-当前仓库完成 M0 工程骨架、M1 账户基础与 M2 Wiki 的代码骨架。Wiki 的真实迁移、RPC 与 RLS 仍需在独立 Supabase 开发项目中验收，不能视为数据库层已验证。
+当前仓库完成 M0 工程骨架、M1 账户基础与 M2 Wiki 的本地开发验收；本地迁移、RPC、RLS、Auth/API 和 Student 浏览器主路径已有证据，独立线上 Supabase 项目与公开发布尚未验收。首页当前为 v1 功能型视觉基线；下一版 Living Campus v2 仍是拟实施设计，见 `docs/design/living-campus-v2.md`。
 
 ## 当前能力
 

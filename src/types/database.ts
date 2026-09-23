@@ -1,5 +1,3 @@
-// Generated from the local Supabase public schema on 2026-09-23 with
-// `npx supabase gen types typescript --local --schema public`.
 export type Json =
   | string
   | number
@@ -105,6 +103,156 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      forum_messages: {
+        Row: {
+          body: string
+          created_at: string
+          floor_no: number
+          forum_account_id: string
+          id: string
+          in_world_time: string | null
+          reply_to_message_id: string | null
+          topic_id: string
+          updated_at: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          floor_no: number
+          forum_account_id: string
+          id?: string
+          in_world_time?: string | null
+          reply_to_message_id?: string | null
+          topic_id: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          floor_no?: number
+          forum_account_id?: string
+          id?: string
+          in_world_time?: string | null
+          reply_to_message_id?: string | null
+          topic_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forum_messages_forum_account_id_fkey"
+            columns: ["forum_account_id"]
+            isOneToOne: false
+            referencedRelation: "forum_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "forum_messages_reply_to_message_id_fkey"
+            columns: ["reply_to_message_id"]
+            isOneToOne: false
+            referencedRelation: "forum_messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "forum_messages_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "forum_topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      forum_topic_hashtags: {
+        Row: {
+          hashtag_id: string
+          topic_id: string
+        }
+        Insert: {
+          hashtag_id: string
+          topic_id: string
+        }
+        Update: {
+          hashtag_id?: string
+          topic_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forum_topic_hashtags_hashtag_id_fkey"
+            columns: ["hashtag_id"]
+            isOneToOne: false
+            referencedRelation: "hashtags"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "forum_topic_hashtags_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "forum_topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      forum_topics: {
+        Row: {
+          board: string
+          created_at: string
+          creator_id: string
+          id: string
+          published_at: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          board: string
+          created_at?: string
+          creator_id: string
+          id?: string
+          published_at?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          board?: string
+          created_at?: string
+          creator_id?: string
+          id?: string
+          published_at?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forum_topics_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hashtags: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          normalized_name: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          normalized_name?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          normalized_name?: string | null
+        }
+        Relationships: []
       }
       places: {
         Row: {
@@ -309,6 +457,60 @@ export type Database = {
         }
         Returns: Json
       }
+      publish_forum_topic: {
+        Args: { p_topic_id: string }
+        Returns: {
+          board: string
+          created_at: string
+          creator_id: string
+          id: string
+          published_at: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "forum_topics"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      replace_forum_draft_hashtags: {
+        Args: { p_names: string[]; p_topic_id: string }
+        Returns: {
+          created_at: string
+          id: string
+          name: string
+          normalized_name: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "hashtags"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      replace_forum_draft_messages: {
+        Args: { p_messages: Json; p_topic_id: string }
+        Returns: {
+          body: string
+          created_at: string
+          floor_no: number
+          forum_account_id: string
+          id: string
+          in_world_time: string | null
+          reply_to_message_id: string | null
+          topic_id: string
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "forum_messages"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       rollback_wiki_revision: {
         Args: {
           p_expected_version: number
@@ -450,8 +652,7 @@ export const Constants = {
   },
 } as const
 
-
-// Domain aliases used by the application; the Database shape above is generated.
+// Application aliases; the Database shape above is generated from local Supabase.
 export type Creator = Database["public"]["Tables"]["profiles"]["Row"];
 export type Student = Database["public"]["Tables"]["students"]["Row"];
 export type College = Database["public"]["Tables"]["colleges"]["Row"];

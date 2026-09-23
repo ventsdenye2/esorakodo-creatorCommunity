@@ -2,8 +2,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SiteFooter } from "../../../../../src/components/layout/site-footer";
 import { SiteHeader } from "../../../../../src/components/layout/site-header";
+import { listPublishedTopicsForStudent } from "../../../../../src/features/forum/queries";
 import { getWikiEntityBySlug, listColleges } from "../../../../../src/features/wiki/queries";
 import { getWikiEntityLabel, isWikiEntityType } from "../../../../../src/features/wiki/types";
+import "../../../../../src/features/forum/forum.css";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +24,7 @@ export default async function WikiDetailPage({ params, searchParams }: PageProps
   ]);
   if (!entity) notFound();
   const college = colleges.find((item) => item.id === entity.collegeId);
+  const forumTopics = entity.type === "student" ? await listPublishedTopicsForStudent(entity.id) : [];
 
   return (
     <div>
@@ -61,6 +64,10 @@ export default async function WikiDetailPage({ params, searchParams }: PageProps
             </dl>
           </aside>
         </div>
+        {forumTopics.length > 0 ? <section className="forum-wiki-traces" aria-labelledby="forum-traces-title">
+          <div><p className="archive-label">CAMPUS / FORUM</p><h2 id="forum-traces-title">论坛里的相关讨论</h2></div>
+          <ul>{forumTopics.map((topic) => <li key={topic.id}><Link href={`/forum/${topic.id}`}>{topic.title}</Link><time dateTime={topic.published_at ?? ""}>{topic.published_at ? new Date(topic.published_at).toLocaleDateString("zh-CN") : ""}</time></li>)}</ul>
+        </section> : null}
       </main>
       <SiteFooter />
     </div>

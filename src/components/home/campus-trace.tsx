@@ -84,7 +84,7 @@ export function CampusTrace() {
     <section className="campus-trace" aria-labelledby="campus-trace-title">
       <div className="trace-heading">
         <h2 id="campus-trace-title">Campus Trace</h2>
-        <span>人物 · 机构 · 事件 · 讨论</span>
+        <span>概念演示 · 人物 / 机构 / 事件 / 讨论</span>
       </div>
 
       <div className="trace-tablist" role="tablist" aria-label="切换校园档案类型">

@@ -6,10 +6,10 @@
 
 - M0 工程骨架已经完成。
 - M1 本地迁移、Profile trigger、Grants 与 RLS 的 pgTAP 验收通过；本地 GoTrue 注册/登录、浏览器 Creator 会话与退出已通过，邮件确认链路及独立开发项目待验。
-- M2 Wiki 本地 RPC、并发冲突、回滚与 RLS 的 pgTAP 验收通过；真实 Auth/API 双用户集成测试与浏览器 Student 创建/编辑/历史/回滚通过，College/Place 页面和移动端有数据状态待补验。
-- M3 到 M7 按依赖顺序实施，不并行预建复杂业务。
+- M2 Wiki 本地 RPC、并发冲突、回滚与 RLS 的 pgTAP 验收通过；Student、College、Place 创建/编辑/历史/回滚、移动有数据页面与浏览器冲突反馈均已验。线上 Auth 邮件仍待验。
+- M3 本地数据库 51/51 pgTAP、论坛注册至发布、匿名阅读、标签筛选及 Student 反向链接的浏览器主路径通过；生产 Supabase 与第二 Creator 浏览器权限路径待验。M4 到 M7 仍按依赖实施。
 - 第一个必须完整跑通的业务闭环是：注册 → Student → Forum Account → Forum Topic → 多账号楼层 → 发布 → Forum Account → Student Wiki。
-- UI 以功能可用为先，但每个新页面或重大改版在编码前必须调用 `frontend-design` skill 形成小型设计方案，并完成响应式、键盘操作、状态反馈和截图检查。视觉令牌可以替换，领域模型不得依赖视觉细节。
+- Living Campus v2 的首页概念沙盘与可访问 Campus Layer 已交付首批，详见 `docs/design/living-campus-implementation.md`；真实关系图、Entity Peek 和正式 3D 校园仍是拟实施。每批设计、代码、状态和实际验收都同步到工程文档。
 
 ## 里程碑总览
 
@@ -17,8 +17,8 @@
 | --- | --- | --- | --- | --- |
 | M0 工程骨架 | App Router、TypeScript、Sites 运行时、基础 Layout、Git | 无 | 本地可安装、构建和渲染公共页面 | 已完成 |
 | M1 账户基础 | Supabase Auth、Creator Profile、SSR 会话、首批 schema 与 RLS | M0 | 真实开发库中注册、登录、退出、Profile trigger 和会话读取全部通过 | 本地 Auth/API 与浏览器主路径已验，邮件确认待验 |
-| M2 Wiki 基础 | Student、College、Place 的创建、详情、编辑、Revision、回滚 | M1 验收 | 所有 Wiki 修改通过原子事务生成 Revision；历史可查；实体可互链 | 本地数据库与 Student 浏览器路径已验，三类页面待补齐 |
-| M3 校园论坛 | Topic、Message、Forum Account、Hashtag、草稿与发布 | M2 实体链接稳定 | 首条端到端垂直切片通过；A 不能修改 B 的作品 | 待做 |
+| M2 Wiki 基础 | Student、College、Place 的创建、详情、编辑、Revision、回滚 | M1 验收 | 所有 Wiki 修改通过原子事务生成 Revision；历史可查；实体可互链 | 本地数据库、三类浏览器页面与冲突/移动已验；线上待验 |
+| M3 校园论坛 | Topic、Message、Forum Account、Hashtag、草稿与发布 | M2 实体链接稳定 | 首条端到端垂直切片通过；A 不能修改 B 的作品 | 本地数据库与单 Creator 浏览器闭环已验；双 Creator 浏览器、生产待验 |
 | M4 校刊与部刊 | Article、稳定标签、结构化正文、实体引用 | M3 权限与发布模型稳定 | 长文可创作、预览、发布；正文实体引用可跳转和反查 | 待做 |
 | M5 事件专题 | Event、Timeline、实体关联、Event Supplement | M4 实体引用可复用 | 主档案单一维护者；补充独立署名；时间线与反向关系可浏览 | 待做 |
 | M6 媒体与运营 | R2 直传、媒体元数据、举报、隐藏、审计 | 作品模型稳定 | 上传凭证不泄露；隐藏不破坏数据；管理动作可审计 | 待做 |
@@ -37,6 +37,12 @@ M1 真实环境验收
 ```
 
 M2 和 M3 是架构验证核心，不应被媒体上传、复杂富文本、积分、私信或推荐算法打断。M4 与 M5 可以复用同一套作品状态、实体引用和发布约束，但保持不同的页面结构与领域表。
+
+## Living Campus v2 前端轨道（首批已实施）
+
+`docs/design/homepage-concept-v1.md` 保留旧基线，`docs/design/living-campus-v2.md` 指导后续改版，`docs/design/living-campus-implementation.md` 记录首批实际交付。轻量沙盘 Hero 与可访问的 Campus Layer 已验；真实关系的 Relation Field、渐进增强的 Entity Peek、各媒介真实数据接入和完整性能验收仍待后续阶段。
+
+首版空间预览使用轻量 SVG/CSS 与已确认或标注为演示的地点；完整 3D 模型、Three.js、空间事件回放留给真实资产和数据契约到位后的独立阶段。这个前端轨道可与 M3 数据库和服务端工作按文件边界并行，但集成时必须核对 Forum Account、Wiki、发布权限和跨媒介实体链接。公开测试版的账户、Wiki、论坛闭环仍须完成真实服务与浏览器验收。
 
 ## 分阶段实施摘要
 

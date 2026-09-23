@@ -12,7 +12,7 @@ export function WikiTrail() {
   return (
     <section className="wiki-trail" aria-labelledby="wiki-trail-title">
       <div className="home-section-heading wiki-heading">
-        <div><h2 id="wiki-trail-title">探索更多校园 Wiki</h2><p>从一个人，到一个事件，再到更广阔的知识网络。</p></div>
+        <div><h2 id="wiki-trail-title">探索更多校园 Wiki</h2><p>概念演示 · 这些示例关系尚未成为已确认档案。</p></div>
         <Link className="section-link" href="/wiki">进入 Wiki<ArrowIcon /></Link>
       </div>
       <div className="wiki-trail-layout">

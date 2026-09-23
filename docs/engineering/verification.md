@@ -91,3 +91,42 @@
 | 浏览器 Student Wiki | Playwright 创建 Student、编辑摘要、查看历史、回滚 | 首版 version 1；编辑后 version 2；回滚后 version 3 且原摘要恢复，历史保留 REV 001/002/003；测试实体和账户已清理 | College/Place 页面、浏览器冲突反馈及移动端有数据页待验 |
 | HTML slug 约束 | Playwright 在 `/create/wiki` 检查输入 `pattern-check` 和 `pattern_check`，读取 `validity.patternMismatch` 与 console | 合法值 true/false、非法值 false/true；控制台 0 error、0 warning | 仅检查浏览器表单约束；服务端 Zod 另有边界 |
 | 生产构建与渲染回归 | `npm run build`；`node --test tests/rendered-html.test.mjs` | 构建通过，5/5 渲染测试通过 | 不替代 API 和浏览器用例 |
+
+## 2026-09-23 Living Campus v2 指导文档更新
+
+本批按用户要求先更新前端设计指导并暂停实现。`docs/design/living-campus-v2.md`、`AGENTS.md`、`ROADMAP.md`、RDS/DPS、v1 设计记录和 README 已明确“当前 v1 / 拟实施 v2”，并把每批改动和进展同步文档写成项目规则。没有修改运行时代码、数据库或 Sites 部署。
+
+| 验收项 | 方法或命令 | 实际结果 | 边界 |
+| --- | --- | --- | --- |
+| 指导一致性 | 对照当前 `app/page.tsx`、`SiteHeader`、`CampusTrace`、`EntityLink` 与新设计文档 | v1 标为当前实现；Campus Layer、Relation Field、Entity Peek、3D 均标为拟实施；论坛/校刊/事件保留媒介差异 | 设计文档不能证明新界面已实现 |
+| Git 空白错误 | `git diff --check` | 通过 | Windows LF/CRLF 提示不是内容错误 |
+| Lint | `npm run lint` | 通过 | 运行时代码本批未变 |
+| TypeScript | `npm run typecheck` | 通过 | 运行时代码本批未变 |
+| 生产构建 | `npm run build` | Vinext 五阶段完成 | 未运行新 UI 的浏览器/视觉测试，因为本批没有改渲染代码 |
+
+上述为当时的暂停记录。开发已按用户新指示恢复，新的 M3 证据见下节。
+
+## 2026-09-23 M3 本地开发进行中
+
+| 验收项 | 方法或命令 | 实际结果 | 未验证边界 |
+| --- | --- | --- | --- |
+| 数据库增量迁移 | `supabase migration up --local` | M3 两条 migration 已应用本地，未 reset 数据库 | 线上项目未迁移 |
+| 论坛 pgTAP | `supabase test db --local` | M3 51/51；M1/M2/M3 合计 82/82 | Server Action、浏览器与线上 RLS 仍需联调 |
+| 数据库类型 | 本地 CLI `gen types typescript --local --schema public` | 重新生成 M3 表/RPC 类型，保留应用别名 | 线上 schema 尚未比对 |
+| 静态检查 | `npm run lint`、`npm run typecheck` | 当前并行工作树通过 | 构建与浏览器执行待验 |
+
+论坛设计和应用契约见 `docs/design/forum.md` 与 `forum-data-contract.md`。保存楼层、Topic 元数据和标签分别是独立请求；目前仅每个 RPC 自身原子。此风险在编辑错误中提示重新载入，需真实浏览器核对恢复路径。Home/Campus UI 与 Wiki 余项仍由并行任务验证，不提前记为通过。
+
+### 本地浏览器与 Linux 可行性补验
+
+| 验收项 | 实际结果 | 未验证边界 |
+| --- | --- | --- |
+| M2 College/Place | College 创建 v1、编辑 v2、回滚 v3；Place 关联 College、编辑、历史、回滚、并发编辑至 v4 均通过。两标签陈旧表单收到版本冲突提示，不覆盖最新摘要，也不新增 Revision；375px 的 Place 详情/编辑/4 条历史页无横向溢出。测试实体、账户和 7 条 Revision 已精确清理。 | 冲突后表单会暂时显示旧摘要，需按提示刷新；线上邮件确认待验。 |
+| Living Campus 首批 | Playwright 1280×720、390×844、375×812；概念沙盘有明确示意标签，Campus Layer 点位切换、Esc 关闭和焦点返回通过；无横向溢出、控制台 0 error/warning。 | 真实 3D、数据库关系、实体 Peek 与完整性能预算未实现。 |
+| Forum 本地主路径 | 一次性 Creator 注册/登录、Forum Account 创建/编辑、2 层草稿及回复引用保存、标签同步、发布后详情、匿名按标签读取均通过；Student 关联后其 Wiki 详情自动显示已发布 Topic。375px 论坛详情 `scrollWidth=innerWidth=375`，控制台 0 error/warning。归属守卫事务精确清理测试用户、Student/Revision、账号、Topic/楼层及未复用标签，复查均为 0。 | 第二 Creator 浏览器权限、增删重排专项、部分保存恢复提示与线上项目待验。 |
+| 全仓构建回归 | `git diff --check`、`npm run lint`、`npm run typecheck`、`npm run build`、`node --test tests/rendered-html.test.mjs` | 均通过；构建后渲染 5/5。沙箱首次运行构建/Node test 的子进程被 EPERM 阻止，允许后通过。 |
+| Linux/Nginx 协议可行性 | Debian/glibc Node 22 容器 `npm ci`、build、`vinext start -H 127.0.0.1`、`nginx -t`、代理首页/登录 200。模板见 `docs/deploy/ubuntu.md`。 | WSL Ubuntu DNS 安装未完成；`vinext start` 随包标为本地预览，生产宿主、HTTPS、云 Auth、Server Action、图片及重启恢复待验。 |
+
+目标是 `campus.kongtian.university` 与托管 Supabase ref `sttghkavzjeqeuignpwi`；本批未连接云项目或自有服务器，也未申请证书、改 DNS 或部署。
+
+本阶段最终 `npm run lint`、`npm run typecheck`、`git diff --check`、`npm run build` 和构建后 `node --test tests/rendered-html.test.mjs` 全部通过（5/5）。用户要求重启电脑，本地阶段至此暂停；未来的生产部署验收不应以本地结果替代。

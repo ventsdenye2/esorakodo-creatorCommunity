@@ -1,0 +1,22 @@
+# Provisional Vinext preview process behind Nginx; see docs/deploy/ubuntu.md.
+[Unit]
+Description=KTU Community Vinext HTTP service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ktu
+Group=ktu
+WorkingDirectory=/srv/ktu-community/current
+Environment=NODE_ENV=production
+EnvironmentFile=/etc/ktu-community/ktu-community.env
+ExecStart=/usr/bin/npm run start -- -H 127.0.0.1 -p 3000
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

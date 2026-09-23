@@ -46,26 +46,40 @@
 | KTU-M200 | KTU-WIKI-001 | `docs/design/wiki-foundation.md`（新建） | 调用 frontend-design skill 定义 Wiki 任务、令牌、线框和状态 | M1 | 通过非模板化批评；含桌面/移动与可访问性计划 | 已验证 |
 | KTU-M201 | KTU-WIKI-001, KTU-WIKI-004 | 产品决策记录、Wiki 字段契约 | 确认可编辑字段和乐观锁策略 | M1 | 字段、来源、冲突文案与版本规则明确 | 已验证 |
 | KTU-M202 | KTU-WIKI-002, KTU-WIKI-004 | Wiki RPC migration 与 Grants hardening migration | 原子更新实体并写 Revision，禁止无历史覆盖 | KTU-M201 | 成功/冲突/越权/回滚 SQL 测试通过 | 已验证：本地迁移与 19/19 Wiki pgTAP 通过 |
-| KTU-M203 | KTU-WIKI-001 | `src/features/wiki/schemas.ts`、`queries.ts`、`actions.ts`（新建） | 建立服务端校验、读取与写入边界 | KTU-M202 | 无客户端直接 update；错误映射稳定 | 进行中：Student 创建、编辑、回滚的 Server Action 已经真实浏览器验证；其他实体与错误页面待验 |
+| KTU-M203 | KTU-WIKI-001 | `src/features/wiki/schemas.ts`、`queries.ts`、`actions.ts`（新建） | 建立服务端校验、读取与写入边界 | KTU-M202 | 无客户端直接 update；错误映射稳定 | 本地三类实体创建/编辑/回滚与冲突提示均已浏览器验证 |
 | KTU-M204 | KTU-LINK-001 | `src/components/entity-link/`（新建） | 统一实体类型、URL 和可访问链接 | KTU-M201 | 所有支持类型正确解析；未知类型安全失败 | 已实现待验证：跨媒介接入留待后续里程碑 |
-| KTU-M205 | KTU-WIKI-001 | `app/(public)/wiki/**`、`app/create/wiki/**`（新建） | 实现目录、详情、创建与编辑页面 | KTU-M200, KTU-M203, KTU-M204 | 可创建三类实体并从目录进入详情 | 进行中：Student 创建、详情、编辑已在浏览器验证；College/Place 页面待验 |
+| KTU-M205 | KTU-WIKI-001 | `app/(public)/wiki/**`、`app/create/wiki/**`（新建） | 实现目录、详情、创建与编辑页面 | KTU-M200, KTU-M203, KTU-M204 | 可创建三类实体并从目录进入详情 | 已验证：Student、College、Place 本地浏览器页面与关联关系 |
 | KTU-M206 | KTU-WIKI-003 | Revision 历史与回滚 action/page | 实现历史查看和回滚 | KTU-M202, KTU-M205 | 回滚产生新 Revision，历史不被删除 | 已验证：Student 浏览器回滚生成 REV 003，REV 001/002 历史保留；SQL 用例覆盖三类实体 |
-| KTU-M207 | KTU-WIKI-001..004 | `supabase/tests/database/m2_wiki.test.sql`、应用测试 | 覆盖原子性、RLS、冲突、回滚和页面状态 | KTU-M206 | 双用户权限、陈旧版本和失败路径通过 | 进行中：19/19 pgTAP、真实 API 双用户/陈旧冲突和 Student 浏览器主路径通过；浏览器失败反馈待验 |
-| KTU-M208 | KTU-UX-002 | 浏览器截图与键盘检查 | 验证 Wiki 桌面/移动、焦点和空错载状态 | KTU-M205 | 关键页面无溢出；操作名称和结果文案一致 | 进行中：空库桌面/移动、Student 桌面主路径已验；移动端有数据页待验 |
+| KTU-M207 | KTU-WIKI-001..004 | `supabase/tests/database/m2_wiki.test.sql`、应用测试 | 覆盖原子性、RLS、冲突、回滚和页面状态 | KTU-M206 | 双用户权限、陈旧版本和失败路径通过 | 本地 19/19 pgTAP、双用户 API、三类浏览器回滚及两标签陈旧冲突已验；线上待验 |
+| KTU-M208 | KTU-UX-002 | 浏览器截图与键盘检查 | 验证 Wiki 桌面/移动、焦点和空错载状态 | KTU-M205 | 关键页面无溢出；操作名称和结果文案一致 | 已验证：375px Place 详情/编辑/4 条 Revision 历史无横向溢出 |
+
+## Living Campus v2 前端轨道（首批已实施）
+
+以下任务按 `docs/design/living-campus-v2.md` 顺序推进；现有首页仍是 `homepage-concept-v1.md`。前端文件工作可与 M3 数据库工作并行，领域和类型契约在集成时统一核对。
+
+| 任务 ID | 需求 ID | 文件或符号 | 实现意图 | 依赖 | 验收 | 状态 |
+| --- | --- | --- | --- | --- | --- | --- |
+| KTU-UXV2-01 | KTU-UX-001..002 | `app/globals.css`、`src/components/layout/` | 更新候选令牌、收紧页头并保留五类主导航 | v2 设计指导 | 桌面/移动路由、焦点和登录入口不退化 | 首批已验：五类导航、登录/Creator、移动页头；完整令牌迁移待后续 |
+| KTU-UXV2-02 | KTU-UX-001..002 | `app/page.tsx`、`src/components/home/`、`src/features/campus/` | Hero 改为文案加轻量校园预览，Trace 移出 Hero | KTU-UXV2-01 | 不依赖 Three.js；真实路由可用；演示地点清楚标注 | 已验证：概念沙盘、真实入口、桌面/移动截图 |
+| KTU-UXV2-03 | KTU-UX-002 | Campus Layer、地点列表/Peek、空间绑定接口 | 提供可选空间探索模式与未来模型替换边界 | KTU-UXV2-02 | Esc、焦点返回、触屏、移动 sheet、reduced motion 和 2D 降级通过 | 首批已验：Esc、焦点返回、移动 sheet 与 2D 路由；正式 Place 绑定待后续 |
+| KTU-UXV2-04 | KTU-LINK-002, KTU-UX-002 | `CampusTrace` → Relation Field | 让关系线只表达实际可读数据 | KTU-UXV2-03 | 演示与真实关系不混淆，键盘可沿关系继续探索 | 待做 |
+| KTU-UXV2-05 | KTU-LINK-001..002, KTU-UX-002 | `src/components/entity-link/` | 在普通档案链接上渐进增加 Peek | KTU-UXV2-04 | 无 JS/无数据仍可跳转；鼠标、键盘、触屏和 Esc 可用 | 待做 |
+| KTU-UXV2-06 | KTU-UX-001..002 | 首页 Forum/Press/Event/Wiki 模块 | 按媒介差异收敛版式，不统一卡片化 | KTU-UXV2-05；真实 M3–M5 内容逐步接入 | 不展示假发布数据或不可用创作入口 | 待做 |
+| KTU-UXV2-07 | KTU-UX-002 | 浏览器和性能记录 | 验收 v2 桌面/移动、键盘、动效与首屏 | KTU-UXV2-01..06 | 指定四种视口、焦点、无溢出、SSR、lint/typecheck/build 和真实截图通过 | 待做 |
 
 ## M3 校园论坛
 
 | 任务 ID | 需求 ID | 文件或符号 | 实现意图 | 依赖 | 验收 | 状态 |
 | --- | --- | --- | --- | --- | --- | --- |
-| KTU-M300 | KTU-FORUM-001..005 | `docs/design/forum.md`（新建） | 调用 frontend-design skill 设计论坛浏览与创作流 | M2 | 明确戏内楼层、Creator 操作和戏外区的视觉边界 | 待做 |
-| KTU-M301 | KTU-FORUM-001 | `src/features/forum-accounts/`（新建） | 创建、选择和编辑 Creator 自有 Forum Account | M2 | 可关联 Student 或保持非学生身份；他人不能修改 | 待做 |
-| KTU-M302 | KTU-FORUM-002..005 | 新 migration：forum_topics/messages/hashtags/join | 建立论坛聚合、顺序、状态、索引和 RLS | M2 | 楼层顺序唯一；草稿隔离；发布公开；越权测试通过 | 待做 |
-| KTU-M303 | KTU-FORUM-002, KTU-FORUM-003 | `src/features/forum/schemas.ts`、`actions.ts`、`queries.ts`（新建） | 实现草稿保存、楼层编排和事务发布 | KTU-M301, KTU-M302 | 无效账号、空 Topic、重复楼层和越权被拒绝 | 待做 |
-| KTU-M304 | KTU-FORUM-002 | `app/create/forum/**`（新建） | 实现功能优先的 Topic 编辑器 | KTU-M300, KTU-M303 | 可增加、重排、删除楼层并预览 | 待做 |
-| KTU-M305 | KTU-FORUM-003, KTU-FORUM-005 | `app/(public)/forum/**`（扩展） | 实现列表、标签、详情和 Forum Account 页面 | KTU-M303, KTU-M304 | published 可浏览；草稿不泄露；标签过滤有效 | 待做 |
-| KTU-M306 | KTU-LINK-002 | 论坛作品与 Wiki 反向关系查询 | 从 Forum Account/Topic 回到 Student Wiki | KTU-M305 | Student Wiki 自动显示相关论坛痕迹 | 待做 |
-| KTU-M307 | KTU-FORUM-004 | SQL、集成与浏览器双用户测试 | 证明 Topic 所有权与草稿隔离 | KTU-M305 | A 不能读/改 B 草稿或改 B published 内容 | 待做 |
-| KTU-M308 | 第一阶段系统验收 | 端到端垂直切片测试 | 跑通注册到 Student Wiki 的完整链路 | KTU-M306, KTU-M307 | RAS 第一阶段 8 项全部有实际证据 | 待做 |
+| KTU-M300 | KTU-FORUM-001..005 | `docs/design/forum.md`（新建） | 调用 frontend-design skill 设计论坛浏览与创作流 | M2 | 明确戏内楼层、Creator 操作和戏外区的视觉边界 | 已实现待浏览器视觉验证 |
+| KTU-M301 | KTU-FORUM-001 | `src/features/forum-accounts/`（新建） | 创建、选择和编辑 Creator 自有 Forum Account | M2 | 可关联 Student 或保持非学生身份；他人不能修改 | 本地单 Creator 浏览器创建/编辑/关联 Student 已验；他人编辑由 RLS/pgTAP 断言 |
+| KTU-M302 | KTU-FORUM-002..005 | 新 migration：forum_topics/messages/hashtags/join | 建立论坛聚合、顺序、状态、索引和 RLS | M2 | 楼层顺序唯一；草稿隔离；发布公开；越权测试通过 | 已验证：本地 M3 51/51 pgTAP、全库 82/82 |
+| KTU-M303 | KTU-FORUM-002, KTU-FORUM-003 | `src/features/forum/schemas.ts`、`actions.ts`、`queries.ts`（新建） | 实现草稿保存、楼层编排和事务发布 | KTU-M301, KTU-M302 | 无效账号、空 Topic、重复楼层和越权被拒绝 | 已实现待验证：类型与 Lint 通过，真实流程待验 |
+| KTU-M304 | KTU-FORUM-002 | `app/create/forum/**`（新建） | 实现功能优先的 Topic 编辑器 | KTU-M300, KTU-M303 | 可增加、重排、删除楼层并预览 | 本地保存、回复、发布与预览组件已实现；增删重排浏览器专项待补 |
+| KTU-M305 | KTU-FORUM-003, KTU-FORUM-005 | `app/(public)/forum/**`（扩展） | 实现列表、标签、详情和 Forum Account 页面 | KTU-M303, KTU-M304 | published 可浏览；草稿不泄露；标签过滤有效 | 本地匿名列表、标签和详情已验；草稿隔离由 pgTAP 验 |
+| KTU-M306 | KTU-LINK-002 | 论坛作品与 Wiki 反向关系查询 | 从 Forum Account/Topic 回到 Student Wiki | KTU-M305 | Student Wiki 自动显示相关论坛痕迹 | 已验证：本地浏览器 Student 详情自动显示关联已发布 Topic |
+| KTU-M307 | KTU-FORUM-004 | SQL、集成与浏览器双用户测试 | 证明 Topic 所有权与草稿隔离 | KTU-M305 | A 不能读/改 B 草稿或改 B published 内容 | 数据库 51/51 含跨作者/匿名/发布后冻结；双用户浏览器待补 |
+| KTU-M308 | 第一阶段系统验收 | 端到端垂直切片测试 | 跑通注册到 Student Wiki 的完整链路 | KTU-M306, KTU-M307 | RAS 第一阶段 8 项全部有实际证据 | 本地单用户主链路已验；邮件确认、双用户浏览器和线上待补 |
 
 ## M4 校刊与部刊
 
