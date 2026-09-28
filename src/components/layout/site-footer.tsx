@@ -6,7 +6,7 @@ export function SiteFooter() {
     <footer className="site-footer">
       <Link className="footer-brand" href="/" aria-label="空天大学首页">
         <BrandMark />
-        <span><strong>空天大学共创平台</strong><small>KONGTIAN UNIVERSITY</small></span>
+        <span><strong>空天大学</strong><small>KONGTIAN UNIVERSITY</small></span>
       </Link>
       <nav aria-label="页脚导航">
         <Link href="/wiki">校园档案</Link>

@@ -55,3 +55,25 @@ sudo certbot renew --dry-run
 ```
 
 如果 `sites-enabled/ktu-community.conf` 已存在，核对目标后更新，避免盲目重建符号链接。签证书前先确认 HTTP DNS 从公网能访问；现成证书可以跳过引导阶段。安装/更新后确认浏览器在 HTTPS 域名下可完成注册、邮件确认、登录/退出、Wiki 修订、论坛发布与权限拒绝；查 Nginx 和 systemd 日志，重启服务并重复检查，再对桌面与移动页面验收。未完成这些检查前不宣称上线。
+
+## 完整平台部署增量
+
+当前应用新增私有R2媒体、运营审核、Creator头像及SSR会话刷新。服务端环境、CORS与验证边界见 release-checklist.md 和 ../engineering/media-verification.md；迁移要比对整个目录（包含202609240001–008）。最新Node standalone使用17个runtime依赖，aws4fetch代替AWS SDK运行时；会话续期/Set-Cookie/private cache与MinIO私有上传均本地验证。线上SSH/DNS/TLS、SMTP及真实R2仍待配置和验收。
+
+## 2026-09-28 · lax01 部署准备
+
+用户授权本机SSH密钥连接ventsdenye及root@lax01.ventsdenye.com；保留现有Supabase项目，不干扰其他网站。已只读核对原站/端口/Nginx，并安装独立Node22.23.3、ktu系统用户与本项目空目录，未启用应用或代理。采用deploy/lax01独立配置：回环3107、版本目录、受限HTTPS预览及注册开关。现有主站与作品集配置hash和200基线保存在deploy/lax01/README.md。
+
+下一步需要用户本机Supabase CLI登录与项目用途确认，然后只读云schema/迁移/备份审计。R2与SMTP尚未配置，具体用户操作见该README；没有迁移云库或公开应用。Cloudflare域名已解析到代理IP（旧NXDOMAIN记录已过时），源站配置仍待核实。
+
+## 2026-09-28 · 受限测试站已部署
+
+用户确认root密钥SSH与独立Supabase用途，授权部署；补充约束为服务器只保留必要内容。云项目原public无表/类型、auth.users=0，保留rls_auto_enable函数。output/deploy-20260928/cloud-public-before.sql保存迁移前结构（Git忽略）；13个本仓库迁移已全部应用，复核29张表全部RLS、13条迁移记录、Auth用户仍0。
+
+云公开参数在Linux专用release构建，lint/typecheck/build通过（构建内存峰值856.7MB，限额1100MB/50%CPU）；注册开关standalone测试本机1/1通过。此次本机旧SSR回归4/7，因本地Supabase停服，未掩盖失败；不能沿用9月24日7/7声称本批全绿。云产物通过真实回环smoke：主页/登录/论坛/Wiki/图片200，无效登录303。
+
+原站配置hash不变，kongtian.university与portfolio.ventsdenye.com仍200。新增campus专用Nginx vhost，nginx -t通过后reload，未restart旧服务。证书有效期至2026-12-27。通过Cloudflare访问匿名401、Basic Auth授权200，禁止缓存/索引。访问密码只保存在服务器root可读的/etc/ktu-community/preview-access.txt；本机没有输出其值。应用KTU_REGISTRATION_ENABLED=false，云Auth注册设置尚需单独核实/关闭，不能宣称此开关封住Supabase直接API。
+
+用户要求轻量运行后精确清理本项目源码/完整node_modules/npm缓存/上传包，保留dist/standalone64MB和私有Node二进制121MB，配置约44KB；服务器磁盘回到8.8GB已用/11GB可用，应用内存约52MB。清理后只重启ktu-community，回环复验正常。服务器无源码Git checkout；本地deploy/backend分支用于代码与配置追踪，后续本机/CI构建+artifact更新。不要声称已实现服务器git pull产物流程。
+
+当前可访问：https://campus.kongtian.university/（受限预览）。真实R2/SMTP/注册确认/首位Creator和管理员仍待配置，未创建云测试账号或作品、未发布合成内容。操作步骤见deploy/lax01/README.md。应用目录/srv/ktu-community/current -> releases/20260928-01，专用服务ktu-community，回环3107。

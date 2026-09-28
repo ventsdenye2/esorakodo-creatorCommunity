@@ -176,3 +176,32 @@ M6 only: server upload service ─────► Cloudflare R2
 - 内容 JSON 带 schema version 和迁移器；未知版本不静默损坏。
 - 发布 URL 使用稳定 ID 或不可变 slug 策略；若允许改 slug，需保留 redirect/alias。
 - 部署运行时特有代码保持隔离，标准 Next.js API 是默认兼容层。
+
+## 2026-09-23 · Campus View 实现
+
+- `campus-hero.tsx` 服务端读取，`campus-view-data.ts` 使用现有 Supabase SSR/RLS 客户端；论坛 published_at、Wiki created_at 跨来源降序合并前 6 条，每个源限 6 条。局部失败保留成功源并显示错误提示。
+- `campus-card-stack.tsx` 只承担客户端展示与 5.5 秒轮播，首卡为最新内容。inert 隔离底层卡片，暂停、悬停、焦点、页面隐藏及 reduced-motion 控制自动切换。
+- 无数据库迁移。无客户端权限扩大；没有实时订阅，新内容在重新加载首页时读取。校刊／事件发布源留待 M4/M5。
+- 视觉和文案约定见 `docs/design/campus-view-stack.md`。
+
+## 2026-09-23 完整平台契约补充
+
+- 当前用户授权扩展至M4–M7完整前后端，先本地实现/验收，再微调、部署。详细分工、视觉与修改围栏见 `docs/design/full-platform.md`。
+- 正文使用版本化原生块schema（段落、标题、引文、UUID实体、受控图片）；校刊采用固定分类至多3项；事件补充显式标注细节、人物视角、余波、传闻和不同观点。
+- M6管理员来自可撤销的`moderators`表，仅数据库管理端授予。上传R2保持私有，服务端验证大小、MIME和文件签名，浏览器无密钥。
+- 搜索采用有界中文名称/标题包含匹配与trigram索引，不提前启用PGroonga。
+- 收藏/点赞/评论以真实Creator为主体，独立于戏内论坛正文楼层；关联使用真实FK。
+
+## 2026-09-23 全平台实现更新
+
+本批按 full-platform.md 完成 M4–M7 及跨域集成：新增迁移 202609240001–008，包含内容/RPC/RLS、媒体/运营、社区互动、内容细化、搜索、头像、论坛原子实体引用、定向审核预览。所有新迁移只应用本地并重新生成数据库类型。Node/Worker 共用 aws4fetch 媒体签名；会话刷新位于请求边界，仍由 server actions 与 RLS 执行授权。
+
+首页卡片堆与栏目取真实公开数据；人物/学院/地点和事件详情提供 UUID 反向作品关联。校园导览保留示意性质，文案改为大学栏目导览，未宣称建筑与真实坐标绑定。Creator 公共资料与真实作者身份不与 Student / Forum Account 混同。
+
+执行状态：实现与集成完成，最终检查见 verification.md，未提交、未部署。187/187 数据库事务测试与 MinIO 私有媒体链路通过。浏览器新文章发布曾被自动审核拒绝，未绕过；已做草稿、预览、SQL 回滚事务及权限验证。授权许可方式尚待决定，不标记现有作品为 CC 授权。外部 R2/CORS、SMTP、云数据库与宿主 HTTPS 为部署阶段条件。
+
+## 2026-09-28 · lax01 部署准备
+
+用户授权本机SSH密钥连接ventsdenye及root@lax01.ventsdenye.com；保留现有Supabase项目，不干扰其他网站。已只读核对原站/端口/Nginx，并安装独立Node22.23.3、ktu系统用户与本项目空目录，未启用应用或代理。采用deploy/lax01独立配置：回环3107、版本目录、受限HTTPS预览及注册开关。现有主站与作品集配置hash和200基线保存在deploy/lax01/README.md。
+
+下一步需要用户本机Supabase CLI登录与项目用途确认，然后只读云schema/迁移/备份审计。R2与SMTP尚未配置，具体用户操作见该README；没有迁移云库或公开应用。Cloudflare域名已解析到代理IP（旧NXDOMAIN记录已过时），源站配置仍待核实。

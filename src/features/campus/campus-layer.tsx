@@ -42,7 +42,7 @@ export function CampusLayer() {
             </div>
             <button aria-label="关闭校园视界" className="campus-layer-close" onClick={close} ref={closeRef} type="button">×</button>
           </div>
-          <p className="campus-layer-disclaimer">这是一张空间交互概念图，点位与建筑均非正式校园设定。</p>
+          <p className="campus-layer-disclaimer">校园导览示意。选择栏目查阅资料，图中建筑不对应实际位置。</p>
           <div className="campus-layer-content">
             <div className="campus-layer-map">
               <CampusScene className="campus-layer-art" />
@@ -60,7 +60,7 @@ export function CampusLayer() {
               ))}
             </div>
             <aside aria-live="polite" className="campus-layer-sheet">
-              <span className="campus-sheet-index">概念点位 / {selectedId.toUpperCase()}</span>
+              <span className="campus-sheet-index">导览入口 / {selectedId.toUpperCase()}</span>
               <h3>{selected.label}</h3>
               <p>{selected.description}</p>
               <Link className="button button-primary" href={selected.href} onClick={close}>打开{selected.label}<ArrowIcon /></Link>

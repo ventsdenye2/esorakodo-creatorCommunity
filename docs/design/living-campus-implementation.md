@@ -1,3 +1,5 @@
+> 当前首页已由 campus-view-stack.md 与 full-platform.md 的实现更新覆盖：自动卡片堆、真实公开内容、真实事件关联；下文保留历史视觉基线。
+
 # Living Campus v2 前端实施记录
 
 > 2026-09-23 工作批次；本文记录实际改动与未完成边界。工程进度与全站验收由 `docs/engineering/progress.md`、`verification.md` 汇总。

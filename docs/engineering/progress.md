@@ -1,3 +1,6 @@
+# 当前恢复入口 · 2026-09-23 全平台批次
+
+M0–M7 应用实现已接通；lint/typecheck/build、7项SSR回归与Node standalone会话续期均通过，开发预览重启与最后论坛控件复验均完成。仅本地测试文章发布/精确清理待自动审核许可，云部署与许可方式决定另列。数据库 187/187 通过，MinIO 私有媒体链路通过。所有改动仍在工作树，无部署。当前验收以 verification.md 最新条目为准，以下早期记录是历史。
 # KTU 平台工程进度
 
 ## 续作状态（2026-09-23，公开测试版上线准备）
@@ -88,3 +91,41 @@
 ## 恢复方式
 
 新会话依次阅读：`AGENTS.md` → `docs/ROADMAP.md` → 本文件 → `docs/engineering/DPS.md` → `docs/engineering/verification.md`。然后核对 `git status`、本地 Supabase 服务和 migration 状态，从 KTU-M104/KTU-M207 的未验边界继续。
+
+## 2026-09-23 · 最新进度：首页改版
+
+首页已改为大学官网语气；CAMPUS VIEW 为自动切换卡片堆，按真实公开内容时间降序组织，空状态为校园导览。调整标题、留白、栏目背景和页脚，保留论坛／校刊／事件的独立结构。没有迁移。
+
+工作树：本批修改保留为未提交改动，开始时工作树干净；未部署。lint、typecheck、build 与 6/6 既有回归测试通过。桌面 1440×900、移动 375×812 视觉及手动／键盘切换、暂停验证通过；浏览器无 error/warn。详细证据见 verification.md 的同日 Campus View 条目。
+
+后续：接入有真实发布内容的环境，补跨源排序和部分源故障的端到端验收；校刊／事件发布源按 M4/M5 进度接入。新发布内容通过重新加载首页读取，不是实时推送。
+
+## 2026-09-23 完整平台续作（进行中）
+
+用户扩大范围至全前后端，之后再微调和部署，并明确要求子agent并行。按 `docs/design/full-platform.md` 推进M4–M7；正文格式和管理员授予策略按该文档选定可迁移、可撤销实现，不再被旧首发范围限制。保留上一批首页未提交改动；本阶段不部署。数据库、校刊、事件三条子任务并行，主线负责媒体/运营/搜索与集成验收。
+
+## 2026-09-24 · 最后收尾
+
+3001已用 `npm run dev -- --hostname 127.0.0.1 --port 3001` 重启；注意Vinext参数为hostname，host会被忽略而绑定localhost/IPv6。重新运行local-session测试全部通过，不再只有standalone证据。
+
+主线真实浏览器补验论坛007：移除关联后选择器获得焦点、Down键选择人物、添加、保存成功、刷新后人物与楼层恢复；375×812发现旧预览grid挤压人物姓名，已分离关联选择器CSS并截图复验，姓名和移除按钮正常且无横向溢出。viewport已reset；可用的新首页预览tab保留。未发布。
+
+待用户许可的本地文章草稿：`http://127.0.0.1:3001/create/article/d3c674c7-0e1f-41dc-a57a-931a9d58c21d`。公开Wiki测试人物`pressqa-0923-876`被该文章与论坛草稿FK引用，为保持待审预览暂留，不能直接清理；因此首页暂有该测试人物。测试发布和后续精确清理一起等许可。所有业务数据仍在隔离本地服务，没有改动线上数据库。
+
+## 2026-09-28 · lax01 部署准备
+
+用户授权本机SSH密钥连接ventsdenye及root@lax01.ventsdenye.com；保留现有Supabase项目，不干扰其他网站。已只读核对原站/端口/Nginx，并安装独立Node22.23.3、ktu系统用户与本项目空目录，未启用应用或代理。采用deploy/lax01独立配置：回环3107、版本目录、受限HTTPS预览及注册开关。现有主站与作品集配置hash和200基线保存在deploy/lax01/README.md。
+
+下一步需要用户本机Supabase CLI登录与项目用途确认，然后只读云schema/迁移/备份审计。R2与SMTP尚未配置，具体用户操作见该README；没有迁移云库或公开应用。Cloudflare域名已解析到代理IP（旧NXDOMAIN记录已过时），源站配置仍待核实。
+
+## 2026-09-28 · 受限测试站已部署
+
+用户确认root密钥SSH与独立Supabase用途，授权部署；补充约束为服务器只保留必要内容。云项目原public无表/类型、auth.users=0，保留rls_auto_enable函数。output/deploy-20260928/cloud-public-before.sql保存迁移前结构（Git忽略）；13个本仓库迁移已全部应用，复核29张表全部RLS、13条迁移记录、Auth用户仍0。
+
+云公开参数在Linux专用release构建，lint/typecheck/build通过（构建内存峰值856.7MB，限额1100MB/50%CPU）；注册开关standalone测试本机1/1通过。此次本机旧SSR回归4/7，因本地Supabase停服，未掩盖失败；不能沿用9月24日7/7声称本批全绿。云产物通过真实回环smoke：主页/登录/论坛/Wiki/图片200，无效登录303。
+
+原站配置hash不变，kongtian.university与portfolio.ventsdenye.com仍200。新增campus专用Nginx vhost，nginx -t通过后reload，未restart旧服务。证书有效期至2026-12-27。通过Cloudflare访问匿名401、Basic Auth授权200，禁止缓存/索引。访问密码只保存在服务器root可读的/etc/ktu-community/preview-access.txt；本机没有输出其值。应用KTU_REGISTRATION_ENABLED=false，云Auth注册设置尚需单独核实/关闭，不能宣称此开关封住Supabase直接API。
+
+用户要求轻量运行后精确清理本项目源码/完整node_modules/npm缓存/上传包，保留dist/standalone64MB和私有Node二进制121MB，配置约44KB；服务器磁盘回到8.8GB已用/11GB可用，应用内存约52MB。清理后只重启ktu-community，回环复验正常。服务器无源码Git checkout；本地deploy/backend分支用于代码与配置追踪，后续本机/CI构建+artifact更新。不要声称已实现服务器git pull产物流程。
+
+当前可访问：https://campus.kongtian.university/（受限预览）。真实R2/SMTP/注册确认/首位Creator和管理员仍待配置，未创建云测试账号或作品、未发布合成内容。操作步骤见deploy/lax01/README.md。应用目录/srv/ktu-community/current -> releases/20260928-01，专用服务ktu-community，回环3107。

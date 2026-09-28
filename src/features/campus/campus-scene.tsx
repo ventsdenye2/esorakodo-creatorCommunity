@@ -1,5 +1,5 @@
 export const campusStops = [
-  { id: "archive", label: "校园档案", href: "/wiki", description: "阅读人物、学院与地点的共创记录。" },
+  { id: "archive", label: "校园档案", href: "/wiki", description: "查阅人物、学院与地点的校园资料。" },
   { id: "forum", label: "校园论坛", href: "/forum", description: "进入正在形成的校园讨论。" },
   { id: "press", label: "校刊·部刊", href: "/press", description: "浏览这所大学的出版物入口。" },
 ] as const;

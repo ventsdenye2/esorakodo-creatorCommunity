@@ -27,10 +27,12 @@ test("server-renders the campus homepage", async () => {
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
 
   const html = await response.text();
-  assert.match(html, /空天大学共创平台/);
-  assert.match(html, /这所大学/);
-  assert.match(html, /切换校园档案类型/);
-  assert.match(html, /ACTIVE TRACE/);
+  assert.match(html, /空天大学/);
+  assert.match(html, /立足此间/);
+  assert.match(html, /CAMPUS VIEW/);
+  assert.match(html, /下一张/);
+  assert.match(html, /Campus Trace/);
+  assert.match(html, /检索校园/);
   assert.match(html, /校园论坛/);
   assert.doesNotMatch(html, /campus-trace\.png/i);
   assert.doesNotMatch(html, /codex-preview|SkeletonPreview|react-loading-skeleton/i);
@@ -39,7 +41,7 @@ test("server-renders the campus homepage", async () => {
 test("server-renders public media boundaries", async () => {
   for (const [pathname, heading] of [
     ["/forum", "校园论坛"],
-    ["/press", "校刊 · 部刊"],
+    ["/press", "空天校刊"],
     ["/events", "校史事件"],
     ["/wiki", "校园档案"],
   ]) {
@@ -86,8 +88,8 @@ test("server-renders the wiki directory and create states", async () => {
     assert.equal(createResponse.status, 200);
     const createHtml = await createResponse.text();
     assert.match(createHtml, /建立校园档案/);
-    assert.match(createHtml, /创建并记录 Revision/);
-    if (createHtml.includes("Supabase 尚未配置")) {
+    assert.match(createHtml, /建立档案/);
+    if (createHtml.includes("档案服务暂未开放")) {
       assert.match(createHtml, /disabled/);
     }
   }
@@ -105,4 +107,20 @@ test("wiki migration preserves the RPC-only write contract", async () => {
   assert.match(migration, /grant execute on function public\.apply_wiki_revision[\s\S]*to authenticated/i);
   assert.match(migration, /p_expected_version is null or p_expected_version <= 0/i);
   assert.match(migration, /p_patch is null or jsonb_typeof\(p_patch\) <> 'object' or p_patch = '\{\}'::jsonb/i);
+});
+
+test("server-renders integrated discovery and author boundaries", async () => {
+  for (const [pathname, heading] of [["/search", "在空天"], ["/search?q=%E6%A0%A1%E5%9B%AD&kind=article", "检索结果|没有找到"], ["/wiki?type=place", "校园档案"]]) {
+    const response = await render(pathname);
+    assert.equal(response.status, 200, pathname);
+    const html = await response.text();
+    assert.match(html, new RegExp(heading));
+    assert.doesNotMatch(html, /R2_SECRET_ACCESS_KEY|SUPABASE_SERVICE_ROLE_KEY/);
+  }
+  for (const pathname of ["/press/not-a-uuid", "/events/not-a-uuid", "/creator/nonexistent_qa_profile"]) {
+    const response = await render(pathname);
+    // App Router can stream a not-found boundary with 200 after headers flush.
+    assert.ok([200,404].includes(response.status), pathname);
+    assert.match(await response.text(), /未找到这份内容|NEXT_HTTP_ERROR_FALLBACK;404/);
+  }
 });

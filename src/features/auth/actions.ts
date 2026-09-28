@@ -32,6 +32,9 @@ export async function signIn(formData: FormData) {
 }
 
 export async function signUp(formData: FormData) {
+  if (process.env.KTU_REGISTRATION_ENABLED === "false") {
+    authRedirect("/register", "error", "当前处于受限测试阶段，暂未开放注册。已有账户仍可登录。");
+  }
   if (!isSupabaseConfigured()) {
     authRedirect("/register", "error", "Supabase 尚未配置，请先设置本地环境变量。");
   }

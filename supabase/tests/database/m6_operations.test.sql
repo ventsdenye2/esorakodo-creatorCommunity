@@ -1,0 +1,61 @@
+begin;
+create extension if not exists pgtap with schema extensions;
+set local search_path=public,extensions;
+select no_plan();
+insert into auth.users(id,email,raw_user_meta_data) values
+('00000000-0000-4000-8000-000000000061','media-a@example.test','{"handle":"media_author_a"}'),
+('00000000-0000-4000-8000-000000000062','media-b@example.test','{"handle":"media_author_b"}');
+insert into public.articles(id,creator_id,title,body,status,published_at) values('00000000-0000-4000-8000-000000000601','00000000-0000-4000-8000-000000000061','Public article','{"schema_version":1,"blocks":[]}','published',now());
+insert into public.media_assets(id,uploader_id,object_key,filename,mime_type,byte_size,status) values
+('00000000-0000-4000-8000-000000000611','00000000-0000-4000-8000-000000000061','test/ready','ready.png','image/png',100,'ready'),
+('00000000-0000-4000-8000-000000000612','00000000-0000-4000-8000-000000000061','test/pending','pending.png','image/png',100,'pending'),
+('00000000-0000-4000-8000-000000000613','00000000-0000-4000-8000-000000000062','test/other','other.png','image/png',100,'ready');
+select ok(not has_table_privilege('authenticated','public.media_assets','UPDATE'),'browser cannot mark asset ready');
+select ok(not has_table_privilege('authenticated','public.moderators','INSERT'),'browser cannot grant moderator');
+select ok(not has_function_privilege('anon','public.interact_work(text,uuid,text,text)','EXECUTE'),'anonymous cannot interact');
+set local role authenticated;
+set local request.jwt.claim.sub='00000000-0000-4000-8000-000000000061';
+select lives_ok($$select public.reserve_media('upload.png','image/png',1024)$$,'reserve creates pending asset');
+select is((select status from public.media_assets where filename='upload.png'),'pending','reservation cannot claim ready');
+select throws_ok($$select public.reserve_media('script.svg','image/svg+xml',100)$$,'23514',null,'unsupported media rejected');
+select throws_ok($$select public.save_article(null,null,'Pending image','','{"schema_version":1,"blocks":[{"type":"image","asset_id":"00000000-0000-4000-8000-000000000612","alt":"Pending"}]}',array[]::text[],true)$$,'P0001','MEDIA_NOT_READY','pending image cannot publish');
+select throws_ok($$select public.save_article(null,null,'Other image','','{"schema_version":1,"blocks":[{"type":"image","asset_id":"00000000-0000-4000-8000-000000000613","alt":"Other"}]}',array[]::text[],true)$$,'P0001','MEDIA_NOT_READY','other creator image cannot publish');
+select lives_ok($$select public.save_article('00000000-0000-4000-8000-000000000601',1,'With image','','{"schema_version":1,"blocks":[{"type":"image","asset_id":"00000000-0000-4000-8000-000000000611","alt":"Ready"}]}',array[]::text[],true)$$,'ready image publishes through atomic hook');
+select is((select count(*) from public.article_media where article_id='00000000-0000-4000-8000-000000000601'),1::bigint,'media relationship stored');
+select throws_ok($$update public.profiles set avatar_asset_id='00000000-0000-4000-8000-000000000613' where id='00000000-0000-4000-8000-000000000061'$$,'P0001','MEDIA_NOT_READY','cannot use another creator avatar');
+select lives_ok($$update public.profiles set avatar_asset_id='00000000-0000-4000-8000-000000000611' where id='00000000-0000-4000-8000-000000000061'$$,'own ready asset can become avatar');
+set local role anon;
+select is((select count(*) from public.media_assets where id='00000000-0000-4000-8000-000000000611'),1::bigint,'ready avatar publicly readable');
+set local role authenticated;
+update public.profiles set avatar_asset_id=null where id='00000000-0000-4000-8000-000000000061';
+select lives_ok($$select public.interact_work('article','00000000-0000-4000-8000-000000000601','comment','A real creator comment')$$,'creator can comment');
+select lives_ok($$select public.interact_work('article','00000000-0000-4000-8000-000000000601','bookmark')$$,'creator can privately bookmark');
+select lives_ok($$select public.interact_work('article','00000000-0000-4000-8000-000000000601','like')$$,'creator can like');
+set local request.jwt.claim.sub='00000000-0000-4000-8000-000000000062';
+select is((select count(*) from public.work_bookmarks where article_id='00000000-0000-4000-8000-000000000601'),0::bigint,'other author cannot read private bookmark');
+select throws_ok($$select public.remove_work_comment((select id from public.work_comments where article_id='00000000-0000-4000-8000-000000000601'))$$,'P0001','FORBIDDEN','other author cannot remove comment');
+select lives_ok($$select public.report_work('article','00000000-0000-4000-8000-000000000601','Needs review please')$$,'public work can be reported');
+select throws_ok($$select public.moderate_report((select id from public.reports where article_id='00000000-0000-4000-8000-000000000601'),'hide','Reviewed content')$$,'P0001','FORBIDDEN','nonmoderator cannot hide work');
+reset role;
+insert into public.moderators(creator_id) values('00000000-0000-4000-8000-000000000062');
+set local role authenticated;
+set local request.jwt.claim.sub='00000000-0000-4000-8000-000000000062';
+select lives_ok($$select public.moderate_report((select id from public.reports where article_id='00000000-0000-4000-8000-000000000601'),'hide','Reviewed content')$$,'moderator hides without modifying body');
+select is((select count(*) from public.moderation_actions where action='hide'),1::bigint,'hide action audited');
+set local role anon;
+select is((select count(*) from public.articles where id='00000000-0000-4000-8000-000000000601'),0::bigint,'hidden article not public');
+select is((select count(*) from public.media_assets where id='00000000-0000-4000-8000-000000000611'),0::bigint,'hidden article image not public');
+select is((select count(*) from public.work_comments where article_id='00000000-0000-4000-8000-000000000601'),0::bigint,'hidden work comments not public');
+select is((select count(*) from public.work_likes where article_id='00000000-0000-4000-8000-000000000601'),0::bigint,'hidden work likes not public');
+set local role authenticated;
+select throws_ok($$select public.interact_work('article','00000000-0000-4000-8000-000000000601','like')$$,'P0001','WORK_NOT_PUBLIC','cannot interact with hidden work');
+select lives_ok($$select public.moderate_report((select id from public.reports where article_id='00000000-0000-4000-8000-000000000601'),'restore','Review resolved')$$,'moderator restores content');
+select is((select count(*) from public.moderation_actions),2::bigint,'restore adds audit without deleting hide');
+reset role;
+delete from public.moderators where creator_id='00000000-0000-4000-8000-000000000062';
+insert into public.media_assets(uploader_id,object_key,filename,mime_type,byte_size) select '00000000-0000-4000-8000-000000000062','test/quota/'||n,'quota.png','image/png',100 from generate_series(1,49) n;
+set local role authenticated;
+select throws_ok($$select public.reserve_media('too-many.png','image/png',100)$$,'P0001','MEDIA_QUOTA','daily reservation quota enforced');
+select is(public.is_moderator(),false,'moderator membership can be revoked');
+select * from finish();
+rollback;

@@ -2,26 +2,26 @@
 
 空天大学共创平台是一座以虚构大学数字校园为界面的 IP 共创空间。现实中的 Creator 通过校园论坛、校刊/部刊与事件专题讲故事，人物、学院、地点与事件则在可追溯的 Wiki 网络中持续生长。
 
-当前仓库已完成 M0 工程骨架、M1 账户、M2 Wiki 和 M3 论坛的本地主要路径；数据库 82/82 pgTAP、Auth/API、三类 Wiki 与论坛发布浏览器流程已有证据。Living Campus v2 的概念沙盘与校园视界已实施首批，真实 3D 与关系数据仍待后续。线上 Supabase、邮件确认、域名 HTTPS 和自有 Ubuntu 服务器尚未验收，网站尚未公开上线。
+当前 M0–M7 的应用实现已接通，进入本地收尾验收与视觉微调阶段。公共界面采用大学官网语气；Creator、Student 与 Forum Account 在创作流程中保持独立。部署将在微调后进行，当前没有上线或应用云端迁移。
 
 ## 当前能力
 
-- App Router 路由结构与 TypeScript strict 模式
-- 校园首页概念沙盘、可访问的校园视界、登录/注册与 Creator 创作入口
-- Supabase 浏览器端 / 服务端 SSR client 封装
-- 邮箱注册、密码登录、确认回调、退出登录与受保护 Creator 页面
-- 第一版 PostgreSQL migration、索引、Grants 与 RLS
-- `profiles`（Creator）、`students`、`colleges`、`places`、`forum_accounts`、`wiki_revisions` 核心模型，以及论坛 Topic、楼层与标签模型
-- Wiki 目录、详情、创建、编辑、Revision 历史与回滚页面
-- Wiki 创建、编辑和回滚的原子 RPC，以及基于 `version` 的乐观锁
-- Forum Account 创建/编辑、论坛草稿编排与预览、发布、版面/标签浏览、Student 档案反向链接
-- Press / Events 的明确占位路由
+- CAMPUS VIEW 自动轮换卡片堆，最新公开内容优先，手动切换、暂停和 reduced-motion 支持；首页栏目读取真实数据。
+- Supabase Auth、SSR 会话、Creator 资料/头像、公开作者页与作品管理。
+- Student / College / Place Wiki 的 UUID 关系、原子修订历史、乐观锁与回滚。
+- 论坛多身份楼层、标签、实体引用、原子草稿保存、预览与发布约束。
+- 校刊结构化正文、固定分类标签、图片、UUID 引用、草稿/预览/发布与独立刊物版式。
+- 事件主档案、稳定时间线、实体关联，以及独立作者的事件补充和档案版式。
+- 私有 R2 媒体接口、签名直传、文件校验；作品评论、收藏、点赞与举报；管理员审阅、隐藏/恢复和审计。
+- 中文分组检索、Wiki / Event 反向作品关联、加载/空/错/权限/冲突状态。
+
+本地数据库 187/187 pgTAP 通过；Press / Events、论坛草稿和双用户权限已有浏览器、API 或事务证据，具体边界见 [验收记录](./docs/engineering/verification.md)。私有媒体经 MinIO + Node standalone 验证，真实云 R2/CORS、SMTP、托管 Supabase 与 Ubuntu/DNS/TLS 留待部署验收。
 
 ## 技术说明
 
 本仓库由 OpenAI Sites starter 初始化，使用 Vinext 提供 App Router 兼容运行时，并通过 `@openai/sites-vite-plugin` 输出 Cloudflare Worker-compatible ESM。自有 Ubuntu 服务器另用 Node standalone 输出与 Nginx 反代；操作和已验证范围见 [Ubuntu 部署说明](./docs/deploy/ubuntu.md)。应用代码保持标准 Next.js App Router API 边界。
 
-业务数据与 Auth 使用 Supabase；Sites 自带的 D1 与 R2 绑定均保持关闭。媒体资源后续使用 Cloudflare R2，本阶段不实现。
+业务数据与 Auth 使用 Supabase；Sites 自带的 D1 与 R2 绑定均保持关闭。媒体通过服务端 S3 兼容适配器接入私有 Cloudflare R2，签名使用 aws4fetch；配置与证据见 docs/engineering/media-verification.md。
 
 ## 本地运行
 
@@ -79,7 +79,7 @@ npm run build
 npx supabase test db --local
 ```
 
-`npm test` 会在构建后检查渲染结果，兼容未配置和已连接本地 Supabase 的状态。pgTAP 覆盖 Profile、Wiki 和论坛草稿隔离、账号归属、发布后冻结；它需要已启动并应用迁移的本地 Supabase。`src/types/database.ts` 的数据库主体由本地已迁移 schema 生成，文件末尾保留应用使用的领域别名。
+`npm test` 会在构建后检查渲染结果，兼容未配置和已连接本地 Supabase 的状态。pgTAP 覆盖 Profile、Wiki、论坛、校刊、事件、媒体、社区互动与管理员审阅的事务、隔离和权限；它需要已启动并应用迁移的本地 Supabase。`src/types/database.ts` 的数据库主体由本地已迁移 schema 生成，文件末尾保留应用使用的领域别名。
 
 本地 Auth/API 集成测试还可运行 `node tests/local-api.test.mjs`。该测试只接受 `.env.local` 中的 `http://127.0.0.1:54321`，需要临时环境变量 `SUPABASE_SERVICE_ROLE_KEY` 清理一次性用户和 Wiki 数据；可从 `npx supabase status -o env` 取得本地服务密钥，运行后清除该环境变量，切勿写入 `.env.local` 或 Git。本地浏览器已验注册、Creator 会话、Student/College/Place Wiki、论坛身份与主题发布、匿名阅读及 Student 反向链接；邮件确认、线上项目和服务器仍待验证。上线前步骤与外部输入见 [发布检查单](./docs/deploy/release-checklist.md)。
 

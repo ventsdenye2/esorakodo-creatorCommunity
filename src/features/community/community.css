@@ -1,0 +1,20 @@
+.work-community { margin:64px auto 0; padding:32px 0; border-top:1px solid var(--rule); max-width:900px; color:var(--ink); }
+.work-community h2 {font:600 25px/1.4 var(--font-display);margin:10px 0;}
+.work-community header p,.work-community .muted {font-size:12px;line-height:1.8;color:var(--ink-soft);}
+.work-community a {color:var(--sky-dark);}
+.work-action-row {display:flex;gap:10px;flex-wrap:wrap;margin:24px 0 12px;}
+.work-community button {min-height:44px;padding:8px 16px;border:1px solid var(--rule);background:var(--paper);color:var(--ink);cursor:pointer;}
+.work-community button[aria-pressed=true] {background:var(--ink);color:white;}
+.work-community button:disabled {opacity:.5;cursor:wait;}
+.work-community label {display:grid;gap:8px;font-size:13px;}
+.work-community textarea {width:100%;resize:vertical;padding:12px;border:1px solid var(--rule);font:inherit;line-height:1.7;background:var(--paper);color:var(--ink);}
+.work-report {font-size:12px;color:var(--ink-soft);}
+.work-report summary {cursor:pointer;min-height:44px;display:flex;align-items:center;}
+.work-report form,.work-comment-form {display:grid;gap:12px;justify-items:start;}
+.work-report label,.work-comment-form label {width:100%;}
+.work-comments {padding:0;list-style:none;margin:24px 0;}
+.work-comments li {padding:20px 0;border-top:1px solid var(--rule-soft);}
+.work-comments li>div {display:flex;justify-content:space-between;gap:16px;font-size:12px;}
+.work-comments p {white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.8;font-size:14px;}
+.work-comments time {color:var(--ink-soft);}
+.work-comments button {font-size:11px;}

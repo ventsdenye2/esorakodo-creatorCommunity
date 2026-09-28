@@ -26,6 +26,8 @@ export const forumMessageSchema = z.object({
 export const forumDraftSchema = forumTopicSchema.extend({
   messages: z.array(forumMessageSchema).max(100, "最多编排 100 层。"),
   tags: z.array(z.string().trim().min(1).max(64)).max(8, "最多添加 8 个标签。"),
+  links: z.array(z.object({entity_type:z.enum(["student","college","place","event"]),entity_id:z.uuid()})).max(30,"最多关联 30 个校园档案。"),
 });
 
 export type ForumDraftInput = z.infer<typeof forumDraftSchema>;
+export type ForumEntityReference = ForumDraftInput["links"][number];

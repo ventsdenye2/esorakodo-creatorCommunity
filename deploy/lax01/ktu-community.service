@@ -1,0 +1,30 @@
+[Unit]
+Description=Kongtian University isolated preview
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ktu
+Group=ktu
+WorkingDirectory=/srv/ktu-community/current
+Environment=NODE_ENV=production
+Environment=HOST=127.0.0.1
+Environment=PORT=3107
+Environment=KTU_REGISTRATION_ENABLED=false
+EnvironmentFile=/etc/ktu-community/ktu-community.env
+ExecStart=/opt/ktu-node/bin/node /srv/ktu-community/current/dist/standalone/server.js
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+UMask=0027
+MemoryMax=768M
+CPUQuota=100%
+TasksMax=128
+
+[Install]
+WantedBy=multi-user.target

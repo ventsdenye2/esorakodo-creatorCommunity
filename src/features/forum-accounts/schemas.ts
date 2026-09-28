@@ -6,6 +6,7 @@ export const forumAccountSchema = z.object({
   accountType: z.enum(["student", "unknown", "organization", "bot"]),
   studentId: z.preprocess((value) => value === "" ? null : value, z.string().uuid().nullable()),
   signature: z.preprocess((value) => value === "" ? null : value, z.string().trim().max(280).nullable()),
+  avatarAssetId: z.preprocess((value) => !value ? null : value, z.uuid().nullable()),
 }).refine((value) => value.accountType !== "student" || value.studentId !== null, {
   message: "学生身份必须关联人物档案。", path: ["studentId"],
 });

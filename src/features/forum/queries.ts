@@ -1,6 +1,7 @@
 import { isSupabaseConfigured } from "../../lib/supabase/config";
 import { createClient } from "../../lib/supabase/server";
 import type { Database, ForumAccount, Student } from "../../types/database";
+import type { ForumEntityReference } from "./schemas";
 
 export type ForumTopic = Database["public"]["Tables"]["forum_topics"]["Row"];
 export type ForumMessage = Database["public"]["Tables"]["forum_messages"]["Row"];
@@ -86,7 +87,7 @@ export async function listOwnDrafts(): Promise<ForumTopicView[]> {
   return enrichTopics(data ?? []);
 }
 
-export async function getForumTopic(id: string, draft = false): Promise<{ topic: ForumTopicView; floors: ForumFloor[] } | null> {
+export async function getForumTopic(id: string, draft = false): Promise<{ topic: ForumTopicView; floors: ForumFloor[]; links: ForumEntityReference[] } | null> {
   if (!isSupabaseConfigured()) return null;
   const supabase = await createClient();
   let query = supabase.from("forum_topics").select("*").eq("id", id);
@@ -94,11 +95,13 @@ export async function getForumTopic(id: string, draft = false): Promise<{ topic:
   const { data: topic, error } = await query.maybeSingle();
   if (error) throw new Error(error.message);
   if (!topic) return null;
-  const [messages, topicView] = await Promise.all([
+  const [messages, topicView, references] = await Promise.all([
     supabase.from("forum_messages").select("*").eq("topic_id", id).order("floor_no"),
     enrichTopics([topic]),
+    supabase.from("forum_topic_entity_links").select("student_id,college_id,place_id,event_id").eq("topic_id",id),
   ]);
   if (messages.error) throw new Error(messages.error.message);
+  if (references.error) throw new Error(references.error.message);
   const accountIds = [...new Set((messages.data ?? []).map((message) => message.forum_account_id))];
   const accounts = accountIds.length ? await supabase.from("forum_accounts").select("*").in("id", accountIds) : null;
   if (accounts?.error) throw new Error(accounts.error.message);
@@ -108,5 +111,6 @@ export async function getForumTopic(id: string, draft = false): Promise<{ topic:
     const account = accountMap.get(message.forum_account_id);
     return account ? [{ ...message, account, replyFloor: message.reply_to_message_id ? floorMap.get(message.reply_to_message_id) ?? null : null }] : [];
   });
-  return { topic: topicView[0], floors };
+  const links:ForumEntityReference[]=(references.data??[]).flatMap<ForumEntityReference>((row)=>row.student_id?[{entity_type:"student" as const,entity_id:row.student_id}]:row.college_id?[{entity_type:"college" as const,entity_id:row.college_id}]:row.place_id?[{entity_type:"place" as const,entity_id:row.place_id}]:row.event_id?[{entity_type:"event" as const,entity_id:row.event_id}]:[]);
+  return { topic: topicView[0], floors, links };
 }

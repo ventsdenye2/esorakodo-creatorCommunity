@@ -1,5 +1,11 @@
-import { ArchivePlaceholder } from "../../../src/components/archive-placeholder";
-
-export default function EventsPage() {
-  return <ArchivePlaceholder section="events" title="校史事件" description="由主档案、时间线、关联实体与事件补充组成的结构化历史。" />;
+import Link from "next/link";
+import { EventShell } from "../../../src/features/events/components/EventShell";
+import { listPublishedEvents, type EventFilters } from "../../../src/features/events/queries";
+import { listWikiEntities } from "../../../src/features/wiki/queries";
+export const dynamic = "force-dynamic";
+export const metadata = { title: "校史事件" };
+export default async function EventsPage({ searchParams }: { searchParams: Promise<EventFilters> }) {
+ const filters = await searchParams;
+ const [events, entities] = await Promise.all([listPublishedEvents(filters), listWikiEntities()]);
+ return <EventShell><header className="events-index-heading"><div><p className="archive-label">UNIVERSITY ARCHIVES</p><h1>校史事件</h1><p>循时间回望，见证空天大学的足迹。</p></div><Link className="event-contribute" href="/create/event">档案管理 ↗</Link></header><form className="events-filter"><label className="events-search">检索档案<input type="search" name="q" placeholder="输入事件标题" defaultValue={filters.q} maxLength={120} /></label>{(["student", "college", "place"] as const).map((type) => <label key={type}>{{ student: "人物", college: "学院", place: "地点" }[type]}<select name={type} defaultValue={filters[type] ?? ""}><option value="">全部</option>{entities.filter((entity) => entity.type === type).map((entity) => <option key={entity.id} value={entity.id}>{entity.name}</option>)}</select></label>)}<label>开始日期<input type="date" name="from" defaultValue={filters.from} /></label><label>结束日期<input type="date" name="to" defaultValue={filters.to} /></label><button type="submit" className="button button-primary">检索</button><Link href="/events">重置</Link></form><section className="events-register" aria-label="事件目录"><div className="events-register-heading"><h2>事件目录</h2><span>{events.length} 份档案{events.length === 100 ? " · 请缩小检索范围" : ""}</span></div>{events.length ? <ol>{events.map((event) => <li key={event.id}><time>{event.starts_on?.slice(0, 4) || "待考"}</time><div><p className="event-date">{event.time_range || event.starts_on || "时间待考"}</p><h3><Link href={`/events/${event.id}`}>{event.title}</Link></h3><p>{event.summary}</p></div><Link className="event-open" href={`/events/${event.id}`} aria-label={`阅读${event.title}`}>↗</Link></li>)}</ol> : <div className="event-empty"><span aria-hidden="true">卷宗 / —</span><h3>暂无符合条件的档案</h3><p>可调整人物、地点或日期范围，再次检索。</p><Link href="/events">查看全部档案 →</Link></div>}</section></EventShell>;
 }

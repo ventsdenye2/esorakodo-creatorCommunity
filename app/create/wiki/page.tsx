@@ -24,10 +24,10 @@ export default async function CreateWikiPage({ searchParams }: PageProps) {
         <header className="wiki-form-header">
           <p className="archive-label">NEW ARCHIVE RECORD</p>
           <h1>建立校园档案</h1>
-          <p>选择一种稳定实体类型。创建成功时，数据库会在同一事务写入首个 Revision。</p>
+          <p>为人物、学院或地点建立档案。每次修改都会保留修订记录。</p>
         </header>
         {!configured ? (
-          <p className="auth-notice auth-notice-error" role="alert">Supabase 尚未配置，表单可预览但无法提交。</p>
+          <p className="auth-notice auth-notice-error" role="alert">档案服务暂未开放，当前无法提交。</p>
         ) : null}
         {query.error ? <p className="auth-notice auth-notice-error" role="alert">{query.error}</p> : null}
         <form action={createWikiEntity} className="wiki-form">
@@ -42,7 +42,7 @@ export default async function CreateWikiPage({ searchParams }: PageProps) {
           </label>
           <label><span>档案名称</span><input maxLength={100} name="name" required /></label>
           <label>
-            <span>稳定 Slug</span>
+            <span>档案地址 · 小写英文、数字或连字符</span>
             <input autoCapitalize="none" maxLength={64} name="slug" pattern="(?:[a-z0-9]|-){2,64}" required />
             <small>创建后不可修改，只使用小写字母、数字和连字符。</small>
           </label>
@@ -57,7 +57,7 @@ export default async function CreateWikiPage({ searchParams }: PageProps) {
           <label><span>档案摘要</span><textarea maxLength={4000} name="summary" rows={8} /></label>
           <div className="wiki-form-actions">
             <Link className="button button-secondary" href="/wiki">取消</Link>
-            <button className="button button-primary" disabled={!configured} type="submit">创建并记录 Revision</button>
+            <button className="button button-primary" disabled={!configured} type="submit">建立档案</button>
           </div>
         </form>
       </main>

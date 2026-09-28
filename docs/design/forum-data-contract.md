@@ -63,3 +63,35 @@ RPC 锁住作者草稿，校验至少一层、楼层从 1 连续、所有 Forum 
 - 标签页先查 `hashtags.normalized_name` 与 `forum_topic_hashtags.hashtag_id`，再只展示 published Topic。`hashtags.name` 是展示文字，`normalized_name` 是精确去重/查询键。
 - `forum_messages.body` 为纯文本，渲染时保持文本转义；不引入富文本 HTML、媒体附件或戏外读者评论。
 - 迁移为 `202609230002_m3_forum.sql` 与追加的 `202609230003_m3_forum_tag_rpc.sql`，测试是 `m3_forum.test.sql`。本地 `supabase migration up --local` 增量应用成功；`supabase test db --local` 通过 M1/M2/M3 共 82 项，M3 为 51 项。没有对本地数据库执行 reset。
+
+## 2026-09-23 完整草稿事务与跨媒介关联
+
+追加迁移 `202609240007_forum_links.sql`。论坛仍使用按楼层排序的纯文本BBS正文；新增的是主题级档案关联，不把正文转成校刊块编辑器，也不把论坛身份和Creator合并。
+
+`forum_topic_entity_links` 保存 `topic_id` 与恰好一个非空的 `student_id / college_id / place_id / event_id`，全部为真实外键。各实体有反链索引，各Topic+实体有部分唯一索引。匿名仅可读父主题published的关联，作者仅额外可读本人draft关联，隐藏/移除主题关联不可读。客户端没有DML权限，统一由RPC维护。事件引用只允许已发布事件；人物、学院、地点从现有公开档案解析。界面用名称选择，但只保存UUID，公开页解析到现有slug链接，不可见目标不输出链接。
+
+新的唯一应用保存入口为：
+
+```text
+save_forum_draft(
+  p_topic_id uuid, p_expected_version bigint,
+  p_title text, p_board text, p_messages jsonb,
+  p_tags text[], p_links jsonb, p_publish boolean = false
+) returns bigint
+```
+
+`p_links` 格式为最多30项的 `[{entity_type:'student'|'college'|'place'|'event',entity_id:uuid}]`。函数先锁父主题、校验登录/作者/draft及预期版本，随后在同一事务里调用楼层同步、标签同步，更新实体关联和标题版面，并按提交意图调用发布。任何后段错误回滚前面的楼层、标签、关联、标题及版本推进。原先多次HTTP请求的部分成功状态已移除。
+
+`forum_topics.version` 为正bigint。父主题更新会推进版本，旧楼层或标签写入路径也触发父版本推进，避免旧RPC写入后新编辑器无法识别冲突。版本是单调修订标识，不等同于保存次数；一次保存可推进多次，客户端只使用RPC返回的最终值，绝不自行加一。`FORUM_VERSION_CONFLICT` 保留浏览器输入并提示复制后重新载入；发布后原有冻结规则继续生效。
+
+应用变更覆盖 `DraftEditor`、保存action、schema、`getForumTopic`（新增`links`）、草稿恢复路由、公开主题关联阅读。专门的 `m3_forum_atomic.test.sql` 在一个最终rollback事务内覆盖20项授权、原子回滚、乐观锁、实体关系和发布冻结测试；没有向共享本地库发布浏览器测试主题。实际迁移执行与测试结果由本次数据库集成验收补记。
+
+### 007 验收结果
+
+- 数据库集成代理增量应用007成功，`m3_forum_atomic.test.sql` 20项全部通过，类型已同步生成。
+- 论坛模块与两个相关路由ESLint通过。类型检查由最终整体校验记录。
+- 本地API实测：带人物UUID和楼层的主题单事务保存成功，返回最终版本；重新读取还原关联且仍为draft；陈旧版本拒绝；故意传无效地点UUID导致后段错误，原标题/版本/草稿状态全部保留；匿名关联查询返回空数组。
+- 同一临时作者的SSR会话读取实际编辑路由返回HTTP 200，并包含恢复后的关联人物、原楼层正文和关联选择界面。全过程p_publish固定false，无新增公开测试作品。
+- 本轮浏览器工具失去可用连接（apps/browsers清单为空），因此007新增控件的实际点击和手机截图未验证；未用另一浏览器或API绕过此前发布动作拒绝。先前校刊手机验收不被误记作007手机验收。
+
+主线最终浏览器复验：原有草稿移除人物后键盘Down选择、添加关联、保存成功、刷新关联和楼层保留；375×812截图发现复用楼层预览grid使人物名挤窄，已将关联选择器独立为forum-entity-picker样式，姓名自适应、移除按钮固定最小宽度。没有发布。

@@ -4,12 +4,17 @@ import { SiteHeader } from "../../../src/components/layout/site-header";
 import { listWikiEntities } from "../../../src/features/wiki/queries";
 import { getWikiEntityHref, getWikiEntityLabel, wikiEntityTypes } from "../../../src/features/wiki/types";
 import { isSupabaseConfigured } from "../../../src/lib/supabase/config";
+import "../../../src/features/creator/portal.css";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "校园档案" };
 
-export default async function WikiPage() {
-  const entities = await listWikiEntities();
+export default async function WikiPage({ searchParams }: { searchParams: Promise<{ q?: string; type?: string }> }) {
+  const query = await searchParams;
+  const q = (query.q ?? "").trim().slice(0, 80);
+  const selectedType = wikiEntityTypes.find(type => type === query.type) ?? "";
+  const allEntities = await listWikiEntities();
+  const entities = allEntities.filter(entity => (!selectedType || entity.type === selectedType) && (!q || entity.name.toLocaleLowerCase().includes(q.toLocaleLowerCase())));
 
   return (
     <div>
@@ -19,23 +24,24 @@ export default async function WikiPage() {
           <div>
             <p className="archive-label">LIVING ARCHIVE / WIKI</p>
             <h1>校园档案</h1>
-            <p>人物、学院与地点共同构成可追溯的校园知识层。每次修改都会留下 Revision。</p>
+            <p>查阅空天大学的人物、学院与地点资料，了解校园的过去与现在。</p>
           </div>
           <Link className="button button-primary" href="/create/wiki">建立档案</Link>
         </header>
+        <form className="campus-search" action="/wiki"><label>档案名称<input name="q" defaultValue={q} maxLength={80} placeholder="查找人物、学院或地点" /></label><label>档案类型<select name="type" defaultValue={selectedType}><option value="">全部类型</option>{wikiEntityTypes.map(type => <option value={type} key={type}>{getWikiEntityLabel(type)}</option>)}</select></label><button className="button button-primary">查找档案</button></form>
 
         {!isSupabaseConfigured() ? (
           <div className="wiki-status" role="status">
-            <strong>等待连接开发数据库</strong>
-            <p>页面与写入边界已经就绪；配置 Supabase 后会显示真实档案。</p>
+            <strong>档案服务暂未开放</strong>
+            <p>资料将在开放后陆续收录。</p>
           </div>
         ) : null}
 
         {entities.length === 0 ? (
           <section className="wiki-empty">
             <span>NO ARCHIVE RECORDS</span>
-            <h2>还没有校园档案。</h2>
-            <p>从一个人物、学院或地点开始，创建操作会同时生成首个 Revision。</p>
+            <h2>{q || selectedType ? "没有找到符合条件的档案。" : "还没有校园档案。"}</h2>
+            <p>{q || selectedType ? "尝试其他关键词，或切换档案类型。" : "人物、学院与地点资料将在此陆续收录。"}</p>
           </section>
         ) : (
           <div className="wiki-groups">

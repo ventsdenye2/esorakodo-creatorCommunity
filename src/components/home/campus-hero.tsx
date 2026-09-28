@@ -1,31 +1,26 @@
 import Link from "next/link";
 import { ArrowIcon } from "../icons/arrow-icon";
-import { CampusScene } from "../../features/campus/campus-scene";
+import { CampusCardStack } from "./campus-card-stack";
+import { getCampusCards } from "./campus-view-data";
 
-export function CampusHero() {
+export async function CampusHero() {
+  const { cards, failed } = await getCampusCards();
   return (
     <section className="home-hero" aria-labelledby="hero-title">
       <div className="hero-copy">
         <span className="hero-kicker">KONGTIAN UNIVERSITY / EARTH CAMPUS</span>
-        <h1 id="hero-title">这所大学，<br />仍在被共同书写。</h1>
-        <p>从一份人物档案、一段校园讨论开始，走进这所正在形成的大学。</p>
+        <h1 id="hero-title">立足此间，<br /><span className="hero-emphasis">望向更远的天空。</span></h1>
+        <p>欢迎来到空天大学。<br />在这里，认识我们的师生，发现校园里的日常与新知。</p>
         <div className="hero-actions">
-          <Link className="button button-primary" href="/wiki">浏览校园档案<ArrowIcon /></Link>
-          <Link className="button button-secondary" href="/register">建立 Creator 档案<ArrowIcon /></Link>
+          <Link className="button button-primary" href="/wiki">走进空天<ArrowIcon /></Link>
+          <Link className="button button-secondary" href="/forum">校园生活<ArrowIcon /></Link>
         </div>
-        <div className="hero-note" aria-label="平台定位">
-          <span>ARCHIVE / DISCUSSION / CREATION</span>
-          <p>一座持续生长的校园，<br />由每位创作者留下记录。</p>
+        <div className="hero-note" aria-label="校园寄语">
+          <span>KNOWLEDGE / DISCOVERY / COMMUNITY</span>
+          <p>求知于广阔天地，<br />相逢于日常之间。</p>
         </div>
       </div>
-      <div className="hero-scene">
-        <CampusScene className="hero-scene-art" />
-        <div className="hero-scene-title"><span>CAMPUS VIEW</span><strong>校园视界</strong></div>
-        <div className="hero-scene-marker hero-scene-marker-archive"><b>A</b><span>校园档案</span></div>
-        <div className="hero-scene-marker hero-scene-marker-forum"><b>B</b><span>校园论坛</span></div>
-        <div className="hero-scene-marker hero-scene-marker-press"><b>C</b><span>校刊·部刊</span></div>
-        <div className="hero-scene-caption"><span>概念沙盘 · 非正式校园地图</span><Link href="/wiki">探索档案 <ArrowIcon /></Link></div>
-      </div>
+      <CampusCardStack cards={cards} failed={failed} />
     </section>
   );
 }

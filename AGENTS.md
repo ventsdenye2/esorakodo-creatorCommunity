@@ -25,13 +25,13 @@
 - Use `@supabase/ssr`; do not reintroduce deprecated Supabase Auth Helpers.
 - Use explicit relational tables. Do not replace the domain with a universal Entity/JSON table.
 - Database migrations live in `supabase/migrations`. Every client-accessible table needs grants, RLS, indexes for its foreign keys, and a documented ownership policy.
-- Cloudflare R2 is deferred. When introduced, PostgreSQL stores metadata/object keys and R2 stores bytes.
+- Private Cloudflare R2 integration is implemented. PostgreSQL stores metadata/object keys and R2 stores bytes; local MinIO verification does not replace production R2/CORS validation.
 - Route files should stay thin. Put reusable UI in `src/components`, domain workflows in `src/features`, infrastructure in `src/lib`, and shared types in `src/types`.
 - Prefer Server Components and server-side authorization. Add Client Components only for real browser interaction.
 
 ## UI direction: Living Campus v2 (proposed)
 
-- `docs/design/living-campus-v2.md` is the current **proposed** front-end design guide; `docs/design/homepage-concept-v1.md` records the **implemented** homepage baseline. Do not describe planned Campus Layer or 3D behavior as shipped.
+- `docs/design/campus-view-stack.md` and `docs/design/full-platform.md` describe the current implementation; earlier homepage/v2 documents retain historical and proposed material. Campus View uses real content; the optional SVG campus guide is schematic. Do not describe 3D or coordinate bindings as shipped.
 - Design the co-creation site as a campus that can be explored, read, traced and written: Entity (what), Relation/Trace (how connected), Campus/Space (where), Time (when). This is an interface model, not a universal Entity database table.
 - Preserve Institutional × Editorial × Spatial × Living Archive, grounded in a university, archive and publication system. Avoid generic SaaS dashboards, uniform card waterfalls, dark neon HUDs, glassmorphism and decorative relationship lines.
 - Keep the current five primary routes. Make Campus Layer a progressive, optional way to explore; 2D navigation and ordinary entity links must remain complete and accessible. Do not add inactive creation or search controls.

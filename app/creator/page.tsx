@@ -1,47 +1,19 @@
-import Link from "next/link";
-import { redirect } from "next/navigation";
-import { signOut } from "../../src/features/auth/actions";
-import { isSupabaseConfigured } from "../../src/lib/supabase/config";
-import { createClient } from "../../src/lib/supabase/server";
-
-export const dynamic = "force-dynamic";
-export const metadata = { title: "Creator 档案" };
-
-export default async function CreatorPage() {
-  if (!isSupabaseConfigured()) {
-    return (
-      <main className="creator-page">
-        <Link className="text-link" href="/">← 返回校园</Link>
-        <h1>Creator 档案</h1>
-        <p>Auth 结构已经就绪。复制 <code>.env.example</code> 为 <code>.env.local</code> 并连接 Supabase 后即可启用会话。</p>
-      </main>
-    );
-  }
-
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("handle, display_name, bio, created_at")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  return (
-    <main className="creator-page">
-      <div className="creator-toolbar">
-        <Link className="text-link" href="/">← 返回校园</Link>
-        <form action={signOut}><button className="button" type="submit">退出登录</button></form>
-      </div>
-      <span className="archive-label">CREATOR PROFILE</span>
-      <h1>{profile?.display_name ?? user.email ?? "Creator"}</h1>
-      <p className="creator-handle">@{profile?.handle ?? "pending-profile"}</p>
-      <p>{profile?.bio ?? "Creator 档案已建立。你可以从校园档案或论坛主题开始创作。"}</p>
-      <nav className="creator-toolbar" aria-label="创作入口">
-        <Link className="button button-primary" href="/create/wiki">建立校园档案</Link>
-        <Link className="button button-secondary" href="/create/forum">创作论坛主题</Link>
-      </nav>
-    </main>
-  );
+import Link from 'next/link';
+import {Avatar} from '../../src/components/ui/avatar';
+import {redirect} from 'next/navigation';
+import {SiteHeader} from '../../src/components/layout/site-header';
+import {SiteFooter} from '../../src/components/layout/site-footer';
+import {signOut} from '../../src/features/auth/actions';
+import {createClient} from '../../src/lib/supabase/server';
+import {isSupabaseConfigured} from '../../src/lib/supabase/config';
+import {creatorWorks,creatorBookmarks} from '../../src/features/creator/queries';
+import '../../src/features/creator/portal.css';
+export const dynamic='force-dynamic';export const metadata={title:'Creator 档案'};
+export default async function CreatorPage(){
+ if(!isSupabaseConfigured())return <div><SiteHeader/><main id="main-content" className="portal-page"><h1>Creator 档案</h1><p>账户服务暂未开放，请稍后再来。</p><Link href="/">返回校园</Link></main><SiteFooter/></div>;
+ const db=await createClient();const {data:{user}}=await db.auth.getUser();if(!user)redirect('/login');
+ const [profile,workResult,bookmarks,accounts,moderator]=await Promise.all([db.from('profiles').select('*').eq('id',user.id).maybeSingle(),creatorWorks(user.id,true),creatorBookmarks(user.id),db.from('forum_accounts').select('id,handle,display_name').eq('created_by',user.id).order('created_at',{ascending:false}),db.rpc('is_moderator')]);
+ return <div><SiteHeader/><main id="main-content" className="portal-page"><header className="portal-heading"><div className="portal-toolbar"><span className="archive-label">CREATOR / WORKSPACE</span><form action={signOut}><button className="button">退出登录</button></form></div><Avatar assetId={profile.data?.avatar_asset_id} name={profile.data?.display_name??'Creator'}/><h1>{profile.data?.display_name??'Creator 档案'}</h1><p>@{profile.data?.handle} · {profile.data?.bio||'在这里整理作品、管理论坛身份与个人资料。'}</p><div className="portal-toolbar"><Link href="/creator/settings">编辑个人资料 ↗</Link>{profile.data&&<Link href={`/creator/${profile.data.handle}`}>查看公开主页 ↗</Link>}{moderator.data&&<Link href="/moderation">内容管理 ↗</Link>}</div></header><nav className="portal-toolbar" aria-label="创作入口"><Link className="button button-primary" href="/create/article">写一篇校刊</Link><Link className="button" href="/create/forum">编排论坛主题</Link><Link className="button" href="/create/event">建立事件档案</Link><Link className="button" href="/create/wiki">建立校园档案</Link></nav>
+ <section><h2>我的作品</h2>{workResult.failed&&<p role="alert">部分作品暂时无法加载，请刷新重试。</p>}{!workResult.works.length?<p className="portal-empty">还没有作品。选择上方一种媒介开始，草稿会保存在这里。</p>:<ul className="portal-list">{workResult.works.map(work=><li key={`${work.kind}-${work.id}`}>{work.status==='hidden'?<strong>{work.title}<span> · 暂不可见</span></strong>:<Link href={work.status==='draft'?work.editHref:work.href}>{work.title}<span>{work.status==='draft'?'继续编辑':'阅读全文'} ↗</span></Link>}<p>{work.kind} · {work.status==='draft'?'草稿':work.status==='published'?'已发布':'暂不可见'} · {new Date(work.date).toLocaleDateString('zh-CN')}{['校史事件','校刊·部刊','事件补充'].includes(work.kind)&&work.status==='published'&&<> · <Link href={work.editHref}>编辑作品</Link></>}</p></li>)}</ul>}</section>
+ <div className="portal-grid"><section><h2>论坛身份</h2><Link href="/create/forum/account">建立新身份 ↗</Link>{accounts.error?<p role="alert">身份列表暂时无法加载。</p>:<ul className="portal-list">{accounts.data?.map(account=><li key={account.id}><Link href={`/create/forum/account/${account.id}`}>{account.display_name}<span>编辑 ↗</span></Link><p>@{account.handle} · <Link href={`/forum/accounts/${account.handle}`}>公开档案</Link></p></li>)}</ul>}</section><section><h2>我的收藏</h2>{bookmarks.failed?<p role="alert">收藏暂时无法加载。</p>:!bookmarks.items.length?<p className="portal-empty">阅读作品时可以收藏，方便以后继续查阅。</p>:<ul className="portal-list">{bookmarks.items.map(item=><li key={item.id}><Link href={item.href}>{item.title} ↗</Link></li>)}</ul>}</section></div></main><SiteFooter/></div>;
 }

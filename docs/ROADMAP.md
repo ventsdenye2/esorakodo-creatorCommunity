@@ -2,31 +2,26 @@
 
 本文档是项目从当前 M1 基础继续开发到 M7 的统一入口。产品定义以 `KTU_CoCreation_Platform_Design_v0.1.docx` 为准；工程约束以仓库根目录 `AGENTS.md` 为准；需求、设计和任务追踪分别见 `engineering/RAS.md`、`engineering/RDS.md` 与 `engineering/DPS.md`。
 
-## 当前结论
+## 当前结论 · 全前后端实现批次
 
-- M0 工程骨架已经完成。
-- M1 本地迁移、Profile trigger、Grants 与 RLS 的 pgTAP 验收通过；本地 GoTrue 注册/登录、浏览器 Creator 会话与退出已通过，邮件确认链路及独立开发项目待验。
-- M2 Wiki 本地 RPC、并发冲突、回滚与 RLS 的 pgTAP 验收通过；Student、College、Place 创建/编辑/历史/回滚、移动有数据页面与浏览器冲突反馈均已验。线上 Auth 邮件仍待验。
-- M3 本地数据库 51/51 pgTAP、论坛注册至发布、匿名阅读、标签筛选及 Student 反向链接的浏览器主路径通过；双 Creator API 权限与楼层重排/删除的浏览器引用保持专项已验，生产 Supabase 待验。M4 到 M7 仍按依赖实施。
-- 第一个必须完整跑通的业务闭环是：注册 → Student → Forum Account → Forum Topic → 多账号楼层 → 发布 → Forum Account → Student Wiki。
-- Living Campus v2 的首页概念沙盘与可访问 Campus Layer 已交付首批，详见 `docs/design/living-campus-implementation.md`；真实关系图、Entity Peek 和正式 3D 校园仍是拟实施。每批设计、代码、状态和实际验收都同步到工程文档。
+用户已将范围扩展为 M0–M7，之后微调、部署。完整实施契约见 `design/full-platform.md`；下方分阶段摘要保留为里程碑定义，不能据其旧待办推断当前未实现。当前工作树尚未提交，也未部署。
 
-## 里程碑总览
+| 里程碑 | 当前交付 | 验收边界 |
+| --- | --- | --- |
+| M0 工程 | App Router / Vinext、TypeScript、Node standalone | 本机构建；线上宿主待验 |
+| M1 账户 | Auth、Creator、资料/头像、SSR 会话刷新 | 本地 Auth；真实 SMTP 待验 |
+| M2 Wiki | 三类实体、UUID 引用、原子修订/冲突/回滚 | DB 与主要浏览器路径通过 |
+| M3 论坛 | 多身份楼层、原子保存、实体引用、预览/发布 | 事务/权限、草稿恢复已验；最终控件见 verification |
+| M4 校刊 | 正文块、固定标签、图片、引用、草稿/预览/发布 | 数据库发布约束通过；浏览器新测试文章发布待许可 |
+| M5 事件 | 主档案、时间线、筛选、独立补充 | 双用户、冲突、移动端及事务验证 |
+| M6 媒体与运营 | 私有上传、头像、评论/点赞/收藏、举报审阅、隐藏/恢复审计 | 本地 MinIO 及 RLS 通过；真实 R2/CORS 待验 |
+| M7 搜索与完善 | 中文分组搜索、首页真实内容、卡片堆、UUID 反向作品关联 | 小数据集实测；线上规模性能待验 |
 
-| 里程碑 | 主要结果 | 进入条件 | 退出条件 | 当前状态 |
-| --- | --- | --- | --- | --- |
-| M0 工程骨架 | App Router、TypeScript、Sites 运行时、基础 Layout、Git | 无 | 本地可安装、构建和渲染公共页面 | 已完成 |
-| M1 账户基础 | Supabase Auth、Creator Profile、SSR 会话、首批 schema 与 RLS | M0 | 真实开发库中注册、登录、退出、Profile trigger 和会话读取全部通过 | 本地 Auth/API 与浏览器主路径已验，邮件确认待验 |
-| M2 Wiki 基础 | Student、College、Place 的创建、详情、编辑、Revision、回滚 | M1 验收 | 所有 Wiki 修改通过原子事务生成 Revision；历史可查；实体可互链 | 本地数据库、三类浏览器页面与冲突/移动已验；线上待验 |
-| M3 校园论坛 | Topic、Message、Forum Account、Hashtag、草稿与发布 | M2 实体链接稳定 | 首条端到端垂直切片通过；A 不能修改 B 的作品 | 本地数据库、双 Creator API 权限与浏览器楼层编排已验；完整第二用户界面及生产待验 |
-| M4 校刊与部刊 | Article、稳定标签、结构化正文、实体引用 | M3 权限与发布模型稳定 | 长文可创作、预览、发布；正文实体引用可跳转和反查 | 待做 |
-| M5 事件专题 | Event、Timeline、实体关联、Event Supplement | M4 实体引用可复用 | 主档案单一维护者；补充独立署名；时间线与反向关系可浏览 | 待做 |
-| M6 媒体与运营 | R2 直传、媒体元数据、举报、隐藏、审计 | 作品模型稳定 | 上传凭证不泄露；隐藏不破坏数据；管理动作可审计 | 待做 |
-| M7 搜索与完善 | 中文搜索、关系推荐、首页策展、最终体验收敛 | 内容量与查询样本可用 | 搜索有相关性与性能证据；核心路径通过桌面和移动端验收 | 待做 |
+全库 187/187 pgTAP 通过。最终 lint/typecheck/build、SSR、会话和浏览器逐项证据见 `engineering/verification.md`，媒体专项见 `engineering/media-verification.md`。3D 校园和坐标绑定没有实际资产，本批不虚构交付。
 
-## 公开测试版发布门禁
+## 发布门禁
 
-M1–M3 是首发范围；M4–M7 不阻塞本次账户、Wiki、论坛公开测试。发布前先完成本地论坛双 Creator 权限与草稿状态补验，再按 `docs/deploy/release-checklist.md` 对线上 Supabase migration/Auth/邮件、域名 DNS/TLS、Ubuntu Node standalone/Nginx、真实 HTTPS 端到端流程逐项留证。现阶段域名 NXDOMAIN，云 CLI 授权和服务器 SSH 尚未就绪；本地完成不等于已上线。
+微调后依据 `deploy/release-checklist.md` 完成线上迁移比对、SMTP、私有 R2/CORS、管理员 UUID 授权、Ubuntu、DNS/TLS 与 HTTPS 端到端验收。CC BY-SA 4.0 许可方式尚待用户决定，不对现有作品自动施加开放许可。
 
 ## 依赖顺序
 
@@ -44,7 +39,7 @@ M2 和 M3 是架构验证核心，不应被媒体上传、复杂富文本、积�
 
 ## Living Campus v2 前端轨道（首批已实施）
 
-`docs/design/homepage-concept-v1.md` 保留旧基线，`docs/design/living-campus-v2.md` 指导后续改版，`docs/design/living-campus-implementation.md` 记录首批实际交付。轻量沙盘 Hero 与可访问的 Campus Layer 已验；真实关系的 Relation Field、渐进增强的 Entity Peek、各媒介真实数据接入和完整性能验收仍待后续阶段。
+`docs/design/homepage-concept-v1.md` 保留旧基线，`docs/design/living-campus-v2.md` 指导后续改版，`docs/design/living-campus-implementation.md` 记录首批实际交付。轻量沙盘 Hero 与可访问的 Campus Layer 已验；首页各媒介已接入真实数据，Campus Trace 展示实际事件关联；渐进增强的 Entity Peek 和正式 3D 空间仍未实现。
 
 首版空间预览使用轻量 SVG/CSS 与已确认或标注为演示的地点；完整 3D 模型、Three.js、空间事件回放留给真实资产和数据契约到位后的独立阶段。这个前端轨道可与 M3 数据库和服务端工作按文件边界并行，但集成时必须核对 Forum Account、Wiki、发布权限和跨媒介实体链接。公开测试版的账户、Wiki、论坛闭环仍须完成真实服务与浏览器验收。
 
@@ -139,3 +134,25 @@ M2 和 M3 是架构验证核心，不应被媒体上传、复杂富文本、积�
 - `engineering/DPS.md` 是唯一任务状态表；开始、阻塞和验证时更新状态与证据入口。
 - `engineering/progress.md` 是断点续作入口；每个独立阶段结束时记录当前提交、检查结果、阻塞和下一步。
 - `M0-M1-PLAN.md` 保留为早期阶段记录，不再承担 M2–M7 的状态管理。
+
+## 2026-09-23 · 首页视觉增量
+
+KTU-UX-CAMPUS-VIEW 本地完成：首页大学官网口吻、最新公开内容卡片堆、移动／键盘／暂停支持。设计见 `design/campus-view-stack.md`，验证与边界见 `engineering/verification.md`。无迁移、未部署，不改变 M4/M5 进度。
+
+## 2026-09-28 · lax01 部署准备
+
+用户授权本机SSH密钥连接ventsdenye及root@lax01.ventsdenye.com；保留现有Supabase项目，不干扰其他网站。已只读核对原站/端口/Nginx，并安装独立Node22.23.3、ktu系统用户与本项目空目录，未启用应用或代理。采用deploy/lax01独立配置：回环3107、版本目录、受限HTTPS预览及注册开关。现有主站与作品集配置hash和200基线保存在deploy/lax01/README.md。
+
+下一步需要用户本机Supabase CLI登录与项目用途确认，然后只读云schema/迁移/备份审计。R2与SMTP尚未配置，具体用户操作见该README；没有迁移云库或公开应用。Cloudflare域名已解析到代理IP（旧NXDOMAIN记录已过时），源站配置仍待核实。
+
+## 2026-09-28 · 受限测试站已部署
+
+用户确认root密钥SSH与独立Supabase用途，授权部署；补充约束为服务器只保留必要内容。云项目原public无表/类型、auth.users=0，保留rls_auto_enable函数。output/deploy-20260928/cloud-public-before.sql保存迁移前结构（Git忽略）；13个本仓库迁移已全部应用，复核29张表全部RLS、13条迁移记录、Auth用户仍0。
+
+云公开参数在Linux专用release构建，lint/typecheck/build通过（构建内存峰值856.7MB，限额1100MB/50%CPU）；注册开关standalone测试本机1/1通过。此次本机旧SSR回归4/7，因本地Supabase停服，未掩盖失败；不能沿用9月24日7/7声称本批全绿。云产物通过真实回环smoke：主页/登录/论坛/Wiki/图片200，无效登录303。
+
+原站配置hash不变，kongtian.university与portfolio.ventsdenye.com仍200。新增campus专用Nginx vhost，nginx -t通过后reload，未restart旧服务。证书有效期至2026-12-27。通过Cloudflare访问匿名401、Basic Auth授权200，禁止缓存/索引。访问密码只保存在服务器root可读的/etc/ktu-community/preview-access.txt；本机没有输出其值。应用KTU_REGISTRATION_ENABLED=false，云Auth注册设置尚需单独核实/关闭，不能宣称此开关封住Supabase直接API。
+
+用户要求轻量运行后精确清理本项目源码/完整node_modules/npm缓存/上传包，保留dist/standalone64MB和私有Node二进制121MB，配置约44KB；服务器磁盘回到8.8GB已用/11GB可用，应用内存约52MB。清理后只重启ktu-community，回环复验正常。服务器无源码Git checkout；本地deploy/backend分支用于代码与配置追踪，后续本机/CI构建+artifact更新。不要声称已实现服务器git pull产物流程。
+
+当前可访问：https://campus.kongtian.university/（受限预览）。真实R2/SMTP/注册确认/首位Creator和管理员仍待配置，未创建云测试账号或作品、未发布合成内容。操作步骤见deploy/lax01/README.md。应用目录/srv/ktu-community/current -> releases/20260928-01，专用服务ktu-community，回环3107。

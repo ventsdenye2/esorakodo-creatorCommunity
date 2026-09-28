@@ -16,7 +16,7 @@ export function AuthShell({
     <main className="auth-page">
       <Link className="auth-brand" href="/">
         <span className="brand-mark">KTU</span>
-        <span><strong>KONGTIAN UNIVERSITY</strong><small>空天大学共创平台</small></span>
+        <span><strong>KONGTIAN UNIVERSITY</strong><small>空天大学</small></span>
       </Link>
       <section className="auth-panel">
         <div className="auth-intro">

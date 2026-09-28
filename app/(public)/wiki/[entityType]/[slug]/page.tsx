@@ -5,6 +5,7 @@ import { SiteHeader } from "../../../../../src/components/layout/site-header";
 import { listPublishedTopicsForStudent } from "../../../../../src/features/forum/queries";
 import { getWikiEntityBySlug, listColleges } from "../../../../../src/features/wiki/queries";
 import { getWikiEntityLabel, isWikiEntityType } from "../../../../../src/features/wiki/types";
+import { EntityTraces } from "../../../../../src/features/entities/entity-traces";
 import "../../../../../src/features/forum/forum.css";
 
 export const dynamic = "force-dynamic";
@@ -44,7 +45,7 @@ export default async function WikiDetailPage({ params, searchParams }: PageProps
           </div>
           <div className="wiki-record-actions">
             <span>VERSION {String(entity.version).padStart(3, "0")}</span>
-            <Link className="button button-secondary" href={`/wiki/${entity.type}/${entity.slug}/history`}>Revision 历史</Link>
+            <Link className="button button-secondary" href={`/wiki/${entity.type}/${entity.slug}/history`}>修订历史</Link>
             <Link className="button button-primary" href={`/wiki/${entity.type}/${entity.slug}/edit`}>编辑档案</Link>
           </div>
         </header>
@@ -68,6 +69,7 @@ export default async function WikiDetailPage({ params, searchParams }: PageProps
           <div><p className="archive-label">CAMPUS / FORUM</p><h2 id="forum-traces-title">论坛里的相关讨论</h2></div>
           <ul>{forumTopics.map((topic) => <li key={topic.id}><Link href={`/forum/${topic.id}`}>{topic.title}</Link><time dateTime={topic.published_at ?? ""}>{topic.published_at ? new Date(topic.published_at).toLocaleDateString("zh-CN") : ""}</time></li>)}</ul>
         </section> : null}
+        <EntityTraces type={entity.type} id={entity.id} />
       </main>
       <SiteFooter />
     </div>

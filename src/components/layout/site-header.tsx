@@ -37,6 +37,7 @@ export async function SiteHeader({ current }: { current?: Section }) {
           ))}
         </nav>
         <div className="header-actions">
+          <Link className="header-search" href="/search">检索</Link>
           <Link className="text-link" href={user ? "/creator" : "/login"}>{user ? "Creator" : "登录"}</Link>
           <Link className="button button-primary header-primary" href={user ? "/creator" : "/register"}>
             <span>{user ? "创作" : "进入校园"}</span><ArrowIcon />

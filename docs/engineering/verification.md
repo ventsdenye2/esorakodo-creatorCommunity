@@ -143,3 +143,59 @@
 - 一次性浏览器数据精确清理：仅目标草稿 `9fd05148-cb01-40b0-ac1a-b7aeb65a38b1`、论坛身份 `9ad887c9-074e-4be5-acdd-fe0b7732eb67` 与测试用户 `forum-browser-qa-923@example.test`；本地事务输出 DELETE 0 楼层 / 0 标签 / 1 主题 / 1 身份 / 1 用户并提交。API 脚本自清理；最终零残留计数未留证。未重置数据库。
 - 第二次 UI 复验的草稿 `3903092d-57ca-4881-8eba-87b7090220c3`、身份 `67ec22bc-cee4-40a7-92c8-46b5240f0525` 与 `forum-reset-qa-923@example.test` 经归属核对后在本地事务删除，1 主题 / 1 身份 / 1 用户；该次证实阻止 reset 与延迟重挂载无效，最终实现已替换。
 - 最终 UI 复验的草稿 `9a49fbfa-ae66-4ee7-b9d2-698d104a130b`、身份 `a3f63efc-0f54-44de-bd83-1bde6ec7d2f0` 与 `forum-final-qa-923@example.test` 经归属核对；本地事务删除 1 楼层 / 2 关联 / 1 主题 / 2 个无其他引用的测试标签 / 1 身份 / 1 用户，提交后按 ID 复查四类对象均为 0。API 测试重跑通过；首次运行的 service key 解析含引号，业务断言通过但清理账号 JWT 失败，残留两名测试用户和身份随后按 UUID/邮箱精确删除；修正解析后复跑完整通过，API 测试邮箱残留计数为 0。
+
+## 2026-09-23 · Campus View 卡片堆验收
+
+- `npm run lint`：通过。
+- `npm run typecheck`：通过。
+- `npm run build`：通过，生成 standalone；Windows 沙箱首次阻止 Vite 子进程，允许构建进程后完成。
+- `node --test tests/rendered-html.test.mjs tests/auth-redirect.test.mjs`：6/6 通过。沙箱首次阻止测试子进程，允许后完成。
+- 浏览器：本地 `http://127.0.0.1:3001`，1440×900、375×812；标题、卡片、控制栏与下方栏目视觉检查通过。文档宽度分别 1425/360（视口 1440/375，含滚动条），无横向溢出。
+- 手机“下一张”点击从 01/03 到 02/03；键盘 Enter 到 03/03；暂停后 aria-pressed=true。底层卡片 inert，不出现在可访问阅读顺序。
+- 自动播放 aria-live=off，实际不同时间观察到顶卡切换。暂停／聚焦时停止定时器。reduced-motion 静态样式与媒体监听已源码核对，尚未通过浏览器系统偏好切换验收。
+- 控制台 error/warn：0。当前数据为空，实际验证为三张校园导览卡。真实发布排序、单卡及部分查询失败分支已源码审阅，联网端到端场景本批未验。未登录创作流程未改变；没有新增授权／冲突写入路径。
+- 文案：首屏、浏览器标题和页脚统一为大学官网口吻；下方历史样例标为话题／刊物预告或资料整理中，不作为真实最新内容展示。
+
+## 2026-09-23 · 完整前后端集成验收（当前）
+
+- `npm run lint`、`npm run typecheck`：最终集成后通过。
+- `npm run build`：通过，Vinext 生成 Node standalone，补齐17个运行依赖。存在 middleware 命名弃用提示；当前运行时支持并经会话测试，未影响构建。
+- `node --test tests/rendered-html.test.mjs tests/auth-redirect.test.mjs`：7/7通过。校刊已从占位页更名为空天校刊，对应旧断言已更新；覆盖主页、各公共媒介、搜索、Wiki筛选、Auth回调和不存在作者/作品路径。
+- 全库 pgTAP：7个文件187/187通过（子任务执行并留媒体/内容证据）；新增006头像、007论坛原子引用、008管理员定向片段读取均本地应用，类型从已迁移schema生成。
+- 私有媒体：MinIO+Node standalone真实PUT/HEAD/GET、重复覆盖412、伪PNG拒绝、双用户/匿名隔离通过；详情见 media-verification.md。没有持久化公开作品fixture。
+- 会话续期：`tests/local-session.test.mjs`对新启动Node standalone 3004通过，验证过期session元数据刷新、Set-Cookie持久化、private cache与匿名跳转，临时Auth用户已清理。旧开发进程3001需重启发现新middleware。
+- Press：注册、草稿保存/恢复、图片入口、正文块/UUID引用、预览、冲突保留、移动/键盘路径见 integration-review-press.md及design/press.md。发布数据库事务约束通过；浏览器“发布文章”被自动审核拒绝，原因是用户未明确授权将合成测试内容公开。未通过其他接口绕过，保留待审核草稿。
+- Events：单维护者、第二作者独立补充、时间节点、陈旧版本冲突及错误输入保持、手机/键盘见design/events.md。曾公开的测试事件发生在上述拒绝通知前，随后按精确UUID清理。
+- Forum007：单RPC保存实体/楼层、返回版本、草稿恢复、陈旧冲突、后段失败全事务回滚和匿名实体隔离已通过API及真实SSR验证；最后浏览器新控件结果由后续条目补充。
+- 首页：真实新增事件曾出现在卡片堆顶部，Campus Trace使用该事件真实关联；中文“观测”返回学院/地点/事件，Wiki学院反链正确。事件fixture清理后显示真实空状态，不保留虚假活动。首页中等宽度实拍无横向溢出。原卡片堆桌面1440×900/手机375×812与切换/暂停/reduced-motion证据继续适用。
+- 本地小数据HTTP观察：首页332ms、搜索101ms、Wiki筛选154ms（均200）；不是线上负载或大数据性能结论。
+
+未完成外部验收：真实R2/CORS、SMTP外部邮件、托管Supabase迁移、Ubuntu/DNS/TLS与正式HTTPS；用户计划微调后部署。本批没有上线。CC BY-SA选项尚待决定，没有自动标记存量作品许可。
+
+## 2026-09-24 · 最后收尾
+
+3001已用 `npm run dev -- --hostname 127.0.0.1 --port 3001` 重启；注意Vinext参数为hostname，host会被忽略而绑定localhost/IPv6。重新运行local-session测试全部通过，不再只有standalone证据。
+
+主线真实浏览器补验论坛007：移除关联后选择器获得焦点、Down键选择人物、添加、保存成功、刷新后人物与楼层恢复；375×812发现旧预览grid挤压人物姓名，已分离关联选择器CSS并截图复验，姓名和移除按钮正常且无横向溢出。viewport已reset；可用的新首页预览tab保留。未发布。
+
+待用户许可的本地文章草稿：`http://127.0.0.1:3001/create/article/d3c674c7-0e1f-41dc-a57a-931a9d58c21d`。公开Wiki测试人物`pressqa-0923-876`被该文章与论坛草稿FK引用，为保持待审预览暂留，不能直接清理；因此首页暂有该测试人物。测试发布和后续精确清理一起等许可。所有业务数据仍在隔离本地服务，没有改动线上数据库。
+
+最终手机选择器修复后的全仓 lint、typecheck、build 再次通过；git diff --check通过。未重跑与CSS无关的DB/媒体测试。README、ROADMAP、RAS/RDS/DPS、progress及部署文档已同步本批实现与边界。
+
+## 2026-09-28 · lax01 部署准备
+
+用户授权本机SSH密钥连接ventsdenye及root@lax01.ventsdenye.com；保留现有Supabase项目，不干扰其他网站。已只读核对原站/端口/Nginx，并安装独立Node22.23.3、ktu系统用户与本项目空目录，未启用应用或代理。采用deploy/lax01独立配置：回环3107、版本目录、受限HTTPS预览及注册开关。现有主站与作品集配置hash和200基线保存在deploy/lax01/README.md。
+
+下一步需要用户本机Supabase CLI登录与项目用途确认，然后只读云schema/迁移/备份审计。R2与SMTP尚未配置，具体用户操作见该README；没有迁移云库或公开应用。Cloudflare域名已解析到代理IP（旧NXDOMAIN记录已过时），源站配置仍待核实。
+
+## 2026-09-28 · 受限测试站已部署
+
+用户确认root密钥SSH与独立Supabase用途，授权部署；补充约束为服务器只保留必要内容。云项目原public无表/类型、auth.users=0，保留rls_auto_enable函数。output/deploy-20260928/cloud-public-before.sql保存迁移前结构（Git忽略）；13个本仓库迁移已全部应用，复核29张表全部RLS、13条迁移记录、Auth用户仍0。
+
+云公开参数在Linux专用release构建，lint/typecheck/build通过（构建内存峰值856.7MB，限额1100MB/50%CPU）；注册开关standalone测试本机1/1通过。此次本机旧SSR回归4/7，因本地Supabase停服，未掩盖失败；不能沿用9月24日7/7声称本批全绿。云产物通过真实回环smoke：主页/登录/论坛/Wiki/图片200，无效登录303。
+
+原站配置hash不变，kongtian.university与portfolio.ventsdenye.com仍200。新增campus专用Nginx vhost，nginx -t通过后reload，未restart旧服务。证书有效期至2026-12-27。通过Cloudflare访问匿名401、Basic Auth授权200，禁止缓存/索引。访问密码只保存在服务器root可读的/etc/ktu-community/preview-access.txt；本机没有输出其值。应用KTU_REGISTRATION_ENABLED=false，云Auth注册设置尚需单独核实/关闭，不能宣称此开关封住Supabase直接API。
+
+用户要求轻量运行后精确清理本项目源码/完整node_modules/npm缓存/上传包，保留dist/standalone64MB和私有Node二进制121MB，配置约44KB；服务器磁盘回到8.8GB已用/11GB可用，应用内存约52MB。清理后只重启ktu-community，回环复验正常。服务器无源码Git checkout；本地deploy/backend分支用于代码与配置追踪，后续本机/CI构建+artifact更新。不要声称已实现服务器git pull产物流程。
+
+当前可访问：https://campus.kongtian.university/（受限预览）。真实R2/SMTP/注册确认/首位Creator和管理员仍待配置，未创建云测试账号或作品、未发布合成内容。操作步骤见deploy/lax01/README.md。应用目录/srv/ktu-community/current -> releases/20260928-01，专用服务ktu-community，回环3107。

@@ -9,7 +9,7 @@ export async function createForumAccount(formData: FormData) {
   const parsed = forumAccountSchema.safeParse({
     handle: formData.get("handle"), displayName: formData.get("displayName"),
     accountType: formData.get("accountType"), studentId: formData.get("studentId"),
-    signature: formData.get("signature"),
+    signature: formData.get("signature"), avatarAssetId: formData.get("avatar_asset_id"),
   });
   const errorPath = "/create/forum/account";
   if (!parsed.success) redirect(`${errorPath}?error=${encodeURIComponent(parsed.error.issues[0]?.message ?? "账号信息无效。")}`);
@@ -21,7 +21,7 @@ export async function createForumAccount(formData: FormData) {
     display_name: parsed.data.displayName,
     account_type: parsed.data.accountType,
     student_id: parsed.data.accountType === "student" ? parsed.data.studentId : null,
-    signature: parsed.data.signature,
+    signature: parsed.data.signature, avatar_asset_id: parsed.data.avatarAssetId,
     created_by: user.id,
   });
   if (error) redirect(`${errorPath}?error=${encodeURIComponent(error.code === "23505" ? "账号标识已被使用。" : "创建失败，请稍后重试。")}`);
@@ -34,7 +34,7 @@ export async function updateForumAccount(formData: FormData) {
   const parsed = forumAccountSchema.safeParse({
     handle: formData.get("handle"), displayName: formData.get("displayName"),
     accountType: formData.get("accountType"), studentId: formData.get("studentId"),
-    signature: formData.get("signature"),
+    signature: formData.get("signature"), avatarAssetId: formData.get("avatar_asset_id"),
   });
   const errorPath = `/create/forum/account/${encodeURIComponent(id)}`;
   if (!/^[0-9a-f-]{36}$/i.test(id)) redirect("/create/forum");
@@ -42,13 +42,13 @@ export async function updateForumAccount(formData: FormData) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
-  const { error } = await supabase.from("forum_accounts").update({
+  const { data: updated, error } = await supabase.from("forum_accounts").update({
     handle: parsed.data.handle, display_name: parsed.data.displayName,
     account_type: parsed.data.accountType,
     student_id: parsed.data.accountType === "student" ? parsed.data.studentId : null,
-    signature: parsed.data.signature,
-  }).eq("id", id).eq("created_by", user.id);
-  if (error) redirect(`${errorPath}?error=${encodeURIComponent(error.code === "23505" ? "账号标识已被使用。" : "更新失败，请稍后重试。")}`);
+    signature: parsed.data.signature, avatar_asset_id: parsed.data.avatarAssetId,
+  }).eq("id", id).eq("created_by", user.id).select("id").maybeSingle();
+  if (error || !updated) redirect(`${errorPath}?error=${encodeURIComponent(error?.code === "23505" ? "账号标识已被使用。" : "账号不存在、无权编辑或保存失败。")}`);
   revalidatePath("/create/forum");
   redirect(`/forum/accounts/${encodeURIComponent(parsed.data.handle)}`);
 }

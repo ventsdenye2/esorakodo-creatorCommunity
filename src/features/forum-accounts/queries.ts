@@ -21,3 +21,15 @@ export async function getForumAccount(handle: string): Promise<ForumAccount | nu
   if (error) throw new Error(error.message);
   return data;
 }
+
+export async function listTopicsForAccount(accountId: string) {
+  if (!isSupabaseConfigured()) return [];
+  const db=await createClient();
+  const {data:messages,error}=await db.from('forum_messages').select('topic_id').eq('forum_account_id',accountId).limit(500);
+  if(error)throw new Error(error.message);
+  const ids=[...new Set((messages??[]).map(message=>message.topic_id))];
+  if(!ids.length)return [];
+  const result=await db.from('forum_topics').select('id,title,published_at').in('id',ids).eq('status','published').order('published_at',{ascending:false}).limit(50);
+  if(result.error)throw new Error(result.error.message);
+  return result.data??[];
+}
