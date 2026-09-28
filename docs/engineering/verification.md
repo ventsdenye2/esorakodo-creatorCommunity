@@ -199,3 +199,7 @@
 用户要求轻量运行后精确清理本项目源码/完整node_modules/npm缓存/上传包，保留dist/standalone64MB和私有Node二进制121MB，配置约44KB；服务器磁盘回到8.8GB已用/11GB可用，应用内存约52MB。清理后只重启ktu-community，回环复验正常。服务器无源码Git checkout；本地deploy/backend分支用于代码与配置追踪，后续本机/CI构建+artifact更新。不要声称已实现服务器git pull产物流程。
 
 当前可访问：https://campus.kongtian.university/（受限预览）。真实R2/SMTP/注册确认/首位Creator和管理员仍待配置，未创建云测试账号或作品、未发布合成内容。操作步骤见deploy/lax01/README.md。应用目录/srv/ktu-community/current -> releases/20260928-01，专用服务ktu-community，回环3107。
+
+### 交付状态（2026-09-28）
+
+源码与部署配置已在deploy/backend分支提交2ae918e并推送origin。服务器当前是精简standalone产物，不是Git完整源码checkout；未来服务器git pull产物分支的自动化尚未配置。最终HTTPS验证：首页/检索/校刊/事件200，Creator307转登录，注册页明确暂未开放；匿名401。清理后进程MemoryCurrent约44MiB，原有两个网站仍200且配置hash一致。
