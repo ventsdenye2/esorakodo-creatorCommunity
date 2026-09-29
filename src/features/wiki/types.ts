@@ -16,6 +16,7 @@ export type WikiEntitySummary = {
 };
 
 export type WikiEntityDetail = WikiEntitySummary & {
+  body: string;
   collegeId: string | null;
   signature: string | null;
   createdBy: string;

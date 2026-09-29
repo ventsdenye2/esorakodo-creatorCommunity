@@ -18,8 +18,11 @@
     "@supabase/ssr": "^0.12.4",
     "@supabase/supabase-js": "^2.112.3",
     "aws4fetch": "^1.0.20",
+    "diff": "^9.0.0",
     "react": "19.2.6",
     "react-dom": "19.2.6",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
     "server-only": "^0.0.1",
     "zod": "^4.4.3"
   },

@@ -156,3 +156,14 @@ KTU-UX-CAMPUS-VIEW 本地完成：首页大学官网口吻、最新公开内容�
 用户要求轻量运行后精确清理本项目源码/完整node_modules/npm缓存/上传包，保留dist/standalone64MB和私有Node二进制121MB，配置约44KB；服务器磁盘回到8.8GB已用/11GB可用，应用内存约52MB。清理后只重启ktu-community，回环复验正常。服务器无源码Git checkout；本地deploy/backend分支用于代码与配置追踪，后续本机/CI构建+artifact更新。不要声称已实现服务器git pull产物流程。
 
 当前可访问：https://campus.kongtian.university/（受限预览）。真实R2/SMTP/注册确认/首位Creator和管理员仍待配置，未创建云测试账号或作品、未发布合成内容。操作步骤见deploy/lax01/README.md。应用目录/srv/ktu-community/current -> releases/20260928-01，专用服务ktu-community，回环3107。
+
+
+## 2026-09-29 · 论坛树状创作与 Markdown 档案
+
+用户确认：论坛 👍 / ？仅为创作者设置的剧情数据，读者端展示；修订采用线性历史、两版差异、恢复新版本，不做分支合并。补充确认所有论坛身份（包括学生类型）均可不关联人物档案创建。详情见 docs/design/forum-wiki-reading.md。
+
+实现：阅读/编辑共用 ThreadTree，保留楼层编号、父节点链接、分支折叠、原位添加回复、上下移动、计数输入和阅读预览。档案在摘要外新增 50000 字 Markdown 正文，GFM 安全渲染与格式工具栏，历史显示版本、作者、提交说明、快照、行差异；超长差异有时间上限并退化为整段增删。追加迁移 202609290001，旧数据计数默认 0、旧快照缺 body 恢复为空；解除 student_accounts_require_student，FK、所有权和 RLS 保留。
+
+验证进展：Windows lint/build 已通过；最新 typecheck、增量后构建待复验。隔离 PostgreSQL 17 全部 14 个迁移及 38 项检查通过（auth.uid 边界以请求声明函数复现，域表/RPC/RLS 原样运行）；不冒充完整 Supabase Auth/API 测试。真实浏览器组件检查通过折叠/回复/计数/提交序列化/预览/删除父节点提示、Markdown 工具栏与安全渲染、历史选择/恢复表单、390px 无溢出；组件测试的 action 边界为桩，真实数据库保存由 SQL 检查覆盖。Linux standalone 已构建并通过回调/同源冒烟，新增独立身份等收尾改动待同步重建。云库只读确认现有 13 个迁移；尚未应用新迁移、推送或更新服务器。
+
+交付策略：deploy/backend 源码、deploy/runtime Linux standalone，沿用 /etc/ktu-community/update-runtime.sh 的浅 fetch/archive、current 切换和健康检查失败恢复。测试工具/数据库/截图位于 Git 忽略的 output；tsconfig 排除 output/dist 生成物。下一步同步最终检查、备份云库受影响表与函数、事务应用迁移、推送与 SSH 更新，实测线上旧内容和匿名权限。

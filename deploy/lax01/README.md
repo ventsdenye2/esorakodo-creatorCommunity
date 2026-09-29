@@ -84,3 +84,8 @@ Git交付使用deploy/runtime仅存dist/standalone和RELEASE.md；源码deploy/b
 2026-09-29 Git交付复验完成：源码60b82a8，产物deploy/runtime=c44ee76ced8ca99048a71aeb2fc589b857ffb38b，远端ref一致；服务器update-runtime.sh实际浅fetch+archive发布成功，current指向releases/git-c44ee76ced8ca99048a71aeb2fc589b857ffb38b。页面/图片200、无效登录303、公开注册页200；两个旧站配置hash不变。bare产物仓库12MB，应用内存约44MB。移除失败/重复9月29日目录和临时上传包，保留9月28日前版；已停用预览凭据文件被删除。仅运行资源和小型Git对象留在服务器，无源码/开发工具安装。线上正式Origin输入校验400、匿名有效结构请求401、R2HEAD200/CORS204；真实用户发布/上传由团队验证，未伪称端到端已通过。
 
 2026-09-29 中文回调与邮件交付完成：源码6b83219，runtime116d827ed71617ecce8caaf7129907573e7b8ebd，服务器已实际Git更新。lint/typecheck通过，回调错误3/3和重定向1/1通过，Linux build和真实standalone callback/media smoke通过。线上发现内部HTTP生成Location后，在专用team-beta.nginx.conf增加仅本站HTTP→HTTPS精确proxy_redirect；nginx -t/reload后线上GET实测缺verifier中文message、无code中文error，均307到正式HTTPS本站/login，恶意next不外跳。未减弱PKCE，不宣称缺verifier等于邮箱已确认。中文注册确认邮件两字段已云端GET读回一致，实际邮件客户端呈现由后续团队注册验证；旧邮件保持原样。服务器保留当前116d827与上一版c44ee76，删除更旧首发产物以节省磁盘。
+
+
+## 2026-09-29 论坛与 Wiki 更新
+
+此版需要追加迁移 202609290001_forum_reactions_wiki_markdown.sql，然后发布新的 deploy/runtime。迁移只增加默认字段、替换修订/草稿函数并解除身份强制关联约束，旧运行版本兼容新增 schema；回滚只切换前一版运行目录，不删除新列或修订。云端已事务应用并核对既有六张表内容指纹不变；未导出业务数据。最新产物 SHA 和实际服务器状态见 engineering/verification.md。

@@ -41,6 +41,7 @@ export async function createWikiEntity(formData: FormData) {
     slug: formValue(formData, "slug"),
     name: formValue(formData, "name"),
     summary: formValue(formData, "summary"),
+    body: formValue(formData, "body"),
     collegeId: formValue(formData, "collegeId"),
     signature: formValue(formData, "signature"),
   });
@@ -49,10 +50,11 @@ export async function createWikiEntity(formData: FormData) {
   }
 
   const supabase = await requireClient("/create/wiki");
-  const { error } = await supabase.rpc("create_wiki_entity", {
+  const { error } = await supabase.rpc("create_wiki_entity_with_body", {
     p_entity_type: parsed.data.entityType,
     p_slug: parsed.data.slug,
     p_name: parsed.data.name,
+    p_body: parsed.data.body ?? "",
     ...(parsed.data.summary ? { p_summary: parsed.data.summary } : {}),
     ...(parsed.data.collegeId ? { p_college_id: parsed.data.collegeId } : {}),
     ...(parsed.data.signature ? { p_signature: parsed.data.signature } : {}),
@@ -73,6 +75,7 @@ export async function updateWikiEntity(formData: FormData) {
     expectedVersion: formValue(formData, "expectedVersion"),
     name: formValue(formData, "name"),
     summary: formValue(formData, "summary"),
+    body: formValue(formData, "body"),
     collegeId: formValue(formData, "collegeId"),
     signature: formValue(formData, "signature"),
     editSummary: formValue(formData, "editSummary"),
@@ -87,6 +90,7 @@ export async function updateWikiEntity(formData: FormData) {
   const patch: Record<string, string | null> = {
     name: parsed.data.name,
     summary: parsed.data.summary ?? null,
+    body: parsed.data.body ?? "",
   };
   if (parsed.data.entityType !== "college") patch.college_id = parsed.data.collegeId ?? null;
   if (parsed.data.entityType === "student") patch.signature = parsed.data.signature ?? null;

@@ -17,3 +17,7 @@
 ## 交付边界
 
 一个 Creator 可以建立多个 Forum Account，账号可关联公开 Student 档案或保持未知、机构、机器人身份。草稿只对作者可见；公开列表和详情只读取 published。服务端与 RLS 都验证账号所有权。楼层以一次 RPC 替换整个草稿序列，发布由独立事务校验后改变状态。每次改动的实际验证记录在 `docs/engineering/verification.md`。
+
+
+## 2026-09-29 更新
+当前版本由 [论坛树状创作与 Markdown 档案](forum-wiki-reading.md) 补充：论坛使用回复树和作者设定反应数量；Wiki 新增 Markdown 正文和版本差异；所有 Forum Account 可独立于人物档案创建。此前纯文本 Wiki、平铺论坛与学生强制关联描述为历史方案。迁移与验证见 engineering/verification.md。

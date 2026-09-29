@@ -1,3 +1,4 @@
+import { MarkdownEditor } from "../../../../../../src/features/wiki/markdown-editor";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { SiteFooter } from "../../../../../../src/components/layout/site-footer";
@@ -57,6 +58,7 @@ export default async function EditWikiPage({ params, searchParams }: PageProps) 
           ) : <input name="signature" type="hidden" value="" />}
           <label><span>档案摘要</span><textarea defaultValue={entity.summary ?? ""} maxLength={4000} name="summary" rows={8} /></label>
           <label><span>本次修改说明</span><input maxLength={280} name="editSummary" required /></label>
+          <MarkdownEditor initialValue={entity.body} />
           <div className="wiki-form-actions">
             <Link className="button button-secondary" href={`/wiki/${entity.type}/${entity.slug}`}>取消</Link>
             <button className="button button-primary" type="submit">保存 Revision</button>

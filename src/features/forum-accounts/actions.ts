@@ -20,7 +20,7 @@ export async function createForumAccount(formData: FormData) {
     handle: parsed.data.handle,
     display_name: parsed.data.displayName,
     account_type: parsed.data.accountType,
-    student_id: parsed.data.accountType === "student" ? parsed.data.studentId : null,
+    student_id: parsed.data.studentId,
     signature: parsed.data.signature, avatar_asset_id: parsed.data.avatarAssetId,
     created_by: user.id,
   });
@@ -45,7 +45,7 @@ export async function updateForumAccount(formData: FormData) {
   const { data: updated, error } = await supabase.from("forum_accounts").update({
     handle: parsed.data.handle, display_name: parsed.data.displayName,
     account_type: parsed.data.accountType,
-    student_id: parsed.data.accountType === "student" ? parsed.data.studentId : null,
+    student_id: parsed.data.studentId,
     signature: parsed.data.signature, avatar_asset_id: parsed.data.avatarAssetId,
   }).eq("id", id).eq("created_by", user.id).select("id").maybeSingle();
   if (error || !updated) redirect(`${errorPath}?error=${encodeURIComponent(error?.code === "23505" ? "账号标识已被使用。" : "账号不存在、无权编辑或保存失败。")}`);

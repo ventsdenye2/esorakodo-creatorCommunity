@@ -119,3 +119,14 @@
 对应实现为 src/features/media/same-origin.mjs 与 server.ts；测试 tests/media-origin.test.mjs 覆盖内部 HTTP/外部 HTTPS、异源/缺失/opaque Origin、伪造转发头、非法/缺失配置和开发/本地 standalone。直接 node tests/media-origin.test.mjs 执行 6/6 通过，typecheck 与定向 ESLint 通过；node --test 在 Windows 沙箱遇到 spawn EPERM，因此改为单进程测试执行。当前为 deploy/backend 工作区增量，Linux 构建及线上复验由主线继续，本记录不代表已部署成功。
 
 2026-09-29用户授权：团队直接访问、注册发文，取消外层预览密码；服务器仅拉取构建产物，不承担构建。
+
+
+## 2026-09-29 · 论坛树状创作与 Markdown 档案
+
+用户确认：论坛 👍 / ？仅为创作者设置的剧情数据，读者端展示；修订采用线性历史、两版差异、恢复新版本，不做分支合并。补充确认所有论坛身份（包括学生类型）均可不关联人物档案创建。详情见 docs/design/forum-wiki-reading.md。
+
+实现：阅读/编辑共用 ThreadTree，保留楼层编号、父节点链接、分支折叠、原位添加回复、上下移动、计数输入和阅读预览。档案在摘要外新增 50000 字 Markdown 正文，GFM 安全渲染与格式工具栏，历史显示版本、作者、提交说明、快照、行差异；超长差异有时间上限并退化为整段增删。追加迁移 202609290001，旧数据计数默认 0、旧快照缺 body 恢复为空；解除 student_accounts_require_student，FK、所有权和 RLS 保留。
+
+验证进展：Windows lint/build 已通过；最新 typecheck、增量后构建待复验。隔离 PostgreSQL 17 全部 14 个迁移及 38 项检查通过（auth.uid 边界以请求声明函数复现，域表/RPC/RLS 原样运行）；不冒充完整 Supabase Auth/API 测试。真实浏览器组件检查通过折叠/回复/计数/提交序列化/预览/删除父节点提示、Markdown 工具栏与安全渲染、历史选择/恢复表单、390px 无溢出；组件测试的 action 边界为桩，真实数据库保存由 SQL 检查覆盖。Linux standalone 已构建并通过回调/同源冒烟，新增独立身份等收尾改动待同步重建。云库只读确认现有 13 个迁移；尚未应用新迁移、推送或更新服务器。
+
+交付策略：deploy/backend 源码、deploy/runtime Linux standalone，沿用 /etc/ktu-community/update-runtime.sh 的浅 fetch/archive、current 切换和健康检查失败恢复。测试工具/数据库/截图位于 Git 忽略的 output；tsconfig 排除 output/dist 生成物。下一步同步最终检查、备份云库受影响表与函数、事务应用迁移、推送与 SSH 更新，实测线上旧内容和匿名权限。

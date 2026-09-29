@@ -232,3 +232,23 @@ app/auth/callback/route.ts 调用 callback-notice.mjs；auth-callback-notice.tes
 2026-09-29中文注册邮件：用户要求确认邮件中文化，已新增deploy/auth-email模板。CLI config push被自动审核拒绝（默认Auth覆盖风险），未执行；改用官方API仅PATCH确认邮件subject/content两字段并GET精确核对。其他设置未改变，只有供应商确认模板custom_contents标志自动变true。旧邮件不变，新邮件中文；未发额外测试邮件。保留ConfirmationURL和PKCE，仅优化回调提示，不把缺verifier当已验证成功。
 
 2026-09-29 中文回调与邮件交付完成：源码6b83219，runtime116d827ed71617ecce8caaf7129907573e7b8ebd，服务器已实际Git更新。lint/typecheck通过，回调错误3/3和重定向1/1通过，Linux build和真实standalone callback/media smoke通过。线上发现内部HTTP生成Location后，在专用team-beta.nginx.conf增加仅本站HTTP→HTTPS精确proxy_redirect；nginx -t/reload后线上GET实测缺verifier中文message、无code中文error，均307到正式HTTPS本站/login，恶意next不外跳。未减弱PKCE，不宣称缺verifier等于邮箱已确认。中文注册确认邮件两字段已云端GET读回一致，实际邮件客户端呈现由后续团队注册验证；旧邮件保持原样。服务器保留当前116d827与上一版c44ee76，删除更旧首发产物以节省磁盘。
+
+
+## 2026-09-29 · 论坛树状创作与 Markdown 档案
+
+用户确认：论坛 👍 / ？仅为创作者设置的剧情数据，读者端展示；修订采用线性历史、两版差异、恢复新版本，不做分支合并。补充确认所有论坛身份（包括学生类型）均可不关联人物档案创建。详情见 docs/design/forum-wiki-reading.md。
+
+实现：阅读/编辑共用 ThreadTree，保留楼层编号、父节点链接、分支折叠、原位添加回复、上下移动、计数输入和阅读预览。档案在摘要外新增 50000 字 Markdown 正文，GFM 安全渲染与格式工具栏，历史显示版本、作者、提交说明、快照、行差异；超长差异有时间上限并退化为整段增删。追加迁移 202609290001，旧数据计数默认 0、旧快照缺 body 恢复为空；解除 student_accounts_require_student，FK、所有权和 RLS 保留。
+
+验证进展：Windows lint/build 已通过；最新 typecheck、增量后构建待复验。隔离 PostgreSQL 17 全部 14 个迁移及 38 项检查通过（auth.uid 边界以请求声明函数复现，域表/RPC/RLS 原样运行）；不冒充完整 Supabase Auth/API 测试。真实浏览器组件检查通过折叠/回复/计数/提交序列化/预览/删除父节点提示、Markdown 工具栏与安全渲染、历史选择/恢复表单、390px 无溢出；组件测试的 action 边界为桩，真实数据库保存由 SQL 检查覆盖。Linux standalone 已构建并通过回调/同源冒烟，新增独立身份等收尾改动待同步重建。云库只读确认现有 13 个迁移；尚未应用新迁移、推送或更新服务器。
+
+交付策略：deploy/backend 源码、deploy/runtime Linux standalone，沿用 /etc/ktu-community/update-runtime.sh 的浅 fetch/archive、current 切换和健康检查失败恢复。测试工具/数据库/截图位于 Git 忽略的 output；tsconfig 排除 output/dist 生成物。下一步同步最终检查、备份云库受影响表与函数、事务应用迁移、推送与 SSH 更新，实测线上旧内容和匿名权限。
+
+
+### 2026-09-29 验证与迁移进展
+
+最新 lint、typecheck、Windows build 全部通过。临时 PostgreSQL17 的 38 项检查通过，覆盖全部 14 个迁移、独立学生论坛身份、计数边界/原子回滚/越权/发布冻结、三类 Markdown 档案创建/修改/冲突/恢复，以及无 body 的旧快照。可复现命令：npm install --prefix output/pg-check embedded-postgres@17.10.0-beta.17；node tests/forum-wiki-database.mjs。
+
+云端 202609290001 已通过管理 API 在事务中应用，5 个新列、身份可独立创建、匿名新 RPC 禁止执行、迁移记录均读回核验。事务内部比较受影响六张表迁移前后数量和既有字段 MD5，完全一致。完整业务数据导出被自动审批拒绝，已取消导出；仅使用服务端内部指纹比较，没有把云端业务内容下载到本机。旧运行版本仍兼容追加 schema。最终 Linux 产物与 SSH 交付进行中。
+
+浏览器真实组件验收已覆盖折叠、新增子回复、两种计数、保存输入序列化、阅读预览、删除父节点提示、GFM 表格/粗斜体/列表、危险 URL/HTML 禁用、版本选择/恢复表单和 390px 页面无溢出。截图位于 output/playwright/forum-wiki-{desktop,mobile}.png。此处 action 边界使用隔离桩，SQL 权限事务验证与浏览器 UI 验证分别记录，不宣称真实用户线上创建/发布已全程验收。

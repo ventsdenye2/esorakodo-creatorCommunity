@@ -1,3 +1,4 @@
+import { MarkdownEditor } from "../../../src/features/wiki/markdown-editor";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { SiteFooter } from "../../../src/components/layout/site-footer";
@@ -55,6 +56,7 @@ export default async function CreateWikiPage({ searchParams }: PageProps) {
           </label>
           <label><span>人物签名（仅人物）</span><input maxLength={280} name="signature" /></label>
           <label><span>档案摘要</span><textarea maxLength={4000} name="summary" rows={8} /></label>
+          <MarkdownEditor />
           <div className="wiki-form-actions">
             <Link className="button button-secondary" href="/wiki">取消</Link>
             <button className="button button-primary" disabled={!configured} type="submit">建立档案</button>

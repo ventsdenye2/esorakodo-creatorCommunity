@@ -20,7 +20,7 @@ export default async function CreateForumPage({ searchParams }: { searchParams: 
     <p className="archive-label">CREATOR / FORUM</p><h1>创作论坛主题</h1>
     <p>以 Forum Account 编排戏内讨论。主题由你的 Creator 账号管理，发布后公开阅读。</p>
     {error && <p className="forum-error" role="alert">{error}</p>}
-    {accounts.length === 0 ? <section className="forum-empty-note"><h2>先建立一个发言身份</h2><p>一个 Creator 可以为不同角色建立多个论坛身份。</p><Link className="button button-primary" href="/create/forum/account">建立 Forum Account</Link></section> : <>
+    {accounts.length === 0 ? <section className="forum-empty-note"><h2>先建立一个发言身份</h2><p>填写昵称与账号标识即可创建，无需关联人物档案。</p><Link className="button button-primary" href="/create/forum/account">建立论坛身份</Link></section> : <>
       <div className="forum-account-strip"><span>可用身份 {accounts.length}</span>{accounts.map((account) => <Link key={account.id} href={`/forum/accounts/${account.handle}`}>@{account.handle}</Link>)}<Link href="/create/forum/account">＋ 添加身份</Link></div>
       <form action={createForumDraft} className="forum-form forum-new-topic"><label>主题标题<input name="title" maxLength={160} required /></label><label>版面<select name="board">{forumBoards.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}</select></label><button className="button button-primary" type="submit">建立草稿并编排楼层</button></form>
     </>}

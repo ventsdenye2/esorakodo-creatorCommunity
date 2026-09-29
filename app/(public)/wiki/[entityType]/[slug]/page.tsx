@@ -1,3 +1,4 @@
+import { Markdown } from "../../../../../src/features/wiki/markdown";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SiteFooter } from "../../../../../src/components/layout/site-footer";
@@ -54,6 +55,7 @@ export default async function WikiDetailPage({ params, searchParams }: PageProps
           <article>
             <h2>档案摘要</h2>
             <p>{entity.summary ?? "这份档案还没有摘要。"}</p>
+            {entity.body && <Markdown>{entity.body}</Markdown>}
           </article>
           <aside>
             <dl>

@@ -18,6 +18,7 @@ function toSummary(type: WikiEntityType, row: Student | College | Place): WikiEn
 function toDetail(type: WikiEntityType, row: Student | College | Place): WikiEntityDetail {
   return {
     ...toSummary(type, row),
+    body: row.body,
     collegeId: "college_id" in row ? row.college_id : null,
     signature: "signature" in row ? row.signature : null,
     createdBy: row.created_by,
@@ -87,7 +88,7 @@ export async function getWikiRevisions(
     .select("*")
     .eq("entity_type", type)
     .eq("entity_id", entityId)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false }).order("id", { ascending: false });
 
   if (error) throw new Error(error.message);
   return data ?? [];

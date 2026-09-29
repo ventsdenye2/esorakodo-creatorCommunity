@@ -101,3 +101,8 @@ docs/                  产品基线与阶段计划
 开发前先阅读 [AGENTS.md](./AGENTS.md) 与 `docs/KTU_CoCreation_Platform_Design_v0.1.docx`。完整里程碑、依赖和质量门禁见 [docs/ROADMAP.md](./docs/ROADMAP.md)，具体任务状态见 [docs/engineering/DPS.md](./docs/engineering/DPS.md)，断点续作从 [docs/engineering/progress.md](./docs/engineering/progress.md) 开始。早期 M0/M1 记录保留在 [docs/M0-M1-PLAN.md](./docs/M0-M1-PLAN.md)。
 
 目前的轻量校园沙盘只作空间交互示意，不代表已确认的校内地点或正式 3D 模型；领域边界和数据库模型不依赖这些视觉细节。
+
+
+### 论坛与档案编辑（2026-09-29）
+
+论坛支持回复树、折叠与同形创作预览；每条发言的 👍 / ？由作者设置，属于剧情数据。所有论坛身份均可不关联人物档案创建。校园档案支持 Markdown 正文、GFM 表格和格式工具栏；修订页可对比两版并把旧版恢复成新修订。设计与迁移说明见 docs/design/forum-wiki-reading.md，实际验收和部署状态见 docs/engineering/verification.md。

@@ -184,6 +184,7 @@ export type Database = {
       }
       colleges: {
         Row: {
+          body: string
           created_at: string
           created_by: string
           id: string
@@ -194,6 +195,7 @@ export type Database = {
           version: number
         }
         Insert: {
+          body?: string
           created_at?: string
           created_by: string
           id?: string
@@ -204,6 +206,7 @@ export type Database = {
           version?: number
         }
         Update: {
+          body?: string
           created_at?: string
           created_by?: string
           id?: string
@@ -516,6 +519,8 @@ export type Database = {
       }
       forum_messages: {
         Row: {
+          question_count: number
+          like_count: number
           body: string
           created_at: string
           floor_no: number
@@ -527,6 +532,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          question_count?: number
+          like_count?: number
           body: string
           created_at?: string
           floor_no: number
@@ -538,6 +545,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          question_count?: number
+          like_count?: number
           body?: string
           created_at?: string
           floor_no?: number
@@ -844,6 +853,7 @@ export type Database = {
       }
       places: {
         Row: {
+          body: string
           college_id: string | null
           created_at: string
           created_by: string
@@ -855,6 +865,7 @@ export type Database = {
           version: number
         }
         Insert: {
+          body?: string
           college_id?: string | null
           created_at?: string
           created_by: string
@@ -866,6 +877,7 @@ export type Database = {
           version?: number
         }
         Update: {
+          body?: string
           college_id?: string | null
           created_at?: string
           created_by?: string
@@ -1008,6 +1020,7 @@ export type Database = {
       }
       students: {
         Row: {
+          body: string
           college_id: string | null
           created_at: string
           created_by: string
@@ -1020,6 +1033,7 @@ export type Database = {
           version: number
         }
         Insert: {
+          body?: string
           college_id?: string | null
           created_at?: string
           created_by: string
@@ -1032,6 +1046,7 @@ export type Database = {
           version?: number
         }
         Update: {
+          body?: string
           college_id?: string | null
           created_at?: string
           created_by?: string
@@ -1431,6 +1446,18 @@ export type Database = {
       }
       create_wiki_entity: {
         Args: {
+          p_college_id?: string
+          p_entity_type: string
+          p_name: string
+          p_signature?: string
+          p_slug: string
+          p_summary?: string
+        }
+        Returns: Json
+      }
+      create_wiki_entity_with_body: {
+        Args: {
+          p_body?: string
           p_college_id?: string
           p_entity_type: string
           p_name: string

@@ -16,6 +16,7 @@ const commonFields = {
   entityType: z.enum(wikiEntityTypes),
   name: z.string().trim().min(1, "请填写档案名称。").max(100, "档案名称不能超过 100 个字符。"),
   summary: optionalText(4000),
+  body: optionalText(50000),
   collegeId: optionalUuid,
   signature: optionalText(280),
 };
