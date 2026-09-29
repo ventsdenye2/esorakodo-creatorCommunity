@@ -164,6 +164,6 @@ KTU-UX-CAMPUS-VIEW 本地完成：首页大学官网口吻、最新公开内容�
 
 实现：阅读/编辑共用 ThreadTree，保留楼层编号、父节点链接、分支折叠、原位添加回复、上下移动、计数输入和阅读预览。档案在摘要外新增 50000 字 Markdown 正文，GFM 安全渲染与格式工具栏，历史显示版本、作者、提交说明、快照、行差异；超长差异有时间上限并退化为整段增删。追加迁移 202609290001，旧数据计数默认 0、旧快照缺 body 恢复为空；解除 student_accounts_require_student，FK、所有权和 RLS 保留。
 
-验证进展：Windows lint/build 已通过；最新 typecheck、增量后构建待复验。隔离 PostgreSQL 17 全部 14 个迁移及 38 项检查通过（auth.uid 边界以请求声明函数复现，域表/RPC/RLS 原样运行）；不冒充完整 Supabase Auth/API 测试。真实浏览器组件检查通过折叠/回复/计数/提交序列化/预览/删除父节点提示、Markdown 工具栏与安全渲染、历史选择/恢复表单、390px 无溢出；组件测试的 action 边界为桩，真实数据库保存由 SQL 检查覆盖。Linux standalone 已构建并通过回调/同源冒烟，新增独立身份等收尾改动待同步重建。云库只读确认现有 13 个迁移；尚未应用新迁移、推送或更新服务器。
+验证完成：最终 lint、typecheck、Windows build 与 Linux 五阶段 build 全部通过。隔离 PostgreSQL 17 原样执行全部 14 个迁移，38 项域表/RPC/RLS 检查通过；Auth 请求声明使用测试函数复现，不等同完整 Supabase Auth/API 验收。浏览器组件覆盖创作交互、序列化、安全 Markdown 和修订恢复表单；action 边界为桩，保存事务另由 SQL 覆盖。云端迁移、推送、SSH 发布和线上真实内容读取验证均完成；没有创建线上测试作品，未声称真实登录发布端到端验收。
 
-交付策略：deploy/backend 源码、deploy/runtime Linux standalone，沿用 /etc/ktu-community/update-runtime.sh 的浅 fetch/archive、current 切换和健康检查失败恢复。测试工具/数据库/截图位于 Git 忽略的 output；tsconfig 排除 output/dist 生成物。下一步同步最终检查、备份云库受影响表与函数、事务应用迁移、推送与 SSH 更新，实测线上旧内容和匿名权限。
+交付完成：deploy/backend 源码、deploy/runtime Linux standalone，服务器通过 /etc/ktu-community/update-runtime.sh 浅 fetch/archive 并切换 current，仅重启 ktu-community。功能源码为 72210ce853c6f81abf74e91e32da1c073d653b3c，线上产物为 94bd025a50f2ce48e1e1c5e24a3977cd52b6669a；后续提交仅同步交付文档。追加迁移 202609290001 已应用，六张受影响表原字段数量/指纹事务内一致。原运行版本 116d827 保留用于回滚。测试工具/数据库/截图在 Git 忽略的 output；没有导出云端业务数据。
