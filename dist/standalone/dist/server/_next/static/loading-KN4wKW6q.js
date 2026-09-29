@@ -1,0 +1,1 @@
+import{t as e}from"./framework~index~page~page~page~page~loading~page~page~page~page~page~loading~page~page~page~l8drb3y2-BnmziDI8.js";var t=e();function n(){return(0,t.jsx)(`main`,{id:`main-content`,className:`portal-page`,"aria-busy":`true`,children:(0,t.jsx)(`p`,{role:`status`,children:`正在核验权限并调阅管理记录…`})})}export{n as default};

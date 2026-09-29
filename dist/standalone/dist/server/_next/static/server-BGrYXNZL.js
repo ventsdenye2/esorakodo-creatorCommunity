@@ -1,0 +1,1 @@
+import{a as e}from"./headers-XMSdQxxK.js";import{r as t,t as n}from"./config-CvGagsOJ.js";async function r(){let r=await e(),{url:i,anonKey:a}=n();return t(i,a,{cookies:{getAll(){return r.getAll()},setAll(e){try{e.forEach(({name:e,value:t,options:n})=>{r.set(e,t,n)})}catch{}}}})}export{r as t};

@@ -1,0 +1,7 @@
+.env*
+.dev.vars*
+*.pem
+*.key
+preview-access.txt
+build.env
+smoke.mjs

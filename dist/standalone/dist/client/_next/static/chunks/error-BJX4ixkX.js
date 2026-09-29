@@ -1,0 +1,1 @@
+import{i as e}from"./framework-maMm1VQx.js";var t=e();function n({reset:e}){return(0,t.jsxs)(`main`,{id:`main-content`,className:`portal-page`,children:[(0,t.jsx)(`h1`,{children:`管理记录暂时无法读取`}),(0,t.jsx)(`p`,{role:`alert`,children:`请重试以重新核验权限并调阅内容，加载完成前不要执行处置。`}),(0,t.jsx)(`button`,{className:`button`,onClick:e,children:`重新调阅`})]})}export{n as default};

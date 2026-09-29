@@ -1,0 +1,1 @@
+import{N as e}from"../../index.js";var t=e();function n({className:e,direction:n=`right`}){return(0,t.jsx)(`svg`,{"aria-hidden":`true`,className:e,fill:`none`,viewBox:`0 0 24 24`,children:(0,t.jsx)(`path`,{d:n===`right`?`M5 12h13m-5-5 5 5-5 5`:`M19 12H6m5-5-5 5 5 5`,stroke:`currentColor`,strokeLinecap:`round`,strokeLinejoin:`round`,strokeWidth:`1.6`})})}export{n as t};

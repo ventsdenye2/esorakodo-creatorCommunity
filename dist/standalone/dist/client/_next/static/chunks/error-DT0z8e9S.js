@@ -1,0 +1,1 @@
+import{i as e}from"./framework-maMm1VQx.js";var t=e();function n({reset:e}){return(0,t.jsxs)(`main`,{id:`main-content`,style:{padding:`6rem 8%`},children:[(0,t.jsx)(`h1`,{children:`档案暂时无法调阅`}),(0,t.jsx)(`p`,{children:`请稍后重试，或返回其他校园栏目。`}),(0,t.jsx)(`button`,{className:`button button-primary`,onClick:e,children:`重新调阅`})]})}export{n as default};

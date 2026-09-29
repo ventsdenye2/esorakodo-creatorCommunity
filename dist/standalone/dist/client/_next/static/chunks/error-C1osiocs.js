@@ -1,0 +1,1 @@
+import{i as e}from"./framework-maMm1VQx.js";var t=e();function n({reset:e}){return(0,t.jsxs)(`main`,{id:`main-content`,className:`press-shell`,children:[(0,t.jsx)(`h1`,{children:`文章暂时无法载入`}),(0,t.jsx)(`p`,{children:`请稍后重试，已保存的文章不会受到影响。`}),(0,t.jsx)(`button`,{onClick:e,children:`重新载入`})]})}export{n as default};

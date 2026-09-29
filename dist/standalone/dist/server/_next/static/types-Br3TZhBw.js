@@ -1,0 +1,1 @@
+var e=[`forum`,`article`,`event`,`supplement`],t={forum:`forum_topic_id`,article:`article_id`,event:`event_id`,supplement:`supplement_id`};export{e as n,t};
