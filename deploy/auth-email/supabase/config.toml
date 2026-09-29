@@ -1,0 +1,7 @@
+# Intentionally declares only the signup confirmation template.
+# Never push the repository's local-development config to production.
+project_id = "ktu-confirmation-email"
+
+[auth.email.template.confirmation]
+subject = "空天大学｜请确认你的注册邮箱"
+content_path = "./supabase/templates/confirmation.html"
