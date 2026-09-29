@@ -252,3 +252,4 @@ app/auth/callback/route.ts 调用 callback-notice.mjs；auth-callback-notice.tes
 云端 202609290001 已通过管理 API 在事务中应用，5 个新列、身份可独立创建、匿名新 RPC 禁止执行、迁移记录均读回核验。事务内部比较受影响六张表迁移前后数量和既有字段 MD5，完全一致。完整业务数据导出被自动审批拒绝，已取消导出；仅使用服务端内部指纹比较，没有把云端业务内容下载到本机。旧运行版本仍兼容追加 schema。最终 Linux 产物与 SSH 交付进行中。
 
 浏览器真实组件验收已覆盖折叠、新增子回复、两种计数、保存输入序列化、阅读预览、删除父节点提示、GFM 表格/粗斜体/列表、危险 URL/HTML 禁用、版本选择/恢复表单和 390px 页面无溢出。截图位于 output/playwright/forum-wiki-{desktop,mobile}.png。此处 action 边界使用隔离桩，SQL 权限事务验证与浏览器 UI 验证分别记录，不宣称真实用户线上创建/发布已全程验收。
+最终补充：四类 Forum Account 实际 Zod 校验均接受无关联档案；浏览器 320px 无溢出、100 层树在 390px 下正文最窄仍超过 250px；保留的上下移动在跨越父楼层时给出解关联提示。修订时间固定 Asia/Shanghai；最终 Linux 重建纳入该修正。
