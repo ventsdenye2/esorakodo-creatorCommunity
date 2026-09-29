@@ -157,3 +157,5 @@ M0–M7 应用实现已接通；lint/typecheck/build、7项SSR回归与Node stan
 app/auth/callback/route.ts 调用 callback-notice.mjs；auth-callback-notice.test.mjs 使用真实 SDK 错误类、独立 code/name 和普通/空错误验证提示映射，3/3 通过。本次不修改邮件模板，模板由主线单独整合。当前工作区待合并提交；完整构建/线上验收状态由后续记录更新。
 
 2026-09-29中文注册邮件：用户要求确认邮件中文化，已新增deploy/auth-email模板。CLI config push被自动审核拒绝（默认Auth覆盖风险），未执行；改用官方API仅PATCH确认邮件subject/content两字段并GET精确核对。其他设置未改变，只有供应商确认模板custom_contents标志自动变true。旧邮件不变，新邮件中文；未发额外测试邮件。保留ConfirmationURL和PKCE，仅优化回调提示，不把缺verifier当已验证成功。
+
+2026-09-29 中文回调与邮件交付完成：源码6b83219，runtime116d827ed71617ecce8caaf7129907573e7b8ebd，服务器已实际Git更新。lint/typecheck通过，回调错误3/3和重定向1/1通过，Linux build和真实standalone callback/media smoke通过。线上发现内部HTTP生成Location后，在专用team-beta.nginx.conf增加仅本站HTTP→HTTPS精确proxy_redirect；nginx -t/reload后线上GET实测缺verifier中文message、无code中文error，均307到正式HTTPS本站/login，恶意next不外跳。未减弱PKCE，不宣称缺verifier等于邮箱已确认。中文注册确认邮件两字段已云端GET读回一致，实际邮件客户端呈现由后续团队注册验证；旧邮件保持原样。服务器保留当前116d827与上一版c44ee76，删除更旧首发产物以节省磁盘。
