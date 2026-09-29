@@ -23,7 +23,7 @@ const status = process.platform === "win32"
  : execFileSync("npx",["--yes","supabase","status","-o","env"],{encoding:"utf8",stdio:["ignore","pipe","pipe"]});
 const serviceKey = status.match(/^SERVICE_ROLE_KEY="([^"]+)"/m)?.[1];
 assert.ok(serviceKey,"local service key available in memory");
-const testEnv = {...env,R2_ENDPOINT:endpoint,R2_BUCKET:"ktu-media-test",R2_ACCESS_KEY_ID:credentials.accessKeyId,R2_SECRET_ACCESS_KEY:credentials.secretAccessKey,R2_FORCE_PATH_STYLE:"true",SUPABASE_SERVICE_ROLE_KEY:serviceKey};
+const testEnv = {...env,NEXT_PUBLIC_SITE_URL:appUrl,R2_ENDPOINT:endpoint,R2_BUCKET:"ktu-media-test",R2_ACCESS_KEY_ID:credentials.accessKeyId,R2_SECRET_ACCESS_KEY:credentials.secretAccessKey,R2_FORCE_PATH_STYLE:"true",SUPABASE_SERVICE_ROLE_KEY:serviceKey};
 Object.assign(process.env,testEnv);
 const admin=createClient(env.NEXT_PUBLIC_SUPABASE_URL,serviceKey,{auth:{persistSession:false}});
 const userIds=[];let server;let started=false;

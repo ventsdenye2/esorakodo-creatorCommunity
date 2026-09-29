@@ -2,6 +2,7 @@ import "server-only";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "../../types/database";
 import { getSupabasePublicConfig } from "../../lib/supabase/config";
+import { isSameMediaOrigin } from "./same-origin.mjs";
 
 // Only imported by server Route Handlers. Never expose this client to UI modules.
 export function createMediaAdmin() {
@@ -10,6 +11,8 @@ export function createMediaAdmin() {
   return createSupabaseClient<Database>(getSupabasePublicConfig().url, key, { auth: { persistSession: false, autoRefreshToken: false } });
 }
 export function sameOrigin(request: Request) {
-  const origin = request.headers.get("origin");
-  return Boolean(origin && origin === new URL(request.url).origin);
+  return isSameMediaOrigin(request, {
+    production: process.env.NODE_ENV === "production",
+    siteUrl: process.env.NEXT_PUBLIC_SITE_URL,
+  });
 }

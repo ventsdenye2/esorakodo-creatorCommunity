@@ -133,3 +133,17 @@ M0–M7 应用实现已接通；lint/typecheck/build、7项SSR回归与Node stan
 ### 交付状态（2026-09-28）
 
 源码与部署配置已在deploy/backend分支提交2ae918e并推送origin。服务器当前是精简standalone产物，不是Git完整源码checkout；未来服务器git pull产物分支的自动化尚未配置。最终HTTPS验证：首页/检索/校刊/事件200，Creator307转登录，注册页明确暂未开放；匿名401。清理后进程MemoryCurrent约44MiB，原有两个网站仍200且配置hash一致。
+
+## 2026-09-29 · 反向代理媒体同源校验修复
+
+线上验收发现公开 HTTPS Origin 与应用内部 HTTP Request URL 不同，原同源比较误拒绝上传。生产媒体 POST 现只信任部署配置 NEXT_PUBLIC_SITE_URL 的 origin；缺失、非 HTTP(S)、带凭据或非根路径/query/hash 的配置拒绝请求，不回退 Host，不信任 Forwarded/X-Forwarded-*。开发仍使用 Request URL 的 origin。配置必须是完整站点根 URL；本地 standalone 媒体测试显式覆盖为 http://127.0.0.1:3005。
+
+对应实现为 src/features/media/same-origin.mjs 与 server.ts；测试 tests/media-origin.test.mjs 覆盖内部 HTTP/外部 HTTPS、异源/缺失/opaque Origin、伪造转发头、非法/缺失配置和开发/本地 standalone。直接 node tests/media-origin.test.mjs 执行 6/6 通过，typecheck 与定向 ESLint 通过；node --test 在 Windows 沙箱遇到 spawn EPERM，因此改为单进程测试执行。当前为 deploy/backend 工作区增量，Linux 构建及线上复验由主线继续，本记录不代表已部署成功。
+
+## 2026-09-29 · 团队测试开放
+
+用户明确要求取消外层预览密码、允许团队成员自行注册发文。已部署本机WSL Linux构建（Node24.19，服务器运行Node22.23.3），仅standalone；current现为releases/20260929-02，保留前版回滚。首次新产物目录层级不符启动失败，已更正为dist/standalone，并重新完整冒烟通过。team-beta.nginx.conf取消Basic Auth，保留TLS、noindex、no-store和应用账号验证。KTU_REGISTRATION_ENABLED=true，Supabase邮箱注册启用且需要邮件确认。用户确认QQ邮箱收到了注册确认邮件；重复注册日志23505属于邮箱唯一键冲突，不修改Auth约束、不删除账号。
+
+媒体同源修复已线上复验：正式HTTPS Origin通过校验返回输入校验400，不再错误403。R2 HEAD200、CORS204前置检查通过；真实登录后上传/发布全流程由团队测试，未声称完成。服务页面/图片200、无效登录303，nginx -t通过；两个原站配置SHA256与基线一致。lint、typecheck、media-origin6/6通过；Linux五阶段build成功。ESLint新增output/**忽略，避免隔离构建产物被当源码扫描。
+
+用户允许服务器Git拉取更新，专用deploy/runtime产物分支正在准备；deploy/backend保留源码。服务器不进行npm安装/构建。外层密码已不再用于访问，任何获得网址的人均可访问和注册，noindex不等于访问控制。当前没有自动授予管理员权限。
