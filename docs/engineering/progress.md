@@ -147,3 +147,5 @@ M0–M7 应用实现已接通；lint/typecheck/build、7项SSR回归与Node stan
 媒体同源修复已线上复验：正式HTTPS Origin通过校验返回输入校验400，不再错误403。R2 HEAD200、CORS204前置检查通过；真实登录后上传/发布全流程由团队测试，未声称完成。服务页面/图片200、无效登录303，nginx -t通过；两个原站配置SHA256与基线一致。lint、typecheck、media-origin6/6通过；Linux五阶段build成功。ESLint新增output/**忽略，避免隔离构建产物被当源码扫描。
 
 用户允许服务器Git拉取更新，专用deploy/runtime产物分支正在准备；deploy/backend保留源码。服务器不进行npm安装/构建。外层密码已不再用于访问，任何获得网址的人均可访问和注册，noindex不等于访问控制。当前没有自动授予管理员权限。
+
+2026-09-29 Git交付复验完成：源码60b82a8，产物deploy/runtime=c44ee76ced8ca99048a71aeb2fc589b857ffb38b，远端ref一致；服务器update-runtime.sh实际浅fetch+archive发布成功，current指向releases/git-c44ee76ced8ca99048a71aeb2fc589b857ffb38b。页面/图片200、无效登录303、公开注册页200；两个旧站配置hash不变。bare产物仓库12MB，应用内存约44MB。移除失败/重复9月29日目录和临时上传包，保留9月28日前版；已停用预览凭据文件被删除。仅运行资源和小型Git对象留在服务器，无源码/开发工具安装。线上正式Origin输入校验400、匿名有效结构请求401、R2HEAD200/CORS204；真实用户发布/上传由团队验证，未伪称端到端已通过。
