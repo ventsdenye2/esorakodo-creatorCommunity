@@ -265,12 +265,19 @@ Campus 与 portfolio 返回 HTTP 200。主站一次服务器侧 TLS 探测出现
 
 新增公开 /guide 操作手册：身份概念、论坛编排、Markdown 档案、修订恢复、校刊、事件和常见问题。练习区可切换回复关系、设置示例计数和练习 Markdown，完全在页面内运行，不保存或发布。创作中心与页脚提供总入口，各编辑器提供新标签页定位到对应章节的链接，保留当前输入。使用当前真实字段/按钮说明，明确无自动保存、论坛冻结与 Wiki 直接公开。设计见 docs/design/creator-guide.md。
 
-当前状态：实现完成，等待 lint/typecheck/build 和桌面/手机浏览器验收。无 schema/权限变更；完成验证后沿用 deploy/backend + deploy/runtime 推送及 SSH 更新。后续进展见 engineering/progress.md 与 engineering/verification.md。
+当前状态：图解教程已上线。lint/typecheck、Windows/Linux build、浏览器桌面/手机验收和线上入口/图片/练习验证通过。功能源码 ba365ef，运行产物 1f4d089；已推送并通过 SSH 更新。无 schema/权限变更，部署证据见 engineering/progress.md 与 engineering/verification.md。
 ### 图解教程补充
 
-用户进一步要求原界面截图与文案一一对应。/guide 现以 10 张原页面/编辑组件截图为主体，34 个编号框选对应 34 项说明；图片使用演示数据，可打开原图。截图位于 public/guide，来自现有表单 DOM/CSS 的实际浏览器渲染，未读取私人草稿或生成虚构界面。交互练习收进展开区域，保留目录和新标签页帮助入口。先前纯文字草案已调整，当前正在复验图解布局与最终构建。数据/权限没有变化，无新增迁移。
+用户进一步要求原界面截图与文案一一对应。/guide 现以 10 张原页面/编辑组件截图为主体，34 个编号框选对应 34 项说明；图片使用演示数据，可打开原图。截图位于 public/guide，来自现有表单 DOM/CSS 的实际浏览器渲染，未读取私人草稿或生成虚构界面。交互练习收进展开区域，保留目录和新标签页帮助入口。先前纯文字草案已调整，图解布局和最终构建均已验证。数据/权限没有变化，无新增迁移。
 ### 2026-10-01 图解教程本地验收
 
 最终 lint、typecheck、Windows build 通过。独立截图环境直接调用原表单页面/编辑组件，存入 public/guide 的 10 张 PNG 共 170583 字节；34 个编号框选与 34 条文字说明对应。真实 standalone /guide 已检查全部截图解码、目录锚点、320/390/1280px 布局、论坛回复/计数练习、Markdown 插表/重置；控制台错误和警告均为 0。原图新标签页打开通过。隔离原身份表单填写未保存内容后打开教程，输入保持且定位到正确章节；这属于 UI 验证，不冒充线上登录写入验收。
 
-最终 Linux 构建正在完成 standalone 打包；157 个运行源文件/图片与主工作区逐一比较一致。截图查看记录在 output/playwright/guide-{annotated-forum,mobile-final,desktop-final}.png。没有新增 schema 或真实账号数据写入。
+最终 Linux 构建、standalone 打包和回调/同源冒烟全部通过；157 个运行源文件/图片与主工作区逐一比较一致。截图查看记录在 output/playwright/guide-{annotated-forum,mobile-final,desktop-final}.png。没有新增 schema 或真实账号数据写入。
+### 2026-10-01 · 图解教程线上交付完成
+
+源码功能提交 ba365efc031aa14803d9cd7d1be6a7a8fc7ec7a5 和 deploy/runtime=1f4d089f695e60418c9326fce905390573a48a1b 均已推送，远端 ref 已核对。SSH update-runtime.sh 成功，current 指向 /srv/ktu-community/releases/git-1f4d089f695e60418c9326fce905390573a48a1b，ktu-community active，检查时内存约 58 MiB。运行包共 5821 文件、57909169 字节，未包含环境文件、截图环境代码或私有草稿；前一版 94bd025 保留。
+
+正式 https://campus.kongtian.university/guide 返回 200。浏览器逐一解码全部 10 张截图、确认 34 个标注，验证论坛示例改回复对象/计数、Markdown 插表/重置、390px 无横向溢出和页脚入口。真实档案历史页的教程链接在新标签页打开 /guide#history。线上控制台无错误，出现 4 条 Next/Vinext 链接预取 CSS 未即时使用警告，不影响页面或交互；不将其记为零警告。验收截图为 output/playwright/guide-production-{mobile,annotated}.png。
+
+此次未修改数据库或 Nginx；两个旧站配置 SHA256 与部署前一致，kongtian.university 和 portfolio.ventsdenye.com 均 200。无功能或部署阻塞；本次收尾仅同步文档，无需重建运行包。

@@ -91,3 +91,7 @@ Git交付使用deploy/runtime仅存dist/standalone和RELEASE.md；源码deploy/b
 此版需要追加迁移 202609290001_forum_reactions_wiki_markdown.sql，然后发布新的 deploy/runtime。迁移只增加默认字段、替换修订/草稿函数并解除身份强制关联约束，旧运行版本兼容新增 schema；回滚只切换前一版运行目录，不删除新列或修订。云端已事务应用并核对既有六张表内容指纹不变；未导出业务数据。最新产物 SHA 和实际服务器状态见 engineering/verification.md。
 
 已完成发布：功能源码 72210ce，deploy/runtime=94bd025a50f2ce48e1e1c5e24a3977cd52b6669a。SSH update-runtime.sh 成功、服务 active、旧版 116d827 保留；线上论坛折叠/展开、390px 布局、档案历史和匿名编辑拦截已核验。Linux build 与 standalone smoke 通过；具体证据见 docs/engineering/verification.md。
+
+## 2026-10-01 图解创作指南
+
+/guide 已上线，10 张原界面截图配 34 个编号说明。功能源码 ba365ef，runtime=1f4d089f695e60418c9326fce905390573a48a1b，SSH update-runtime.sh 更新成功。无新增迁移；前版 94bd025 保留。线上图片、互动练习、页脚及修订历史帮助入口已复验；两个旧站配置未变且 HTTP 200。
