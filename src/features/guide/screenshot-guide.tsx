@@ -2,6 +2,12 @@
 type Mark = { x: number; y: number; w: number; h: number; label: string; text: string };
 type Capture = { title: string; width: number; height: number; marks: Mark[] };
 const captures: Record<string, Capture> = {
+  "markdown-import": { title: "把 Markdown 文件填入编辑器", width: 900, height: 625, marks: [
+    { x: 1.85, y: 18.98, w: 96.3, h: 7.73, label: "选择文件", text: "下载对应模板，整理好作品后选择 UTF-8 的 .md 文件。也可以直接粘贴全文。" },
+    { x: 1.85, y: 37.59, w: 96.3, h: 36.62, label: "核对文件内容", text: "这里显示读取的全文，可以修改格式。格式说明、完整模板和 AI 提示词见本节下方。" },
+    { x: 1.85, y: 79.8, w: 96.3, h: 6.5, label: "确认替换", text: "导入会替换当前编辑内容。论坛还会创建缺少的独立身份，请确认后再继续。" },
+    { x: 1.85, y: 89.95, w: 17.93, h: 7.38, label: "导入并填入编辑器", text: "格式正确时填入内容；有错误会提示并保留原输入。完成后仍需检查预览，再保存或发布。" },
+  ] },
   identity: { title: "建立论坛身份", width: 960, height: 578, marks: [
     { x: 0, y: 5.54, w: 100, h: 7.85, label: "账号标识", text: "填写 @ 后面的名字，例如 night_study；使用 2–32 位英文字母、数字或下划线。" },
     { x: 0, y: 22.39, w: 100, h: 7.85, label: "显示名称", text: "填写帖子里显示的昵称，例如“晚自习观察员”，可以用中文。" },

@@ -207,3 +207,7 @@ Campus 与 portfolio 返回 HTTP 200。主站一次服务器侧 TLS 探测出现
 正式 https://campus.kongtian.university/guide 返回 200。浏览器逐一解码全部 10 张截图、确认 34 个标注，验证论坛示例改回复对象/计数、Markdown 插表/重置、390px 无横向溢出和页脚入口。真实档案历史页的教程链接在新标签页打开 /guide#history。线上控制台无错误，出现 4 条 Next/Vinext 链接预取 CSS 未即时使用警告，不影响页面或交互；不将其记为零警告。验收截图为 output/playwright/guide-production-{mobile,annotated}.png。
 
 此次未修改数据库或 Nginx；两个旧站配置 SHA256 与部署前一致，kongtian.university 和 portfolio.ventsdenye.com 均 200。无功能或部署阻塞；本次收尾仅同步文档，无需重建运行包。
+
+## 2026-10-01 创作 Markdown 导入（进行中）
+
+论坛、校刊/部刊和事件草稿新增版本化 Markdown 导入、UTF-8 文件/粘贴入口、替换确认、严格领域校验与下载模板。论坛由服务器复核并复用本人身份，缺失身份通过单次批量 INSERT 创建；无迁移。事件公开后不整体替换节点。见 `docs/design/markdown-import.md`；图解教程新增格式与 AI 提示词。本地实现完成：lint、typecheck、Windows build 通过；26 项解析器回归、41 项真实 PostgreSQL 17 检查通过（含批量身份创建、冲突整批回滚、归属防伪）。浏览器真实组件校验三种文件导入、错误时保留内容、回复映射与节点数；390px 手机及教程无横向溢出。界面使用演示数据与替代保存边界，未对生产写入测试作品。Linux 产物构建与上线核对进行中。

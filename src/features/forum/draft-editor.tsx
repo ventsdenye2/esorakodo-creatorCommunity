@@ -1,5 +1,7 @@
 "use client";
 
+import { MarkdownImport } from "../import/markdown-import";
+import { prepareForumImportAccounts } from "../import/actions";
 import Link from "next/link";
 import { GuideLink } from "../guide/guide-link";
 import { ThreadTree } from "./thread-tree";
@@ -23,10 +25,12 @@ function prepareFloors(initialFloors: DraftFloor[]): EditableFloor[] {
   }));
 }
 
-export function DraftEditor({ topicId, title, board, tags, initialFloors, accounts, version, initialLinks, entities }: {
+export function DraftEditor({ topicId, title, board, tags, initialFloors, accounts: initialAccounts, version, initialLinks, entities }: {
   topicId: string; title: string; board: string; tags: string[]; version: number;
   initialFloors: DraftFloor[]; accounts: ForumAccount[]; initialLinks: ForumEntityReference[]; entities: EditorEntity[];
 }) {
+  const [accounts, setAccounts] = useState(initialAccounts);
+  const [importing, setImporting] = useState(false);
   const [floors, setFloors] = useState<EditableFloor[]>(() => prepareFloors(initialFloors));
   const [draftTitle, setDraftTitle] = useState(title);
   const [draftBoard, setDraftBoard] = useState(board);
@@ -37,7 +41,8 @@ export function DraftEditor({ topicId, title, board, tags, initialFloors, accoun
   const entitySelect = useRef<HTMLSelectElement>(null);
   const [links, setLinks] = useState(initialLinks);
   const [entityChoice, setEntityChoice] = useState("");
-  const [state, action, pending] = useActionState(saveForumDraft.bind(null, topicId), { error: null, saved: false, version });
+  const [state, action, saving] = useActionState(saveForumDraft.bind(null, topicId), { error: null, saved: false, version });
+  const pending = saving || importing;
   function update(index: number, patch: Partial<EditableFloor>) {
     setDirty(true);
     setFloors((current) => current.map((floor, position) => position === index ? { ...floor, ...patch } : floor));
@@ -78,6 +83,20 @@ export function DraftEditor({ topicId, title, board, tags, initialFloors, accoun
     startTransition(() => action(formData));
   }
   return <form onSubmit={submit} className="forum-form forum-editor" onChange={() => setDirty(true)}>
+    <MarkdownImport kind="forum" disabled={pending} onImport={async (data, raw) => {
+      setImporting(true);
+      try {
+        const result = await prepareForumImportAccounts(raw);
+        if (result.error) throw new Error(result.error);
+        const ids = data.floors.map(() => crypto.randomUUID());
+        const imported = data.floors.map((floor, index) => {
+          const account = result.accounts.find(a => a.handle === floor.handle);
+          if (!account) throw new Error("论坛身份匹配失败，请重新导入。");
+          return { id: ids[index], forum_account_id: account.id, body: floor.body, in_world_time: floor.in_world_time, like_count: floor.like_count, question_count: floor.question_count, replyToId: floor.reply_to_floor_no ? ids[floor.reply_to_floor_no - 1] : null };
+        });
+        setAccounts(result.accounts); setFloors(imported); setDraftTitle(data.title); setDraftBoard(data.board); setDraftTags(data.tags.join(", ")); setDirty(true); setPreview(false); setReplyNotice("");
+      } finally { setImporting(false); }
+    }} />
     <GuideLink section="forum">楼层、回复与发布怎么用？查看教程</GuideLink>
     <fieldset className="forum-editor-lock" disabled={pending}>
     <input type="hidden" name="links" value={JSON.stringify(links)} />

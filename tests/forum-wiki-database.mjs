@@ -29,6 +29,12 @@ try {
   const independent=randomUUID();
   await db.query("insert into forum_accounts(id,handle,display_name,account_type,created_by) values($1,'qa_independent','独立学生身份','student',$2)",[independent,a]);
   check((await db.query('select student_id from forum_accounts where id=$1',[independent])).rows[0].student_id===null,'student forum identity can be created without a character archive');
+  await db.query("insert into forum_accounts(handle,display_name,account_type,student_id,created_by) values('qa_import_a','导入甲','unknown',null,$1),('qa_import_b','导入乙','unknown',null,$1)",[a]);
+  check((await db.query("select id from forum_accounts where created_by=$1 and handle like 'qa_import_%'",[a])).rows.length===2,'Markdown import can create a batch of independent owned identities');
+  await assert.rejects(db.query("insert into forum_accounts(handle,display_name,account_type,created_by) values('qa_partial','不可残留','unknown',$1),('qa_role','冲突','unknown',$1)",[a]),/duplicate key/);
+  check((await db.query("select id from forum_accounts where handle='qa_partial'")).rows.length===0,'conflicting handle rolls back entire import identity batch');
+  await assert.rejects(db.query("insert into forum_accounts(handle,display_name,account_type,created_by) values('qa_forged','伪造归属','unknown',$1)",[b]),/row-level security/);
+  check(true,'identity import cannot spoof another creator');
   const input=[{forum_account_id:account,body:'独立发言',like_count:42,question_count:3},{forum_account_id:account,body:'回复第一层',reply_to_floor_no:1,like_count:5,question_count:999999999},{forum_account_id:account,body:'兼容旧编辑器'}];
   const save=async(messages, publish=false, version)=>db.query(`select save_forum_draft($1,coalesce($2,(select version from forum_topics where id=$1)),'论坛测试','campus',$3::jsonb,'{}','[]', $4) as version`,[topic,version??null,JSON.stringify(messages),publish]);
   await save(input);

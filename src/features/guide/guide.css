@@ -74,3 +74,5 @@
   .guide-capture-mark { border-width: 1px; }
   .guide-capture-mark b { width: 18px; height: 18px; font-size: 11px; }
 }
+
+.guide-import-code{white-space:pre-wrap;overflow-wrap:anywhere;padding:1rem;background:var(--paper,#faf8f1);border:1px solid var(--line,#d4cebf);font-size:.88rem;line-height:1.7}

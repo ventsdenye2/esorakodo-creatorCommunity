@@ -1,9 +1,10 @@
+import { ImportGuide } from "./import-guide";
 import Link from "next/link";
 import { ForumPractice, MarkdownPractice } from "./practice";
 import { ScreenshotGuide } from "./screenshot-guide";
 import "./guide.css";
 
-const chapters = [["start", "从哪里开始"], ["identity", "作者、角色与论坛身份"], ["forum", "编排论坛主题"], ["wiki", "编写校园档案"], ["history", "比较与恢复版本"], ["press", "写校刊文章"], ["events", "记录事件与补充材料"], ["questions", "遇到问题时"]];
+const chapters = [["import", "Markdown 导入"], ["start", "从哪里开始"], ["identity", "作者、角色与论坛身份"], ["forum", "编排论坛主题"], ["wiki", "编写校园档案"], ["history", "比较与恢复版本"], ["press", "写校刊文章"], ["events", "记录事件与补充材料"], ["questions", "遇到问题时"]];
 
 export function CreatorGuide() {
   return <main id="main-content" className="guide-page">
@@ -28,6 +29,7 @@ export function CreatorGuide() {
       <section id="history" className="guide-section"><p className="guide-kicker">像翻阅修改记录一样</p><h2>看清改了什么，也能恢复旧内容</h2><p>从档案页面进入“修订历史”。登录后，选择旧版本可以看到恢复操作。</p><ScreenshotGuide name="wiki-history" /><ScreenshotGuide name="wiki-restore" /><p className="guide-note">例如当前是 v3，恢复 v1 会生成内容与 v1 相同的 v4；v1、v2、v3 都会保留。恢复针对整份档案，请检查其他字段是否也需要一起恢复。</p><p>如果提示“档案已被其他人更新”，先保留自己的修改文本，再重新打开最新档案核对后编辑，避免覆盖他人的内容。</p></section>
       <section id="press" className="guide-section"><p className="guide-kicker">用文章完整讲述</p><h2>校刊：分段写作，再检查阅读效果</h2><p>打开<Link href="/create/article">“校刊投稿”</Link>，填写标题、摘要，最多选择 3 个栏目标签，再在下面的区域写正文。</p><ScreenshotGuide name="press-blocks" /><ScreenshotGuide name="press-publish" /><p>校刊使用你的作者资料署名，不需要为每个段落选择论坛身份。</p></section>
       <section id="events" className="guide-section"><p className="guide-kicker">共同记录校园发生的事</p><h2>事件主档案与补充材料</h2><p>打开<Link href="/create/event">“建立事件档案”</Link>，填写标题、概述、时间说明、背景与影响，再添加时间节点。</p><ScreenshotGuide name="event-timeline" /><p>完成后“预览时间线”，再“保存草稿”或“发布档案”。“完整已保存预览”只显示已经保存的内容。</p><p>你维护自己建立的主档案。想为别人的公开事件提供另一视角时，从事件详情页进入补充资料入口，填写资料标题、性质和正文，选择对应节点或“整个事件”，再保存或发布。补充资料独立署名，不会覆盖主档案。</p><p className="guide-note">校刊、事件及补充材料发布后仍有更新入口。它们与“发布后冻结”的论坛主题规则不同。已有补充资料引用的时间节点需要保留。</p></section>
+      <ImportGuide />
       <section id="questions" className="guide-section"><p className="guide-kicker">随手查一下</p><h2>遇到问题时</h2><details className="guide-details"><summary>找不到我写过的草稿</summary><p>登录原来的创作者账号，打开<Link href="/creator">创作中心</Link>的“我的作品”，或对应创作页的草稿列表。只输入或点击预览、没有点击保存的内容，不会成为已保存草稿。</p></details><details className="guide-details"><summary>下拉框里没有想用的发言身份</summary><p>先在“建立论坛身份”创建这个账号。创作时只能使用自己管理的身份；显示名称、人物档案名称与论坛 @账号不是同一个东西。先保存当前草稿，创建身份后再回来打开草稿。</p></details><details className="guide-details"><summary>保存失败、按钮不可用或提示版本冲突</summary><p>先检查必填项和页面提示，保存中请等待完成。刷新前先复制重要正文到本地，避免丢失未保存输入。版本冲突时重新打开最新内容再核对，不要反复提交旧页面。仍有问题时，记录页面地址、操作步骤和提示文字交给维护者；不要发送密码或完整邮箱确认链接。</p></details><details className="guide-details"><summary>点击档案链接，就会把设定同步进作品吗？</summary><p>不会。关联或引用档案提供阅读线索，不会替你复制正文，也不会因角色在论坛发言而修改人物设定。需要变更设定时，请单独编辑档案并填写修改说明。</p></details><details className="guide-details"><summary>能在写作时保留教程吗？</summary><p>可以。编辑页的教程入口会在新标签页打开，原来的输入仍留在编辑页。教程练习只在当前页面有效，正式作品仍需要在创作页保存。</p></details><div className="guide-finish"><Link className="button button-primary" href="/creator">开始我的创作 →</Link><a href="#guide-top">返回教程顶部 ↑</a></div></section>
     </div></div>
   </main>;
