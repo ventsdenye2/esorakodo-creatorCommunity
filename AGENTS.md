@@ -15,6 +15,7 @@
 - Student, College, Place, and Event are stable-ID wiki entities. Store relationships by UUID, not by display name.
 - Published works tell stories; Wiki records traceable shared canon. Using a character in a work is not the same operation as editing that character's Wiki.
 - Wiki changes require revision history. Do not add direct client-side wiki updates that bypass a revision-producing transaction.
+- College canon: the original 16 colleges are the founding cohort, not a fixed total. 工程学院 and 机械工程学院 are the same college; use 机械工程学院 and preserve its existing `engineering` identity. 计算机学院 developed from 机械工程学院; 飞行学院 developed from 军事学院. Keep them as distinct college records and do not collapse current character affiliations back into the founding cohort. Exact dates are not established.
 - Event main archives have one maintaining Creator; other Creators extend them through Event Supplements.
 
 ## Engineering baseline

@@ -1,0 +1,5 @@
+# Keep production content snapshots and generated data-bearing SQL local.
+*.json
+*.sql
+!inventory.sql
+__pycache__/
