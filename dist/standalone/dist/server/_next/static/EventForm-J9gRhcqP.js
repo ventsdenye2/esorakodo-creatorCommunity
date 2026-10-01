@@ -1,1 +1,0 @@
-import{a as e}from"./rsc-BSXLf-Rl.js";var t=e(()=>{throw Error(`Unexpectedly client reference export 'EventForm' is called on server`)},`e554e46e310a`,`EventForm`);export{t};

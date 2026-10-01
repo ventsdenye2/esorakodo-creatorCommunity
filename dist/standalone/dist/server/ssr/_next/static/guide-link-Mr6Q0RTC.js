@@ -1,1 +1,0 @@
-import{N as e}from"../../index.js";import{t}from"./link-eFANuFVh.js";var n=e();function r({section:e,children:r}){return(0,n.jsx)(`p`,{className:`creator-guide-link`,children:(0,n.jsxs)(t,{href:`/guide#${e}`,target:`_blank`,rel:`noopener noreferrer`,children:[r,` `,(0,n.jsx)(`span`,{children:`↗ 新标签页`})]})})}export{r as t};

@@ -1,0 +1,1 @@
+import{t as e}from"./framework~index~page~page~page~page~loading~page~page~page~page~page~loading~page~page~page~9sm4ad02-CPGnpSxk.js";var t=e();function n(){return(0,t.jsx)(`main`,{id:`main-content`,className:`press-shell`,"aria-busy":`true`,children:(0,t.jsx)(`p`,{role:`status`,children:`正在载入校刊…`})})}export{n as default};

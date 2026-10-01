@@ -1,0 +1,1 @@
+import{a as e}from"./rsc-BENyviu5.js";var t=e(()=>{throw Error(`Unexpectedly client reference export 'default' is called on server`)},`488f87647d7d`,`default`);export{t as default};

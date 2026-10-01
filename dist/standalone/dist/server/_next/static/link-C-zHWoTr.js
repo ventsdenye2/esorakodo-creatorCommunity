@@ -1,1 +1,0 @@
-import{a as e}from"./rsc-BSXLf-Rl.js";var t=e(()=>{throw Error(`Unexpectedly client reference export 'default' is called on server`)},`c2747888630f`,`default`);export{t};
