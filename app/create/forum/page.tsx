@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { GuideLink } from "../../../src/features/guide/guide-link";
 import { redirect } from "next/navigation";
 import { SiteHeader } from "../../../src/components/layout/site-header";
 import { SiteFooter } from "../../../src/components/layout/site-footer";
@@ -19,6 +20,7 @@ export default async function CreateForumPage({ searchParams }: { searchParams: 
     <nav className="forum-crumb"><Link href="/forum">校园论坛</Link><span>/</span>创作主题</nav>
     <p className="archive-label">CREATOR / FORUM</p><h1>创作论坛主题</h1>
     <p>以 Forum Account 编排戏内讨论。主题由你的 Creator 账号管理，发布后公开阅读。</p>
+    <GuideLink section="forum">第一次编排？查看论坛创作教程</GuideLink>
     {error && <p className="forum-error" role="alert">{error}</p>}
     {accounts.length === 0 ? <section className="forum-empty-note"><h2>先建立一个发言身份</h2><p>填写昵称与账号标识即可创建，无需关联人物档案。</p><Link className="button button-primary" href="/create/forum/account">建立论坛身份</Link></section> : <>
       <div className="forum-account-strip"><span>可用身份 {accounts.length}</span>{accounts.map((account) => <Link key={account.id} href={`/forum/accounts/${account.handle}`}>@{account.handle}</Link>)}<Link href="/create/forum/account">＋ 添加身份</Link></div>

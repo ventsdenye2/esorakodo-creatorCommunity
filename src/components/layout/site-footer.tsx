@@ -12,6 +12,7 @@ export function SiteFooter() {
         <Link href="/wiki">校园档案</Link>
         <Link href="/events">校史事件</Link>
         <Link href="/press">校刊·部刊</Link>
+        <Link href="/guide">创作指南</Link>
       </nav>
       <p>探索更大的天空，连接仍在生长的校园历史。</p>
     </footer>

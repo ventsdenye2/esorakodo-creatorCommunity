@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { GuideLink } from "../../../../src/features/guide/guide-link";
 import { redirect } from "next/navigation";
 import { SiteHeader } from "../../../../src/components/layout/site-header";
 import { SiteFooter } from "../../../../src/components/layout/site-footer";
@@ -18,6 +19,7 @@ export default async function NewForumAccountPage({ searchParams }: { searchPara
     <nav className="forum-crumb"><Link href="/forum">校园论坛</Link><span>/</span><Link href="/create/forum">创作主题</Link><span>/</span>建立身份</nav>
     <p className="archive-label">FORUM IDENTITY</p><h1>建立论坛身份</h1>
     <p>一个 Creator 可以管理多个戏内账号。只需昵称和账号标识即可建立身份，无需先创建人物档案。</p>
+    <GuideLink section="identity">论坛身份和人物档案有什么区别？</GuideLink>
     {error && <p role="alert" className="forum-error">{error}</p>}
     <form action={createForumAccount} className="forum-form">
       <label>账号标识<input name="handle" required minLength={2} maxLength={32} pattern="[A-Za-z0-9_]+" autoCapitalize="none" /></label>

@@ -1,4 +1,5 @@
 import { MarkdownEditor } from "../../../../../../src/features/wiki/markdown-editor";
+import { GuideLink } from "../../../../../../src/features/guide/guide-link";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { SiteFooter } from "../../../../../../src/components/layout/site-footer";
@@ -36,6 +37,7 @@ export default async function EditWikiPage({ params, searchParams }: PageProps) 
           <p className="archive-label">EDIT {getWikiEntityLabel(entity.type).toUpperCase()} / VERSION {entity.version}</p>
           <h1>编辑档案</h1>
           <p>保存时会检查当前版本；如果已有更新，不会静默覆盖他人的内容。</p>
+          <GuideLink section="wiki">查看档案编辑教程与 Markdown 练习</GuideLink>
         </header>
         {query.error ? <p className="auth-notice auth-notice-error" role="alert">{query.error}</p> : null}
         <form action={updateWikiEntity} className="wiki-form">

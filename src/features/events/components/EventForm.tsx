@@ -1,6 +1,7 @@
 "use client";
 import { useActionState, useState, useRef, startTransition, type FormEvent } from "react";
 import Link from "next/link";
+import { GuideLink } from "../../guide/guide-link";
 import { saveEvent } from "../actions";
 import type { EventNode, EventRecord } from "../queries";
 import type { WikiEntitySummary } from "../../wiki/types";
@@ -15,6 +16,7 @@ export function EventForm({ event, initialNodes = [], initialLinks = [], entitie
   function updateNode(id: string, key: "label" | "title" | "description", value: string) { setNodes(nodes.map((node) => node.id === id ? { ...node, [key]: value } : node)); }
   function submit(event: FormEvent<HTMLFormElement>) { event.preventDefault(); const data = new FormData(event.currentTarget); startTransition(() => action(data)); }
   return <form action={action} onSubmit={submit} className="event-form">
+    <GuideLink section="events">查看事件档案与补充材料教程</GuideLink>
     <input type="hidden" name="intent" defaultValue="save" ref={intentRef} /><input type="hidden" name="id" value={event?.id ?? ""} /><input type="hidden" name="version" value={event?.version ?? ""} />
     <input type="hidden" name="nodes" value={JSON.stringify(nodes)} /><input type="hidden" name="links" value={JSON.stringify(links.map((value) => { const [entity_type, entity_id] = value.split(":"); return { entity_type, entity_id }; }))} />
     {state.error && <p className="event-alert" role="alert">{state.error}</p>}{saved && !state.error && <p className="event-notice" role="status">已保存。可以继续编辑或预览。</p>}

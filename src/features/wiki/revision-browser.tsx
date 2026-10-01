@@ -2,6 +2,7 @@
 /* eslint-disable jsx-a11y/no-noninteractive-tabindex -- Scrollable diff is keyboard-accessible. */
 
 import { useState } from "react";
+import { GuideLink } from "../guide/guide-link";
 import { diffLines } from "diff";
 import { Markdown } from "./markdown";
 import { rollbackWikiRevision } from "./actions";
@@ -36,6 +37,7 @@ export function RevisionBrowser({ revisions, entity, canRestore, editors }: {
   function label(revision: WikiRevisionView) { return `v${String(snapshot(revision).version ?? "?")} · ${revision.summary}`; }
   if (!sorted.length) return <p>暂无修订记录。</p>;
   return <div className="revision-browser">
+    <GuideLink section="history">如何比较版本和恢复旧内容？</GuideLink>
     <div className="revision-compare-controls"><label>从版本<select value={from} onChange={event => setFrom(event.target.value)}>{sorted.map(item => <option key={item.id} value={item.id}>{label(item)}</option>)}</select></label><span aria-hidden="true">→</span><label>到版本<select value={to} onChange={event => setTo(event.target.value)}>{sorted.map(item => <option key={item.id} value={item.id}>{label(item)}</option>)}</select></label></div>
     <div className="revision-workspace"><aside><h2>修订记录</h2><ol className="revision-commits">{sorted.map((revision,index) => <li key={revision.id} data-selected={to === revision.id}><button type="button" onClick={() => {setTo(revision.id); setFrom(sorted[index + 1]?.id ?? revision.id);}}><span>v{String(snapshot(revision).version)} {index === 0 && <em>当前</em>}</span><strong>{revision.summary || "未填写修改说明"}</strong><small>{editors[revision.editor_id] ?? revision.editor_id.slice(0,8)} · {new Date(revision.created_at).toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" })}</small><code>{revision.id.slice(0,8)}</code></button></li>)}</ol></aside>
       <section className="revision-inspection" aria-label="版本差异">

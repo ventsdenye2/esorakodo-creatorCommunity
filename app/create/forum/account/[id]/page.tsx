@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { GuideLink } from "../../../../../src/features/guide/guide-link";
 import { notFound, redirect } from "next/navigation";
 import { SiteHeader } from "../../../../../src/components/layout/site-header";
 import { SiteFooter } from "../../../../../src/components/layout/site-footer";
@@ -18,6 +19,7 @@ export default async function EditForumAccountPage({ params, searchParams }: { p
   return <div><SiteHeader current="forum" /><main id="main-content" className="forum-shell forum-form-page">
     <nav className="forum-crumb"><Link href="/forum">校园论坛</Link><span>/</span><Link href={`/forum/accounts/${account.handle}`}>@{account.handle}</Link><span>/</span>编辑</nav>
     <p className="archive-label">FORUM IDENTITY / EDIT</p><h1>编辑论坛身份</h1>
+    <GuideLink section="identity">查看论坛身份使用说明</GuideLink>
     {error && <p role="alert" className="forum-error">{error}</p>}
     <form action={updateForumAccount} className="forum-form"><input type="hidden" name="id" value={account.id} />
       <AvatarPicker initialId={account.avatar_asset_id} name={account.display_name} />

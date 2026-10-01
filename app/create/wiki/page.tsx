@@ -1,4 +1,5 @@
 import { MarkdownEditor } from "../../../src/features/wiki/markdown-editor";
+import { GuideLink } from "../../../src/features/guide/guide-link";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { SiteFooter } from "../../../src/components/layout/site-footer";
@@ -26,6 +27,7 @@ export default async function CreateWikiPage({ searchParams }: PageProps) {
           <p className="archive-label">NEW ARCHIVE RECORD</p>
           <h1>建立校园档案</h1>
           <p>为人物、学院或地点建立档案。每次修改都会保留修订记录。</p>
+          <GuideLink section="wiki">查看档案编辑教程与 Markdown 练习</GuideLink>
         </header>
         {!configured ? (
           <p className="auth-notice auth-notice-error" role="alert">档案服务暂未开放，当前无法提交。</p>

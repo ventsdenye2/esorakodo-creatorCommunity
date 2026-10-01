@@ -187,3 +187,16 @@ app/auth/callback/route.ts 调用 callback-notice.mjs；auth-callback-notice.tes
 正式站真实帖子 3d8aad83-2b72-4645-bffb-1818d906cf0c：三楼嵌套于二楼、三条计数均为旧数据默认 0、折叠/展开成功，390px 无横向溢出。实际学生档案 test 历史可选择版本并展开 v1 快照，控制台错误/警告均为 0；匿名访问 /wiki/student/test/edit 跳转中文登录提示。截图为 output/playwright/forum-production-{desktop,mobile}.png。版本差异与恢复写入由隔离组件及 SQL 验证；没有用线上用户身份进行写入/发布测试。
 
 Campus 与 portfolio 返回 HTTP 200。主站一次服务器侧 TLS 探测出现 EOF，本机复核 https://kongtian.university/ 返回 HTTP 200。两个旧站 Nginx 配置 SHA256 与部署前相同，本批未修改 Nginx。云端迁移校验已完成，功能无遗留部署阻塞；本提交仅收尾文档，无需重新构建运行产物。
+## 2026-10-01 · 创作者站内教程
+
+新增公开 /guide 操作手册：身份概念、论坛编排、Markdown 档案、修订恢复、校刊、事件和常见问题。练习区可切换回复关系、设置示例计数和练习 Markdown，完全在页面内运行，不保存或发布。创作中心与页脚提供总入口，各编辑器提供新标签页定位到对应章节的链接，保留当前输入。使用当前真实字段/按钮说明，明确无自动保存、论坛冻结与 Wiki 直接公开。设计见 docs/design/creator-guide.md。
+
+当前状态：实现完成，等待 lint/typecheck/build 和桌面/手机浏览器验收。无 schema/权限变更；完成验证后沿用 deploy/backend + deploy/runtime 推送及 SSH 更新。后续进展见 engineering/progress.md 与 engineering/verification.md。
+### 图解教程补充
+
+用户进一步要求原界面截图与文案一一对应。/guide 现以 10 张原页面/编辑组件截图为主体，34 个编号框选对应 34 项说明；图片使用演示数据，可打开原图。截图位于 public/guide，来自现有表单 DOM/CSS 的实际浏览器渲染，未读取私人草稿或生成虚构界面。交互练习收进展开区域，保留目录和新标签页帮助入口。先前纯文字草案已调整，当前正在复验图解布局与最终构建。数据/权限没有变化，无新增迁移。
+### 2026-10-01 图解教程本地验收
+
+最终 lint、typecheck、Windows build 通过。独立截图环境直接调用原表单页面/编辑组件，存入 public/guide 的 10 张 PNG 共 170583 字节；34 个编号框选与 34 条文字说明对应。真实 standalone /guide 已检查全部截图解码、目录锚点、320/390/1280px 布局、论坛回复/计数练习、Markdown 插表/重置；控制台错误和警告均为 0。原图新标签页打开通过。隔离原身份表单填写未保存内容后打开教程，输入保持且定位到正确章节；这属于 UI 验证，不冒充线上登录写入验收。
+
+最终 Linux 构建正在完成 standalone 打包；157 个运行源文件/图片与主工作区逐一比较一致。截图查看记录在 output/playwright/guide-{annotated-forum,mobile-final,desktop-final}.png。没有新增 schema 或真实账号数据写入。

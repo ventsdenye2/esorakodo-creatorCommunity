@@ -67,6 +67,9 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 .button-secondary:hover { background: var(--paper-soft); }
 .button:disabled { opacity: .48; cursor: not-allowed; }
 .text-link { color: var(--ink); font-size: 14px; }
+.creator-guide-link { margin: 16px 0 24px; font-size: 14px; line-height: 1.7; }
+.creator-guide-link a { display: inline-flex; min-height: 44px; gap: 10px; align-items: center; flex-wrap: wrap; color: var(--sky-dark); text-decoration: underline; text-underline-offset: 4px; }
+.creator-guide-link span { font-size: 12px; color: var(--ink-soft); text-decoration: none; }
 
 .site-header {
   width: min(100%, var(--content-max));

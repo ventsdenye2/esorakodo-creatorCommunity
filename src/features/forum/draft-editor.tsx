@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { GuideLink } from "../guide/guide-link";
 import { ThreadTree } from "./thread-tree";
 import { startTransition, useActionState, useRef, useState } from "react";
 import type { ForumAccount } from "../../types/database";
@@ -77,6 +78,7 @@ export function DraftEditor({ topicId, title, board, tags, initialFloors, accoun
     startTransition(() => action(formData));
   }
   return <form onSubmit={submit} className="forum-form forum-editor" onChange={() => setDirty(true)}>
+    <GuideLink section="forum">楼层、回复与发布怎么用？查看教程</GuideLink>
     <fieldset className="forum-editor-lock" disabled={pending}>
     <input type="hidden" name="links" value={JSON.stringify(links)} />
     <input type="hidden" name="messages" value={JSON.stringify(floors.map((floor) => ({
