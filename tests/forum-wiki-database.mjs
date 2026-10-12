@@ -6,7 +6,7 @@ import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import EmbeddedPostgres from '../output/pg-check/node_modules/embedded-postgres/dist/index.js';
 
-const cluster = new EmbeddedPostgres({ databaseDir: path.resolve(`output/pg-check/data-${Date.now()}`), user: 'postgres', password: randomUUID(), port: 55439, persistent: true, initdbFlags: ['--encoding=UTF8', '--locale=C'], postgresFlags: ['-h', '127.0.0.1'], onLog() {}, onError() {} });
+const cluster = new EmbeddedPostgres({ databaseDir: path.resolve(`output/pg-check/data-${Date.now()}`), user: 'postgres', password: randomUUID(), port: 55449, persistent: true, initdbFlags: ['--encoding=UTF8', '--locale=C'], postgresFlags: ['-h', '127.0.0.1'], onLog() {}, onError() {} });
 let db, passed = 0;
 function check(value, message) { assert.ok(value, message); passed++; console.log(`PASS ${passed}: ${message}`); }
 try {
@@ -35,6 +35,23 @@ try {
   check((await db.query("select id from forum_accounts where handle='qa_partial'")).rows.length===0,'conflicting handle rolls back entire import identity batch');
   await assert.rejects(db.query("insert into forum_accounts(handle,display_name,account_type,created_by) values('qa_forged','伪造归属','unknown',$1)",[b]),/row-level security/);
   check(true,'identity import cannot spoof another creator');
+  // Forum images: private drafts, ownership, transactional links and published access.
+  await db.query('reset role');
+  const image=randomUUID(),otherImage=randomUUID(),pendingImage=randomUUID();
+  await db.query("insert into media_assets(id,uploader_id,object_key,filename,mime_type,byte_size,status) values($1,$2,$1::uuid::text,'a.png','image/png',10,'ready'),($3,$4,$3::uuid::text,'b.png','image/png',10,'ready'),($5,$2,$5::uuid::text,'pending.png','image/png',10,'pending')",[image,a,otherImage,b,pendingImage]);
+  await db.query('set role authenticated');
+  const imageInput=[{forum_account_id:account,body:'图片\n![现场](/api/media/'+image+')\n![另一张](/api/media/'+image+')'}];
+  const saveImages=(messages)=>db.query("select save_forum_draft($1,(select version from forum_topics where id=$1),'图片主题','campus',$2::jsonb,'{}','[]',false)",[topic,JSON.stringify(messages)]);
+  await saveImages(imageInput);
+  check((await db.query('select * from forum_message_media')).rows.length===1,'duplicate image lines create one relational link');
+  await db.query('set role anon');
+  check((await db.query('select * from media_assets where id=$1',[image])).rows.length===0,'draft forum image not visible anonymously');
+  check((await db.query('select * from forum_message_media')).rows.length===0,'draft media links not visible anonymously');
+  await db.query('set role authenticated');
+  for(const invalidBody of ['![外部](https://example.com/a.png)','![本地](./a.png)','![别人的](/api/media/'+otherImage+')','![未完成](/api/media/'+pendingImage+')']) {
+    await assert.rejects(saveImages([{forum_account_id:account,body:invalidBody}]),/FORUM_IMAGE_INVALID/);
+    check((await db.query('select * from forum_message_media')).rows.length===1,'invalid image rolls back entire floor replacement');
+  }
   const input=[{forum_account_id:account,body:'独立发言',like_count:42,question_count:3},{forum_account_id:account,body:'回复第一层',reply_to_floor_no:1,like_count:5,question_count:999999999},{forum_account_id:account,body:'兼容旧编辑器'}];
   const save=async(messages, publish=false, version)=>db.query(`select save_forum_draft($1,coalesce($2,(select version from forum_topics where id=$1)),'论坛测试','campus',$3::jsonb,'{}','[]', $4) as version`,[topic,version??null,JSON.stringify(messages),publish]);
   await save(input);
@@ -51,11 +68,17 @@ try {
   await db.query("select set_config('request.jwt.claim.sub',$1,false)",[b]);
   check((await db.query('select * from forum_messages where topic_id=$1',[topic])).rows.length===0,'other author cannot read draft');
   await assert.rejects(save(input),/FORUM_TOPIC_NOT_OWNED/); check(true,'other author cannot change counts');
-  await db.query("select set_config('request.jwt.claim.sub',$1,false)",[a]); await save(input,true);
+  await db.query("select set_config('request.jwt.claim.sub',$1,false)",[a]); await save([{...input[0],body:input[0].body+'\n![现场](/api/media/'+image+')'},...input.slice(1)],true);
   await assert.rejects(save(input),/FORUM_TOPIC_NOT_DRAFT/); check(true,'published counts frozen');
   await db.query('set role anon');
   rows=(await db.query('select * from forum_messages where topic_id=$1 order by floor_no',[topic])).rows;
   check(rows[0].like_count===42,'anonymous reader sees published authored counts');
+  check((await db.query('select * from media_assets where id=$1',[image])).rows.length===1,'published forum grants anonymous ready image read');
+  await db.query('reset role');
+  await db.query("update forum_topics set status='hidden' where id=$1",[topic]);
+  await db.query('set role anon');
+  check((await db.query('select * from media_assets where id=$1',[image])).rows.length===0,'hidden forum revokes anonymous image access');
+  await db.query('reset role'); await db.query("update forum_topics set status='published' where id=$1",[topic]); await db.query('set role anon');
   await assert.rejects(db.query('update forum_messages set like_count=0 where topic_id=$1',[topic])); check(true,'reader cannot vote by mutating authored counts');
   await assert.rejects(db.query("select create_wiki_entity_with_body('college','denied','Denied')")); check(true,'anonymous Markdown creation denied');
   await db.query('set role authenticated'); await db.query("select set_config('request.jwt.claim.sub',$1,false)",[a]);

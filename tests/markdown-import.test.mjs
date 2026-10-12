@@ -17,3 +17,14 @@ for(const invalid of [event.replace('2026-09-20','2026-02-30'),event.replace('en
 ok(()=>assert.equal(parseEvent(event.slice(0,event.indexOf('### 时间节点'))).nodes.length,0));
 console.log(`PASS ${checks} Markdown import parser checks`);
 
+
+const {parseForumBody, validForumImages} = await import('../src/features/forum/body.ts');
+const imageId='12345678-1234-4234-8234-123456789abc';
+const withImages=forum.replace('有人知道三楼为什么还亮着灯吗？', '有人知道三楼为什么还亮着灯吗？\n![现场](/api/media/'+imageId+')\n![第二张](/api/media/'+imageId+')');
+assert.equal(parseForumBody(parseForum(withImages).floors[0].body).images.length,2);
+assert.equal(parseForumBody(parseForum(withImages).floors[0].body).text,'有人知道三楼为什么还亮着灯吗？');
+assert.equal(validForumImages('![本地](./image.png)'),false);
+assert.throws(()=>parseForum(forum.replace('有人知道三楼为什么还亮着灯吗？','![外部](https://example.com/image.png)')));
+assert.throws(()=>parseForum(forum.replace('有人知道三楼为什么还亮着灯吗？','![危险](javascript:alert(1))')));
+assert.equal(parseForumBody('普通文字\n![现场](/api/media/'+imageId+')').images[0].id,imageId);
+console.log('PASS 6 forum image import checks');

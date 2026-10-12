@@ -61,7 +61,7 @@ RPC 锁住作者草稿，校验至少一层、楼层从 1 连续、所有 Forum 
 - 公共列表限定 `status='published'`；数据库 RLS 已隔离草稿，但查询仍应显式按状态、`published_at desc` 排序。楼层显式 `order by floor_no`，不依赖插入时间。
 - Topic 与 Student 的首发反向关系可由公开楼层 `forum_account_id → forum_accounts.student_id` 查询；Forum Account 是关系桥梁，不将 Creator 与 Student 合并。
 - 标签页先查 `hashtags.normalized_name` 与 `forum_topic_hashtags.hashtag_id`，再只展示 published Topic。`hashtags.name` 是展示文字，`normalized_name` 是精确去重/查询键。
-- `forum_messages.body` 为纯文本，渲染时保持文本转义；不引入富文本 HTML、媒体附件或戏外读者评论。
+- `forum_messages.body` 保留纯文本与独立图片行 `![说明](/api/media/UUID)`；图片通过 `forum_message_media` 关联已上传 `media_assets`，禁止外部 URL、本地路径、HTML 和他人/未完成资产。公开主题的图片按主题状态读取，草稿仅作者可读。阅读区引用只展开直接目标楼层，图片显示缩略图并可打开完整图片；首楼 Forum Account 的发言显示楼主标识。
 - 迁移为 `202609230002_m3_forum.sql` 与追加的 `202609230003_m3_forum_tag_rpc.sql`，测试是 `m3_forum.test.sql`。本地 `supabase migration up --local` 增量应用成功；`supabase test db --local` 通过 M1/M2/M3 共 82 项，M3 为 51 项。没有对本地数据库执行 reset。
 
 ## 2026-09-23 完整草稿事务与跨媒介关联
@@ -99,3 +99,8 @@ save_forum_draft(
 
 ## 2026-09-29 更新
 当前版本由 [论坛树状创作与 Markdown 档案](forum-wiki-reading.md) 补充：论坛使用回复树和作者设定反应数量；Wiki 新增 Markdown 正文和版本差异；所有 Forum Account 可独立于人物档案创建。此前纯文本 Wiki、平铺论坛与学生强制关联描述为历史方案。迁移与验证见 engineering/verification.md。
+
+
+## 2026-10-12 · 多图回复与直接引用
+
+论坛楼层编辑器支持多选图片和剪贴板粘贴，Markdown 导入保留合法图片行并在编辑器中继续添加图片。引用卡片只显示直接回复目标的楼层号、身份、正文和缩略图，点击缩略图打开完整图片；不递归嵌套。楼主根据首楼论坛身份匹配。迁移 `202610120001_forum_images.sql` 新增媒体关联、归属触发器、草稿/发布 RLS。

@@ -295,3 +295,14 @@ Campus 与 portfolio 返回 HTTP 200。主站一次服务器侧 TLS 探测出现
 - 本地交付：18个院系、10个人物JSON与Markdown匹配线上读回内容；原始资料不改；知识库图片、SVG与ZIP重新生成，图片布局与本地引用已检查。
 - 检查：npm run lint、npm run typecheck通过；npm run build初次受沙箱spawn EPERM阻挡，授权重试通过，standalone依赖完整。Python脚本语法与试运行/提交SQL一致性检查通过。
 - 边界：本次公开验收为HTTP页面内容核对与数据库修订核对，未重新执行登录后的浏览器创作流程；没有修改网站UI、数据库结构或部署应用。维护文件中的JSON与生成SQL不提交Git。
+
+
+## 2026-10-12 · 论坛图片本地验收
+
+`node tests/markdown-import.test.mjs`：26 原有解析检查 + 6 图片检查通过。`node tests/forum-wiki-database.mjs`：隔离 PostgreSQL17 全部15迁移及50检查通过，覆盖重复关联、匿名草稿隔离、非法/跨归属/未ready图片整次回滚、发布可读、隐藏撤销和旧功能。未连接生产数据库。
+
+浏览器真实组件在本机隔离 Vite 预览通过：楼主身份、直接引用无递归、两图缩略图、弹窗/Escape/焦点返回、390px无溢出、多选上传、剪贴板图片与阅读预览。媒体接口用本地桩，不声称真实R2上传已验证。桌面/手机截图 `output/playwright/forum-images-{desktop,mobile}.png` 已查看手机，教程楼层截图更新为当前编辑器合成内容。预览控制台仅开发工具提示和 favicon404，无组件异常。
+
+ lint/typecheck/build通过；首次 build 被沙箱 realpath EPERM 阻止，提升本地构建权限后五阶段和standalone生成通过。最后教程与类型同步后复跑记录见下一条。无生产迁移/部署。
+
+最终同步后 lint、typecheck、五阶段 build 与 standalone 打包再次通过。用户询问 Supabase 迁移与服务器连接；已核对本地项目链接 ref sttghkavzjeqeuignpwi 及部署文档 root@lax01.ventsdenye.com、密钥 SSH、既有 update-runtime.sh，尚未本轮实际连通核验或执行生产迁移。

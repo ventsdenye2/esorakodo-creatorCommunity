@@ -9,6 +9,7 @@ export type ForumSaveState = { error: string | null; saved: boolean; version: nu
 const initialError = "保存失败，请稍后重试。";
 
 function forumError(error: { code?: string; message: string }) {
+  if (error.message.includes("FORUM_IMAGE_INVALID")) return "图片不可用或不属于你，请重新上传后保存。";
   if (error.message.includes("FORUM_VERSION_CONFLICT")) return "这份草稿已在别处更新。请复制保留当前内容，重新载入最新版本后再保存。";
   if (error.message.includes("FORUM_LINKS_INVALID")) return "关联档案已不可用，请重新选择后保存。";
   if (error.message.includes("FORUM_TOPIC_INVALID")) return "主题标题或版面无效，请检查后再保存。";

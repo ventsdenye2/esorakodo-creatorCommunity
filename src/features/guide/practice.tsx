@@ -35,7 +35,7 @@ export function ForumPractice() {
     </div>
     <p className="guide-practice-status" role="status">{parent === "two" ? "第 3 层接在第 2 层下面，形成连续对话。" : parent === "one" ? "第 2、3 层都回复第 1 层，成为并列回复。" : "第 3 层现在是独立发言，与第 1 层处于同一级。"} 楼层编号仍是 #03。</p>
     <ThreadTree key={parent} prefix="guide-floor" nodes={nodes} renderEditor={node => <><p className="thread-body">{node.body}</p><div className="thread-reactions" aria-label="剧情中的反应数量"><span>👍 <b>{node.likes}</b></span><span>？ <b>{node.questions}</b></span></div></>} />
-    <p className="guide-caption">也可以点击“收起 / 展开”查看分支。示例昵称不是站内账号。</p>
+    <p className="guide-caption">改变回复对象可查看直接目标引用卡片。示例昵称不是站内账号。</p>
   </div>;
 }
 

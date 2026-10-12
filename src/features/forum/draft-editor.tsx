@@ -4,6 +4,7 @@ import { MarkdownImport } from "../import/markdown-import";
 import { prepareForumImportAccounts } from "../import/actions";
 import Link from "next/link";
 import { GuideLink } from "../guide/guide-link";
+import { FloorBodyEditor } from "./floor-body-editor";
 import { ThreadTree } from "./thread-tree";
 import { startTransition, useActionState, useRef, useState } from "react";
 import type { ForumAccount } from "../../types/database";
@@ -42,7 +43,8 @@ export function DraftEditor({ topicId, title, board, tags, initialFloors, accoun
   const [links, setLinks] = useState(initialLinks);
   const [entityChoice, setEntityChoice] = useState("");
   const [state, action, saving] = useActionState(saveForumDraft.bind(null, topicId), { error: null, saved: false, version });
-  const pending = saving || importing;
+  const [uploading, setUploading] = useState(false);
+  const pending = saving || importing || uploading;
   function update(index: number, patch: Partial<EditableFloor>) {
     setDirty(true);
     setFloors((current) => current.map((floor, position) => position === index ? { ...floor, ...patch } : floor));
@@ -77,6 +79,7 @@ export function DraftEditor({ topicId, title, board, tags, initialFloors, accoun
   }
   function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (pending) return;
     const submitter = (event.nativeEvent as SubmitEvent).submitter;
     const formData = submitter ? new FormData(event.currentTarget, submitter) : new FormData(event.currentTarget);
     setDirty(false);
@@ -116,7 +119,7 @@ export function DraftEditor({ topicId, title, board, tags, initialFloors, accoun
       <label>标签<input name="tags" value={draftTags} onChange={(event) => setDraftTags(event.target.value)} placeholder="用逗号分隔，最多 8 个" /></label>
     </div>
     <details className="forum-entity-picker"><summary>关联校园档案（{links.length}）</summary><p className="forum-form-hint">将主题与涉及的人物、学院、地点或事件关联。关联不会改写档案内容。</p><label>选择档案<select ref={entitySelect} value={entityChoice} disabled={pending || links.length >= 30} onChange={(event) => setEntityChoice(event.target.value)}><option value="">选择一个校园档案</option>{entities.filter((entity) => !links.some((link) => link.entity_id === entity.id && link.entity_type === entity.type)).map((entity) => <option key={`${entity.type}:${entity.id}`} value={`${entity.type}:${entity.id}`}>{entity.label} · {entity.type === "student" ? "人物" : entity.type === "college" ? "学院" : entity.type === "place" ? "地点" : "事件"}</option>)}</select></label><button className="button button-secondary" type="button" disabled={pending || !entityChoice || links.length >= 30} onClick={() => { const entity = entities.find((item) => `${item.type}:${item.id}` === entityChoice); if (entity) { setLinks((current) => [...current, {entity_type:entity.type,entity_id:entity.id}]); setEntityChoice(""); } }}>添加关联</button><ul>{links.map((link) => { const entity = entities.find((item) => item.id === link.entity_id && item.type === link.entity_type); return <li key={`${link.entity_type}:${link.entity_id}`}><span>{entity?.label ?? "档案已不可用"}</span> <button className="button button-secondary" type="button" disabled={pending} onClick={() => { setLinks((current) => current.filter((item) => item !== link)); requestAnimationFrame(() => entitySelect.current?.focus()); }} aria-label={`移除${entity?.label ?? "不可用档案"}关联`}>移除</button></li>; })}</ul></details>
-    <div className="forum-editor-heading"><div><h2>{draftTitle || "未命名主题"}</h2><p className="forum-form-hint">{floors.length} / 100 条发言 · 回复会显示在对应分支下</p></div><button className="button button-secondary" type="button" aria-pressed={preview} onClick={() => setPreview(!preview)}>{preview ? "继续编辑" : "阅读预览"}</button></div>
+    <div className="forum-editor-heading"><div><h2>{draftTitle || "未命名主题"}</h2><p className="forum-form-hint">{floors.length} / 100 条发言 · 按楼层顺序显示 · 回复引用直接目标</p></div><button className="button button-secondary" type="button" aria-pressed={preview} onClick={() => setPreview(!preview)}>{preview ? "继续编辑" : "阅读预览"}</button></div>
     <p className="forum-form-hint">👍 赞同 · ？疑惑：以下数量由你编写，用于剧情展示。</p>
     {floors.length === 0 && <p className="forum-empty-note">尚无发言。添加一条发言，开始编排这场讨论。</p>}
     <ThreadTree prefix="draft" nodes={floors.map((floor, index) => {
@@ -132,7 +135,7 @@ export function DraftEditor({ topicId, title, board, tags, initialFloors, accoun
           <label>回复对象<select value={floor.replyToId ?? ""} onChange={event => update(index, { replyToId: event.target.value || null })}><option value="">独立发言</option>{floors.slice(0, index).map((target, i) => <option key={target.id} value={target.id}>#{i + 1} · {target.body.slice(0, 24) || "空白发言"}</option>)}</select></label>
           <label>戏内时间<input value={floor.in_world_time} maxLength={100} onChange={event => update(index, { in_world_time: event.target.value })} placeholder="可选" /></label>
         </div>
-        <label htmlFor={'body-' + floor.id} className="sr-only">第 {index + 1} 层正文</label><textarea id={'body-' + floor.id} value={floor.body} required rows={3} maxLength={10000} onChange={event => update(index, { body: event.target.value })} placeholder="以这个身份写下发言……" />
+        <FloorBodyEditor id={"body-" + floor.id} body={floor.body} disabled={saving || importing || uploading} onBusy={setUploading} onChange={body => update(index, { body })} />
         <div className="thread-edit-reactions"><label>👍 赞同<input type="number" min={0} max={999999999} step={1} required value={floor.like_count} onChange={event => update(index, { like_count: event.target.valueAsNumber || 0 })} /></label><label>？疑惑<input type="number" min={0} max={999999999} step={1} required value={floor.question_count} onChange={event => update(index, { question_count: event.target.valueAsNumber || 0 })} /></label><button className="thread-delete" type="button" onClick={() => remove(index)} aria-label={`删除第 ${index + 1} 层`}>删除发言</button></div>
       </div>;
     }} />

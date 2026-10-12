@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { validForumImages } from "./body";
 
 export const forumBoards = [
   { id: "campus", label: "校园日常" },
@@ -20,7 +21,7 @@ export const forumMessageSchema = z.object({
   like_count: z.number().int().min(0).max(999999999).default(0),
   question_count: z.number().int().min(0).max(999999999).default(0),
   forum_account_id: z.string().uuid("请选择发言账号。"),
-  body: z.string().trim().min(1, "楼层正文不能为空。").max(10000, "单层不能超过 10000 字。"),
+  body: z.string().trim().min(1, "楼层正文不能为空。").max(10000, "单层不能超过 10000 字。").refine(validForumImages, "图片须独占一行，使用 ![说明](/api/media/图片UUID)。本地图片请在编辑器上传。"),
   in_world_time: z.string().trim().max(100, "戏内时间不能超过 100 字。"),
   reply_to_floor_no: z.number().int().positive().nullable(),
 });

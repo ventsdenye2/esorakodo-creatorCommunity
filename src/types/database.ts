@@ -9,6 +9,15 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      forum_message_media: {
+        Row: { message_id: string; asset_id: string }
+        Insert: { message_id: string; asset_id: string }
+        Update: { message_id?: string; asset_id?: string }
+        Relationships: [
+          { foreignKeyName: "forum_message_media_message_id_fkey"; columns: ["message_id"]; isOneToOne: false; referencedRelation: "forum_messages"; referencedColumns: ["id"] },
+          { foreignKeyName: "forum_message_media_asset_id_fkey"; columns: ["asset_id"]; isOneToOne: false; referencedRelation: "media_assets"; referencedColumns: ["id"] }
+        ]
+      }
       article_entity_links: {
         Row: {
           article_id: string

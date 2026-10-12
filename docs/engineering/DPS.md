@@ -214,3 +214,8 @@ app/auth/callback/route.ts 调用 callback-notice.mjs；auth-callback-notice.tes
 ## 2026-10-01 创作 Markdown 导入（进行中）
 
 论坛、校刊/部刊和事件草稿新增版本化 Markdown 导入、UTF-8 文件/粘贴入口、替换确认、严格领域校验与下载模板。论坛由服务器复核并复用本人身份，缺失身份通过单次批量 INSERT 创建；无迁移。事件公开后不整体替换节点。见 `docs/design/markdown-import.md`；图解教程新增格式与 AI 提示词。本地实现完成：lint、typecheck、Windows build 通过；26 项解析器回归、41 项真实 PostgreSQL 17 检查通过（含批量身份创建、冲突整批回滚、归属防伪）。浏览器真实组件校验三种文件导入、错误时保留内容、回复映射与节点数；390px 手机及教程无横向溢出。界面使用演示数据与替代保存边界，未对生产写入测试作品。Linux build 与 standalone 启动/Origin/中文回调冒烟通过。源码 `75e29ecc15f3ee28031fcdc17a62753ca7adc522` 已推送；runtime `4bef03f08062362ce117f4126c3bdcfc8a7097f1` 已经既有 SSH 脚本部署，current 指向匹配版本，服务 active。线上 `/guide#import` 内容、三份模板、原始截图全部 HTTP 200；真实浏览器完成图像载入与模板展开检查。无新迁移、无生产测试作品写入。当前批次完成；后续真实创作者可用自己的草稿完成首次导入保存。
+
+
+## 2026-10-12 · 论坛多图与直接引用
+
+用户确认多图、选择上传、粘贴图片，并同步 Markdown 导入/编辑；仅展开直接回复目标。已实现平铺楼层、引用正文和图片缩略图、完整图片弹窗、首楼论坛身份的楼主标识。图片格式为独立行 `![说明](/api/media/UUID)`，媒体关联与 RLS 由 `202610120001_forum_images.sql` 追加。详见 [设计与契约](../design/forum-images.md)。历史树状缩进/折叠说明由本需求取代。当前为本地待交付工作区，未部署或应用生产迁移。
