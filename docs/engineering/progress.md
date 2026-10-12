@@ -227,3 +227,14 @@ Campus 与 portfolio 返回 HTTP 200。主站一次服务器侧 TLS 探测出现
 本地实现完成：多选/粘贴图片，引用卡片只显示直接目标正文和缩略图，原图弹窗/Escape/焦点返回，首楼身份楼主标签，按楼层排序。导入、编辑预览、模板、教程与真实截图同步。追加 202610120001 迁移和数据库类型，图片关联/归属/ready/RLS 保持原子保存和发布冻结。工作区基线干净，本批修改未提交；无生产数据库变更或部署。下一步为审阅本地改动后在部署批次应用迁移、构建运行包和线上验证。
 
 最终同步后 lint、typecheck、五阶段 build 与 standalone 打包再次通过。用户询问 Supabase 迁移与服务器连接；已核对本地项目链接 ref sttghkavzjeqeuignpwi 及部署文档 root@lax01.ventsdenye.com、密钥 SSH、既有 update-runtime.sh，尚未本轮实际连通核验或执行生产迁移。
+
+
+## 2026-10-12 · 线上迁移与部署完成
+
+用户明确授权先 Git commit 后线上迁移部署。功能源码 `d906cf0e887039a7c9762f511d9f9f5fbfe45762` 已推送 deploy/backend；Linux standalone runtime `403d56d05c5010018f0b53df1c1e4796e17b9d9c` 已推送 deploy/runtime 并核对远端 ref。
+
+Supabase sttghkavzjeqeuignpwi 原14条迁移只读核对后，在事务中追加202610120001，forum_topics/forum_messages/forum_accounts/media_assets全部行数量及完整内容MD5迁移前后一致（比较只在服务器事务内进行，无业务内容导出）；迁移记录、RLS、触发器与匿名函数禁止调用均读回验证。无重建/清空/既有内容改写。
+
+176个本机运行输入同步至既有WSL Linux环境；五阶段构建、118包依赖补全、standalone启动及媒体同源/中文回调冒烟通过。运行包5836文件、58053056字节，无环境/凭据文件。服务器既有update-runtime.sh执行成功，current为releases/git-403d56d05c5010018f0b53df1c1e4796e17b9d9c，ktu-community active，前版git-4bef03f08062362ce117f4126c3bdcfc8a7097f1保留。
+
+线上主页、论坛、教程、模板、楼层截图与既有真实帖子均HTTP200，新引用和楼主标识已实际读回。真实浏览器390px检查3个楼主标识、1个直接引用、无嵌套引用/横向溢出，截图output/playwright/forum-images-production-mobile.png。两个旧站均200、两个Nginx配置SHA256与部署前一致。未创建线上测试帖子或执行真实用户上传，上传/粘贴接口交互在本地桩与SQL权限测试验证；真实R2发布端到端不记为已验收。任务交付完成，本次收尾仅文档无需重建。

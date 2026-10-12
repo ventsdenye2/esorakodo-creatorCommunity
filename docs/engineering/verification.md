@@ -306,3 +306,14 @@ Campus 与 portfolio 返回 HTTP 200。主站一次服务器侧 TLS 探测出现
  lint/typecheck/build通过；首次 build 被沙箱 realpath EPERM 阻止，提升本地构建权限后五阶段和standalone生成通过。最后教程与类型同步后复跑记录见下一条。无生产迁移/部署。
 
 最终同步后 lint、typecheck、五阶段 build 与 standalone 打包再次通过。用户询问 Supabase 迁移与服务器连接；已核对本地项目链接 ref sttghkavzjeqeuignpwi 及部署文档 root@lax01.ventsdenye.com、密钥 SSH、既有 update-runtime.sh，尚未本轮实际连通核验或执行生产迁移。
+
+
+## 2026-10-12 · 线上迁移与部署完成
+
+用户明确授权先 Git commit 后线上迁移部署。功能源码 `d906cf0e887039a7c9762f511d9f9f5fbfe45762` 已推送 deploy/backend；Linux standalone runtime `403d56d05c5010018f0b53df1c1e4796e17b9d9c` 已推送 deploy/runtime 并核对远端 ref。
+
+Supabase sttghkavzjeqeuignpwi 原14条迁移只读核对后，在事务中追加202610120001，forum_topics/forum_messages/forum_accounts/media_assets全部行数量及完整内容MD5迁移前后一致（比较只在服务器事务内进行，无业务内容导出）；迁移记录、RLS、触发器与匿名函数禁止调用均读回验证。无重建/清空/既有内容改写。
+
+176个本机运行输入同步至既有WSL Linux环境；五阶段构建、118包依赖补全、standalone启动及媒体同源/中文回调冒烟通过。运行包5836文件、58053056字节，无环境/凭据文件。服务器既有update-runtime.sh执行成功，current为releases/git-403d56d05c5010018f0b53df1c1e4796e17b9d9c，ktu-community active，前版git-4bef03f08062362ce117f4126c3bdcfc8a7097f1保留。
+
+线上主页、论坛、教程、模板、楼层截图与既有真实帖子均HTTP200，新引用和楼主标识已实际读回。真实浏览器390px检查3个楼主标识、1个直接引用、无嵌套引用/横向溢出，截图output/playwright/forum-images-production-mobile.png。两个旧站均200、两个Nginx配置SHA256与部署前一致。未创建线上测试帖子或执行真实用户上传，上传/粘贴接口交互在本地桩与SQL权限测试验证；真实R2发布端到端不记为已验收。任务交付完成，本次收尾仅文档无需重建。
