@@ -1,14 +1,14 @@
-# Kongtian University Linux runtime
+﻿# Kongtian University Linux runtime
 
-Source revision: 75e29ecc15f3ee28031fcdc17a62753ca7adc522 (deploy/backend).
-Release: 2026-10-01 Markdown import for forum, articles and event drafts,
-strict versioned templates, identity creation and illustrated format guide.
-No new database migration. Previous schema 202609290001 remains in use.
+Source revision: d906cf0e887039a7c9762f511d9f9f5fbfe45762 (deploy/backend).
+Release: 2026-10-12 forum multi-image upload/paste, direct-floor quote thumbnails,
+full-image viewer, topic-owner badges and synchronized Markdown/editor guide.
+Requires additive migration 202610120001_forum_images (already applied).
 
 Linux x86_64 runtime built in WSL Ubuntu with Node 24.19.0. Entry point:
 dist/standalone/server.js. Server uses its existing isolated Node 22 runtime.
 Local Linux standalone startup, callback and media-origin smoke checks passed.
-Guide: 11 original interface captures and 38 numbered explanations. Browser UI and
+Guide: forum floor screenshot and image instructions synchronized. Browser UI and
 responsive checks recorded on the source branch; no production creator writes.
 
 No environment files, credentials, local tests or creator fixture data included.
