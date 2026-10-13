@@ -245,3 +245,7 @@ Supabase sttghkavzjeqeuignpwi 原14条迁移只读核对后，在事务中追加
 从 deploy/backend=852e952 干净工作树开始，修复 F1–F7/R1；本批变更尚未提交。用户要求 Git 管理，验证完成后允许上线。lint/typecheck/build 与 99 项真实 PostgreSQL 回归通过，浏览器验收进行中。服务器只读确认当前 runtime=403d56d，服务 active，剩余 5.6GB；未执行本批云端迁移或发布。下一步完成浏览器、Git 提交、Linux 构建、迁移部署与复验。
 
 最终真实 RevisionBrowser SSR 专项通过：CRLF/首空行无 React 水合错误，版本切换与 390px 无溢出；带 action 的原地失败表单保留名称/摘要/正文。浏览器临时环境的问题已修正（UTF-8 与测试页面 head），不涉及产品代码。准备 Git 提交及 Linux 发布。
+
+同类复查补充：Creator 头像表单也上报上传 busy、拦截提前保存；头像/字段改动撤回旧保存提示，失败保留输入。补充验证后再生成最终运行产物。
+
+头像补充修复浏览器通过：上传期间按钮禁用与 requestSubmit 拦截，完成后提交含头像 ID，显示名称变化撤回旧提示；lint/typecheck 通过。线上增量迁移已事务提交，既有三表数量/指纹未改变，2 触发器/4 索引/迁移记录读回一致。源码 20b29f4 已推送；最终 Linux 产物重建中。

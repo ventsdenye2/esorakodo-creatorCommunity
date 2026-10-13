@@ -226,3 +226,5 @@ app/auth/callback/route.ts 调用 callback-notice.mjs；auth-callback-notice.tes
 F1–F7/R1 代码完成，lint/typecheck/Windows standalone build 通过；99 项隔离 PostgreSQL 检查通过。正在完成浏览器真实组件与 SSR 验证，再提交源码、事务应用增量迁移、构建 Linux runtime 并部署，最后生产复验。用户已授权上线。
 
 最终真实 RevisionBrowser SSR 专项通过：CRLF/首空行无 React 水合错误，版本切换与 390px 无溢出；带 action 的原地失败表单保留名称/摘要/正文。浏览器临时环境的问题已修正（UTF-8 与测试页面 head），不涉及产品代码。准备 Git 提交及 Linux 发布。
+
+头像补充修复浏览器通过：上传期间按钮禁用与 requestSubmit 拦截，完成后提交含头像 ID，显示名称变化撤回旧提示；lint/typecheck 通过。线上增量迁移已事务提交，既有三表数量/指纹未改变，2 触发器/4 索引/迁移记录读回一致。源码 20b29f4 已推送；最终 Linux 产物重建中。
