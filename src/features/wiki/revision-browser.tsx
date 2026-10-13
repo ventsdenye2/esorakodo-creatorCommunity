@@ -17,7 +17,9 @@ const fields = [["name", "档案名称"], ["summary", "摘要"], ["college_id", 
 const text = (value: unknown) => typeof value === "string" ? value : "";
 function changes(before: string, after: string) {
   // Bound pathological large rewrites; whole-text removal/addition remains exact.
-  return diffLines(before, after, { timeout: 100 }) ?? [
+  before = before.replace(/\r\n?/g, "\n");
+  after = after.replace(/\r\n?/g, "\n");
+  return diffLines(before, after, { maxEditLength: 1000 }) ?? [
     { value: before, removed: true, added: false },
     { value: after, added: true, removed: false },
   ];
@@ -43,7 +45,7 @@ export function RevisionBrowser({ revisions, entity, canRestore, editors }: {
       <section className="revision-inspection" aria-label="版本差异">
         <header><h2>v{String(before.version)} → v{String(after.version)}</h2><p>{changed.length} 个字段变更 · <span className="diff-legend-added">＋新增</span> / <span className="diff-legend-removed">−删除</span></p></header>
         {changed.length === 0 && <p className="revision-unchanged">这两个版本的档案内容相同。</p>}
-        {changed.map(([key, label]) => <div className="revision-file" key={key}><h3>{label}</h3><div className="revision-diff" role="region" aria-label={`${label}差异`} tabIndex={0}>{changes(text(before[key]), text(after[key])).map((part,i) => <div className={part.added ? "diff-added" : part.removed ? "diff-removed" : "diff-context"} key={i}><span aria-label={part.added ? "新增" : part.removed ? "删除" : "不变"}>{part.added ? "+" : part.removed ? "−" : " "}</span><pre>{part.value}</pre></div>)}</div></div>)}
+        {changed.map(([key, label]) => <div className="revision-file" key={key}><h3>{label}</h3><div className="revision-diff" role="region" aria-label={`${label}差异`} tabIndex={0}>{changes(text(before[key]), text(after[key])).map((part,i) => <div className={part.added ? "diff-added" : part.removed ? "diff-removed" : "diff-context"} key={i}><span aria-label={part.added ? "新增" : part.removed ? "删除" : "不变"}>{part.added ? "+" : part.removed ? "−" : " "}</span><pre><code>{part.value}</code></pre></div>)}</div></div>)}
         <details className="revision-snapshot"><summary>查看 v{String(after.version)} 完整档案</summary><h2>{text(after.name)}</h2><p>{text(after.summary)}</p>{text(after.signature) && <blockquote>{text(after.signature)}</blockquote>}{text(after.college_id) && <p>所属学院：{text(after.college_id)}</p>}<Markdown>{text(after.body)}</Markdown></details>
         {canRestore && afterRevision && Number(after.version) !== entity.version && <details className="revision-restore"><summary>恢复此版本…</summary><p>将 v{String(after.version)} 的内容保存为一个新版本，现有历史会保留。</p><form action={rollbackWikiRevision} onSubmit={() => setPending(true)}>
           <input type="hidden" name="revisionId" value={afterRevision.id} /><input type="hidden" name="entityType" value={entity.type} /><input type="hidden" name="slug" value={entity.slug} /><input type="hidden" name="expectedVersion" value={entity.version} />

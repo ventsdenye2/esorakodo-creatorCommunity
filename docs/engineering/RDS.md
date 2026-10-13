@@ -252,3 +252,8 @@ app/auth/callback/route.ts 调用 callback-notice.mjs；auth-callback-notice.tes
 ## 2026-10-12 · 论坛多图与直接引用
 
 用户确认多图、选择上传、粘贴图片，并同步 Markdown 导入/编辑；仅展开直接回复目标。已实现平铺楼层、引用正文和图片缩略图、完整图片弹窗、首楼论坛身份的楼主标识。图片格式为独立行 `![说明](/api/media/UUID)`，媒体关联与 RLS 由 `202610120001_forum_images.sql` 追加。详见 [设计与契约](../design/forum-images.md)。历史树状缩进/折叠说明由本需求取代。当前为本地待交付工作区，未部署或应用生产迁移。
+
+
+## 2026-10-13 · 功能测试修复
+
+表单使用返回错误的 Action 与客户端手动 dispatch；上传状态从组件上报；保存提示比较内容基线。历史换行归一化并采用确定性 diff 上限。评论使用双字段游标及原 RLS。追加发布触发器与索引，无数据回填。详见 ../design/bugfixes-20261013.md。

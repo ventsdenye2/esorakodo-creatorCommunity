@@ -1,3 +1,4 @@
+import { ActionForm } from "../../../src/components/forms/action-form";
 import { MarkdownEditor } from "../../../src/features/wiki/markdown-editor";
 import { GuideLink } from "../../../src/features/guide/guide-link";
 import Link from "next/link";
@@ -33,7 +34,7 @@ export default async function CreateWikiPage({ searchParams }: PageProps) {
           <p className="auth-notice auth-notice-error" role="alert">档案服务暂未开放，当前无法提交。</p>
         ) : null}
         {query.error ? <p className="auth-notice auth-notice-error" role="alert">{query.error}</p> : null}
-        <form action={createWikiEntity} className="wiki-form">
+        <ActionForm action={createWikiEntity} className="wiki-form">
           <label>
             <span>档案类型</span>
             <select defaultValue="student" name="entityType">
@@ -63,7 +64,7 @@ export default async function CreateWikiPage({ searchParams }: PageProps) {
             <Link className="button button-secondary" href="/wiki">取消</Link>
             <button className="button button-primary" disabled={!configured} type="submit">建立档案</button>
           </div>
-        </form>
+        </ActionForm>
       </main>
       <SiteFooter />
     </div>

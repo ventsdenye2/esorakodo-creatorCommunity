@@ -35,7 +35,9 @@ async function requireClient(path: string) {
   return supabase;
 }
 
-export async function createWikiEntity(formData: FormData) {
+export type WikiSaveState = { error: string | null };
+
+export async function createWikiEntity(_: WikiSaveState, formData: FormData): Promise<WikiSaveState> {
   const parsed = createWikiEntitySchema.safeParse({
     entityType: formValue(formData, "entityType"),
     slug: formValue(formData, "slug"),
@@ -46,10 +48,13 @@ export async function createWikiEntity(formData: FormData) {
     signature: formValue(formData, "signature"),
   });
   if (!parsed.success) {
-    withMessage("/create/wiki", "error", parsed.error.issues[0]?.message ?? "档案信息无效。");
+    return { error: parsed.error.issues[0]?.message ?? "档案信息无效。" };
   }
 
-  const supabase = await requireClient("/create/wiki");
+  if (!isSupabaseConfigured()) return { error: "档案服务暂不可用，请稍后重试。" };
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "登录已过期，请在新标签页登录后返回重试；当前输入仍然保留。" };
   const { error } = await supabase.rpc("create_wiki_entity_with_body", {
     p_entity_type: parsed.data.entityType,
     p_slug: parsed.data.slug,
@@ -59,7 +64,7 @@ export async function createWikiEntity(formData: FormData) {
     ...(parsed.data.collegeId ? { p_college_id: parsed.data.collegeId } : {}),
     ...(parsed.data.signature ? { p_signature: parsed.data.signature } : {}),
   });
-  if (error) withMessage("/create/wiki", "error", wikiErrorMessage(error));
+  if (error) return { error: wikiErrorMessage(error) };
 
   const href = getWikiEntityHref(parsed.data.entityType, parsed.data.slug);
   revalidatePath("/wiki");
@@ -67,7 +72,7 @@ export async function createWikiEntity(formData: FormData) {
   redirect(`${href}?message=${encodeURIComponent("档案已创建，并记录首个 Revision。")}`);
 }
 
-export async function updateWikiEntity(formData: FormData) {
+export async function updateWikiEntity(_: WikiSaveState, formData: FormData): Promise<WikiSaveState> {
   const parsed = updateWikiEntitySchema.safeParse({
     entityType: formValue(formData, "entityType"),
     entityId: formValue(formData, "entityId"),
@@ -80,13 +85,15 @@ export async function updateWikiEntity(formData: FormData) {
     signature: formValue(formData, "signature"),
     editSummary: formValue(formData, "editSummary"),
   });
-  const fallback = "/wiki";
   if (!parsed.success) {
-    withMessage(fallback, "error", parsed.error.issues[0]?.message ?? "档案修改无效。");
+    return { error: parsed.error.issues[0]?.message ?? "档案修改无效。" };
   }
 
   const href = getWikiEntityHref(parsed.data.entityType, parsed.data.slug);
-  const supabase = await requireClient(`${href}/edit`);
+  if (!isSupabaseConfigured()) return { error: "档案服务暂不可用，请稍后重试。" };
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "登录已过期，请在新标签页登录后返回重试；当前输入仍然保留。" };
   const patch: Record<string, string | null> = {
     name: parsed.data.name,
     summary: parsed.data.summary ?? null,
@@ -102,7 +109,7 @@ export async function updateWikiEntity(formData: FormData) {
     p_patch: patch,
     p_summary: parsed.data.editSummary,
   });
-  if (error) withMessage(`${href}/edit`, "error", wikiErrorMessage(error));
+  if (error) return { error: wikiErrorMessage(error) };
 
   revalidatePath("/wiki");
   revalidatePath(href);

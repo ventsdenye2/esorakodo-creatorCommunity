@@ -103,5 +103,86 @@ try {
   const restored=(await db.query("select rollback_wiki_revision($1,2,'恢复旧快照') as doc",[old.id])).rows[0].doc;
   check(restored.body===''&&restored.version===3,'pre-migration snapshot without body restores safely');
   await assert.rejects(db.query("update colleges set body='bypass' where id=$1",[legacy.id])); check(true,'Markdown cannot bypass revision RPC');
+
+  await db.query('set role authenticated');await db.query("select set_config('request.jwt.claim.sub',$1,false)",[a]);
+  const content=JSON.stringify({schema_version:1,blocks:[{type:'paragraph',text:'隔离数据库验收正文'}]});
+  const article=(await db.query("select save_article(null,null,'验收文章','摘要',$1::jsonb,array['校园生活'],false) as id",[content])).rows[0].id;
+  check((await db.query('select status from articles where id=$1',[article])).rows[0].status==='draft','article draft save persists');
+  await db.query("set role anon;select set_config('request.jwt.claim.sub','',false)");check((await db.query('select id from articles where id=$1',[article])).rows.length===0,'anonymous readers cannot see article draft');
+  await db.query('set role authenticated');await db.query("select set_config('request.jwt.claim.sub',$1,false)",[b]);
+  await assert.rejects(db.query("select save_article($1,1,'盗改','',$2::jsonb,'{}',false)",[article,content]),/FORBIDDEN/);check(true,'other creator cannot edit article');
+  await db.query("select set_config('request.jwt.claim.sub',$1,false)",[a]);
+  await assert.rejects(db.query("select save_article($1,99,'过期','',$2::jsonb,'{}',false)",[article,content]),/VERSION_CONFLICT/);check(true,'article optimistic lock rejects stale edits');
+  await db.query("select save_article($1,1,'验收文章','摘要',$2::jsonb,array['校园生活'],true)",[article,content]);
+  await db.query("set role anon;select set_config('request.jwt.claim.sub','',false)");check((await db.query('select status from articles where id=$1',[article])).rows[0].status==='published','published article visible anonymously');
+  await db.query('set role authenticated');await db.query("select set_config('request.jwt.claim.sub',$1,false)",[a]);
+  await assert.rejects(db.query("select save_event(null,null,'无节点','概述','秋季','','','[]',true)") ,/INVALID_NODES/);check(true,'event publication rejects missing timeline');
+  const timelineId=randomUUID(),timeline=JSON.stringify([{id:timelineId,label:'第一日',title:'开始',description:'经过'}]);
+  const event=(await db.query("select save_event(null,null,'验收事件','概述','秋季','背景','影响',$1::jsonb,true) as id",[timeline])).rows[0].id;
+  check((await db.query('select status from events where id=$1',[event])).rows[0].status==='published','event publication saves stable timeline');
+  await db.query("select set_config('request.jwt.claim.sub',$1,false)",[b]);
+  const supplement=(await db.query("select save_event_supplement(null,null,$1,$2,'补充视角','perspective',$3::jsonb,true) as id",[event,timelineId,content])).rows[0].id;
+  check((await db.query('select creator_id from event_supplements where id=$1',[supplement])).rows[0].creator_id===b,'event supplement preserves independent authorship');
+  await db.query("select set_config('request.jwt.claim.sub',$1,false)",[a]);
+  await assert.rejects(db.query("select save_event($1,1,'验收事件','概述','秋季','','','[]',false)",[event]),/NODE|NODES/);check(true,'timeline node referenced by supplement cannot be removed');
+  check(Number((await db.query('select version from events where id=$1',[event])).rows[0].version)===1,'failed timeline update rolls back version');
+  await db.query("select interact_work('article',$1,'like')",[article]);check((await db.query('select id from work_likes where article_id=$1',[article])).rows.length===1,'work like toggle adds one record');
+  await db.query("select interact_work('article',$1,'like')",[article]);check((await db.query('select id from work_likes where article_id=$1',[article])).rows.length===0,'work like toggle removes record');
+  await db.query("select interact_work('article',$1,'bookmark')",[article]);
+  await db.query("select set_config('request.jwt.claim.sub',$1,false)",[b]);check((await db.query('select id from work_bookmarks where article_id=$1',[article])).rows.length===0,'another creator cannot read private bookmark');
+  await db.query("select interact_work('article',$1,'comment','测试作品讨论')",[article]);
+  const comment=(await db.query('select id from work_comments where article_id=$1',[article])).rows[0].id;
+  await db.query("select set_config('request.jwt.claim.sub',$1,false)",[a]);
+  await assert.rejects(db.query('select remove_work_comment($1)',[comment]),/FORBIDDEN/);check(true,'creator cannot remove another creator comment');
+  await db.query("select set_config('request.jwt.claim.sub',$1,false)",[b]);await db.query('select remove_work_comment($1)',[comment]);
+  await db.query("set role anon;select set_config('request.jwt.claim.sub','',false)");check((await db.query('select id from work_comments where id=$1',[comment])).rows.length===0,'removed comment is no longer publicly readable');
+  await db.query('set role authenticated');await db.query("select set_config('request.jwt.claim.sub',$1,false)",[b]);
+  const report=(await db.query("select report_work('event',$1,'隔离数据库举报理由') as id",[event])).rows[0].id;
+  await assert.rejects(db.query("select moderate_report($1,'hide','普通用户不得处置')",[report]),/FORBIDDEN/);check(true,'ordinary creator cannot moderate');
+  await db.query('reset role');await db.query('insert into moderators(creator_id) values($1)',[a]);
+  await db.query('set role authenticated');await db.query("select set_config('request.jwt.claim.sub',$1,false)",[a]);
+  await db.query("select moderate_report($1,'hide','隔离验收隐藏理由')",[report]);
+  await db.query("set role anon;select set_config('request.jwt.claim.sub','',false)");check((await db.query('select id from events where id=$1',[event])).rows.length===0,'moderation hides event from public readers');
+  check((await db.query('select id from event_supplements where id=$1',[supplement])).rows.length===0,'hidden event also hides published supplements');
+  await db.query('set role authenticated');await db.query("select set_config('request.jwt.claim.sub',$1,false)",[a]);await db.query("select moderate_report($1,'restore','隔离验收恢复理由')",[report]);
+  check((await db.query('select id from moderation_actions where report_id=$1',[report])).rows.length===2,'hide and restore both retain audit evidence');
+  await db.query("set role anon;select set_config('request.jwt.claim.sub','',false)");check((await db.query('select id from events where id=$1',[event])).rows.length===1,'moderation restores public event');
+  await db.query('set role authenticated');await db.query("select set_config('request.jwt.claim.sub',$1,false)",[a]);
+
+  const whitespace=['','   ','\t\r\n', '\u00a0', '\u3000', '\ufeff', '\u000b'];
+  for(const type of ['paragraph','heading','quote']) for(const text of whitespace) {
+    const blank=JSON.stringify({schema_version:1,blocks:[{type,text}]});
+    await assert.rejects(db.query("select save_article(null,null,'不得发布空白','',$1::jsonb,'{}',true)",[blank]),/CONTENT_INVALID_BODY/);
+    await assert.rejects(db.query("select save_event_supplement(null,null,$1,null,'不得发布空白','detail',$2::jsonb,true)",[event,blank]),/CONTENT_INVALID_BODY/);
+    check(true,`article and supplement reject ${type} whitespace ${JSON.stringify(text)}`);
+  }
+  const blank=JSON.stringify({schema_version:1,blocks:[{type:'paragraph',text:'   '}]});
+  await db.query("select save_article(null,null,'空白草稿允许暂存','',$1::jsonb,'{}',false)",[blank]);check(true,'blank drafts remain saveable');
+  const v=JSON.stringify({schema_version:1,blocks:[{type:'paragraph',text:'v'}]});
+  await db.query("select save_article(null,null,'有效正文','',$1::jsonb,'{}',true)",[v]);check(true,'letter v is meaningful, never mistaken for vertical-tab escape');
+  await db.query("select save_article(null,null,'纯图片文章','',$1::jsonb,'{}',true)",[JSON.stringify({schema_version:1,blocks:[{type:'image',asset_id:image,alt:''}]})]);check(true,'valid image-only publication remains allowed');
+  const before=(await db.query('select body,version from articles where id=$1',[article])).rows[0];
+  await assert.rejects(db.query("select save_article($1,$2,'不得清空已发布','',$3::jsonb,'{}',false)",[article,before.version,blank]),/CONTENT_INVALID_BODY/);
+  check(JSON.stringify((await db.query('select body,version from articles where id=$1',[article])).rows[0])===JSON.stringify(before),'failed published update rolls back body and version');
+  await db.query("select set_config('request.jwt.claim.sub',$1,false)",[b]);
+  await assert.rejects(db.query("select save_event_supplement($1,1,$2,$3,'不得清空','perspective',$4::jsonb,false)",[supplement,event,timelineId,blank]),/CONTENT_INVALID_BODY/);check(true,'published supplement cannot be emptied using save intent');
+  await db.query('reset role');
+  await db.query("delete from work_comments where article_id=$1",[article]);
+  const ids=Array.from({length:111},()=>randomUUID());
+  for(const [i,id] of ids.entries())await db.query("insert into work_comments(id,creator_id,article_id,body,created_at) values($1,$2,$3,$4,'2026-10-13T00:00:00Z')",[id,a,article,'分页'+i]);
+  await db.query("set role anon;select set_config('request.jwt.claim.sub','',false)");
+  const collected=[];let cursor;
+  do{
+    const result=cursor?await db.query('select id,created_at from work_comments where article_id=$1 and (created_at,id)<($2,$3) order by created_at desc,id desc limit 50',[article,cursor.created_at,cursor.id]):await db.query('select id,created_at from work_comments where article_id=$1 order by created_at desc,id desc limit 50',[article]);
+    collected.push(...result.rows.map(item=>item.id));cursor=result.rows.length===50?result.rows.at(-1):null;
+  }while(cursor);
+  check(collected.length===111&&new Set(collected).size===111,'stable cursor pages expose all 111 same-timestamp comments exactly once');
+  await db.query('reset role');await db.query("insert into work_comments(creator_id,article_id,body,created_at) values($1,$2,'最新评论','2026-10-14T00:00:00Z')",[a,article]);
+  await db.query("set role anon;select set_config('request.jwt.claim.sub','',false)");
+  check((await db.query('select body from work_comments where article_id=$1 order by created_at desc,id desc limit 50',[article])).rows[0].body==='最新评论','new comment appears in initial newest page after more than 50 comments');
+  await db.query('reset role');await db.query("update articles set status='hidden' where id=$1",[article]);
+  await db.query("set role anon;select set_config('request.jwt.claim.sub','',false)");
+  check((await db.query('select id from work_comments where article_id=$1',[article])).rows.length===0,'pagination never exposes hidden work comments through RLS');
+
   console.log(`Database acceptance complete: ${passed} checks passed.`);
 } finally { if(db) await db.end(); await cluster.stop(); }

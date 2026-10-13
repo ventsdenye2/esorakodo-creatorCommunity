@@ -1,3 +1,4 @@
+import { ActionForm } from "../../../../src/components/forms/action-form";
 import Link from "next/link";
 import { GuideLink } from "../../../../src/features/guide/guide-link";
 import { redirect } from "next/navigation";
@@ -21,13 +22,13 @@ export default async function NewForumAccountPage({ searchParams }: { searchPara
     <p>一个 Creator 可以管理多个戏内账号。只需昵称和账号标识即可建立身份，无需先创建人物档案。</p>
     <GuideLink section="identity">论坛身份和人物档案有什么区别？</GuideLink>
     {error && <p role="alert" className="forum-error">{error}</p>}
-    <form action={createForumAccount} className="forum-form">
+    <ActionForm action={createForumAccount} className="forum-form">
       <label>账号标识<input name="handle" required minLength={2} maxLength={32} pattern="[A-Za-z0-9_]+" autoCapitalize="none" /></label>
       <label>显示名称<input name="displayName" required maxLength={60} /></label>
       <label>身份类型<select name="accountType" defaultValue="unknown"><option value="unknown">未公开身份</option><option value="student">学生</option><option value="organization">组织</option><option value="bot">校园机器人</option></select></label>
       <label>关联人物档案（可选）<select name="studentId" defaultValue=""><option value="">不关联，独立论坛身份</option>{entities.filter((item) => item.type === "student").map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select><small>所有身份类型均可独立创建；以后也可以补充关联。</small></label>
       <label>签名<input name="signature" maxLength={280} /></label>
       <div className="forum-form-actions"><Link className="button button-secondary" href="/create/forum">返回创作</Link><button className="button button-primary" disabled={!isSupabaseConfigured()} type="submit">建立身份</button></div>
-    </form>
+    </ActionForm>
   </main><SiteFooter /></div>;
 }

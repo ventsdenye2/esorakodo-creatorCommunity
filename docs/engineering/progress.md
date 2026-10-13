@@ -238,3 +238,10 @@ Supabase sttghkavzjeqeuignpwi 原14条迁移只读核对后，在事务中追加
 176个本机运行输入同步至既有WSL Linux环境；五阶段构建、118包依赖补全、standalone启动及媒体同源/中文回调冒烟通过。运行包5836文件、58053056字节，无环境/凭据文件。服务器既有update-runtime.sh执行成功，current为releases/git-403d56d05c5010018f0b53df1c1e4796e17b9d9c，ktu-community active，前版git-4bef03f08062362ce117f4126c3bdcfc8a7097f1保留。
 
 线上主页、论坛、教程、模板、楼层截图与既有真实帖子均HTTP200，新引用和楼主标识已实际读回。真实浏览器390px检查3个楼主标识、1个直接引用、无嵌套引用/横向溢出，截图output/playwright/forum-images-production-mobile.png。两个旧站均200、两个Nginx配置SHA256与部署前一致。未创建线上测试帖子或执行真实用户上传，上传/粘贴接口交互在本地桩与SQL权限测试验证；真实R2发布端到端不记为已验收。任务交付完成，本次收尾仅文档无需重建。
+
+
+## 2026-10-13 · 功能测试修复
+
+从 deploy/backend=852e952 干净工作树开始，修复 F1–F7/R1；本批变更尚未提交。用户要求 Git 管理，验证完成后允许上线。lint/typecheck/build 与 99 项真实 PostgreSQL 回归通过，浏览器验收进行中。服务器只读确认当前 runtime=403d56d，服务 active，剩余 5.6GB；未执行本批云端迁移或发布。下一步完成浏览器、Git 提交、Linux 构建、迁移部署与复验。
+
+最终真实 RevisionBrowser SSR 专项通过：CRLF/首空行无 React 水合错误，版本切换与 390px 无溢出；带 action 的原地失败表单保留名称/摘要/正文。浏览器临时环境的问题已修正（UTF-8 与测试页面 head），不涉及产品代码。准备 Git 提交及 Linux 发布。

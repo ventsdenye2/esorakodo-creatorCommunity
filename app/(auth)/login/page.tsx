@@ -7,7 +7,7 @@ export const metadata = { title: "登录" };
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; message?: string }>;
+  searchParams: Promise<{ error?: string; message?: string; next?: string }>;
 }) {
   const params = await searchParams;
 
@@ -20,6 +20,7 @@ export default async function LoginPage({
       <AuthNotice tone="error">{params.error}</AuthNotice>
       <AuthNotice tone="message">{params.message}</AuthNotice>
       <form className="auth-form" action={signIn}>
+        <input type="hidden" name="next" value={params.next ?? "/creator"} />
         <label>邮箱<input name="email" type="email" autoComplete="email" required /></label>
         <label>密码<input name="password" type="password" autoComplete="current-password" minLength={8} required /></label>
         <button className="button button-primary" type="submit">登录</button>

@@ -5,14 +5,18 @@ import { redirect } from "next/navigation";
 import { createClient } from "../../lib/supabase/server";
 import { isSupabaseConfigured } from "../../lib/supabase/config";
 import { signInSchema, signUpSchema } from "./schemas";
+import { safeNextPath } from "./safe-next.mjs";
+import { authErrorMessage } from "./error-message.mjs";
 
 function authRedirect(path: string, key: "error" | "message", value: string): never {
-  redirect(`${path}?${key}=${encodeURIComponent(value)}`);
+  redirect(`${path}${path.includes("?") ? "&" : "?"}${key}=${encodeURIComponent(value)}`);
 }
 
 export async function signIn(formData: FormData) {
+  const next = safeNextPath(String(formData.get("next") ?? ""), "https://campus.kongtian.university");
+  const loginPath = `/login?next=${encodeURIComponent(next)}`;
   if (!isSupabaseConfigured()) {
-    authRedirect("/login", "error", "Supabase 尚未配置，请先设置本地环境变量。");
+    authRedirect(loginPath, "error", "登录服务暂不可用，请稍后重试。");
   }
 
   const parsed = signInSchema.safeParse({
@@ -21,14 +25,14 @@ export async function signIn(formData: FormData) {
   });
 
   if (!parsed.success) {
-    authRedirect("/login", "error", parsed.error.issues[0]?.message ?? "登录信息无效。");
+    authRedirect(loginPath, "error", parsed.error.issues[0]?.message ?? "登录信息无效。");
   }
 
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword(parsed.data);
 
-  if (error) authRedirect("/login", "error", error.message);
-  redirect("/creator");
+  if (error) authRedirect(loginPath, "error", authErrorMessage(error));
+  redirect(next);
 }
 
 export async function signUp(formData: FormData) {
@@ -66,7 +70,7 @@ export async function signUp(formData: FormData) {
     },
   });
 
-  if (error) authRedirect("/register", "error", error.message);
+  if (error) authRedirect("/register", "error", authErrorMessage(error));
   if (data.session) redirect("/creator");
   authRedirect("/login", "message", "注册成功，请检查邮箱并完成验证。");
 }

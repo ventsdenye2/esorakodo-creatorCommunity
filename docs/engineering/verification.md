@@ -317,3 +317,10 @@ Supabase sttghkavzjeqeuignpwi 原14条迁移只读核对后，在事务中追加
 176个本机运行输入同步至既有WSL Linux环境；五阶段构建、118包依赖补全、standalone启动及媒体同源/中文回调冒烟通过。运行包5836文件、58053056字节，无环境/凭据文件。服务器既有update-runtime.sh执行成功，current为releases/git-403d56d05c5010018f0b53df1c1e4796e17b9d9c，ktu-community active，前版git-4bef03f08062362ce117f4126c3bdcfc8a7097f1保留。
 
 线上主页、论坛、教程、模板、楼层截图与既有真实帖子均HTTP200，新引用和楼主标识已实际读回。真实浏览器390px检查3个楼主标识、1个直接引用、无嵌套引用/横向溢出，截图output/playwright/forum-images-production-mobile.png。两个旧站均200、两个Nginx配置SHA256与部署前一致。未创建线上测试帖子或执行真实用户上传，上传/粘贴接口交互在本地桩与SQL权限测试验证；真实R2发布端到端不记为已验收。任务交付完成，本次收尾仅文档无需重建。
+
+
+## 2026-10-13 · 功能测试修复
+
+lint、typecheck、Windows 五阶段 build/standalone 通过。node tests/forum-wiki-database.mjs：99 项通过，16 个迁移全量重放、七种空白×三种文本块的文章/补充发布拒绝、草稿/纯图片兼容、失败事务回滚、111 条同时间评论游标完整性与隐藏 RLS。Auth/媒体测试 13 项通过，另含 26+6 项 Markdown 断言。浏览器已确认失败输入保留、三个编辑器保存提示、上传期间按钮和程序提交拦截、完成后图片序列化、失败解锁、111 评论加载与 390px 无横向溢出。SSR 历史专项与生产上线验证仍在进行，不将隔离桩计作生产端到端验收。
+
+最终真实 RevisionBrowser SSR 专项通过：CRLF/首空行无 React 水合错误，版本切换与 390px 无溢出；带 action 的原地失败表单保留名称/摘要/正文。浏览器临时环境的问题已修正（UTF-8 与测试页面 head），不涉及产品代码。准备 Git 提交及 Linux 发布。

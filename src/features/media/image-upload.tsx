@@ -1,13 +1,15 @@
 "use client";
-import { useId,useState } from "react";
-export function ImageUpload({onUploaded,disabled=false}:{onUploaded:(asset:{id:string;url:string})=>void;disabled?:boolean}) {
+import { useContext,useId,useState } from "react";
+import { UploadBusyContext } from "../../components/forms/action-form";
+export function ImageUpload({onUploaded,onBusy,disabled=false}:{onUploaded:(asset:{id:string;url:string})=>void;onBusy?:(busy:boolean)=>void;disabled?:boolean}) {
+  const formBusy = useContext(UploadBusyContext);
   const id=useId();const [busy,setBusy]=useState(false);const [error,setError]=useState("");
   async function upload(file:File) {
     setError("");if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>10485760){setError("请选择不超过10MB的JPEG、PNG或WebP图片。");return;}
-    setBusy(true);
+    setBusy(true);onBusy?.(true);formBusy?.(true);
     try {
       onUploaded(await uploadImage(file));
-    }catch(err){setError(err instanceof Error?err.message:'图片上传失败。');}finally{setBusy(false);}
+    }catch(err){setError(err instanceof Error?err.message:'图片上传失败。');}finally{setBusy(false);onBusy?.(false);formBusy?.(false);}
   }
   return <div className="image-upload"><label htmlFor={id}>{busy?'正在上传并校验…':'选择图片（JPEG / PNG / WebP，最多10MB）'}</label><input id={id} type="file" accept="image/jpeg,image/png,image/webp" disabled={disabled||busy} onChange={event=>{const file=event.target.files?.[0];if(file)void upload(file);event.target.value='';}}/>{error&&<p role="alert">{error}</p>}</div>;
 }

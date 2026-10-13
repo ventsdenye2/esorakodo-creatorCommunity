@@ -1,3 +1,4 @@
+import { ActionForm } from "../../../../../../src/components/forms/action-form";
 import { MarkdownEditor } from "../../../../../../src/features/wiki/markdown-editor";
 import { GuideLink } from "../../../../../../src/features/guide/guide-link";
 import Link from "next/link";
@@ -40,7 +41,7 @@ export default async function EditWikiPage({ params, searchParams }: PageProps) 
           <GuideLink section="wiki">查看档案编辑教程与 Markdown 练习</GuideLink>
         </header>
         {query.error ? <p className="auth-notice auth-notice-error" role="alert">{query.error}</p> : null}
-        <form action={updateWikiEntity} className="wiki-form">
+        <ActionForm action={updateWikiEntity} className="wiki-form">
           <input name="entityType" type="hidden" value={entity.type} />
           <input name="entityId" type="hidden" value={entity.id} />
           <input name="slug" type="hidden" value={entity.slug} />
@@ -65,7 +66,7 @@ export default async function EditWikiPage({ params, searchParams }: PageProps) 
             <Link className="button button-secondary" href={`/wiki/${entity.type}/${entity.slug}`}>取消</Link>
             <button className="button button-primary" type="submit">保存 Revision</button>
           </div>
-        </form>
+        </ActionForm>
       </main>
       <SiteFooter />
     </div>

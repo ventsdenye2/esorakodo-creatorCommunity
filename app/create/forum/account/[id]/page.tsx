@@ -1,3 +1,4 @@
+import { ActionForm } from "../../../../../src/components/forms/action-form";
 import Link from "next/link";
 import { GuideLink } from "../../../../../src/features/guide/guide-link";
 import { notFound, redirect } from "next/navigation";
@@ -21,7 +22,7 @@ export default async function EditForumAccountPage({ params, searchParams }: { p
     <p className="archive-label">FORUM IDENTITY / EDIT</p><h1>编辑论坛身份</h1>
     <GuideLink section="identity">查看论坛身份使用说明</GuideLink>
     {error && <p role="alert" className="forum-error">{error}</p>}
-    <form action={updateForumAccount} className="forum-form"><input type="hidden" name="id" value={account.id} />
+    <ActionForm action={updateForumAccount} className="forum-form"><input type="hidden" name="id" value={account.id} />
       <AvatarPicker initialId={account.avatar_asset_id} name={account.display_name} />
       <label>账号标识<input name="handle" defaultValue={account.handle} required minLength={2} maxLength={32} pattern="[A-Za-z0-9_]+" autoCapitalize="none" /></label>
       <label>显示名称<input name="displayName" defaultValue={account.display_name} required maxLength={60} /></label>
@@ -29,6 +30,6 @@ export default async function EditForumAccountPage({ params, searchParams }: { p
       <label>关联人物档案（可选）<select name="studentId" defaultValue={account.student_id ?? ""}><option value="">不关联，独立论坛身份</option>{entities.filter((item) => item.type === "student").map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select><small>可以补充或解除关联，不影响已有论坛发言。</small></label>
       <label>签名<input name="signature" defaultValue={account.signature ?? ""} maxLength={280} /></label>
       <div className="forum-form-actions"><Link className="button button-secondary" href={`/forum/accounts/${account.handle}`}>取消</Link><button className="button button-primary" type="submit">保存身份</button></div>
-    </form>
+    </ActionForm>
   </main><SiteFooter /></div>;
 }

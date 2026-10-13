@@ -1442,6 +1442,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      content_body_has_content: { Args: { p_body: Json }; Returns: boolean }
       apply_wiki_revision: {
         Args: {
           p_entity_id: string

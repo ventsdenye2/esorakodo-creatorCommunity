@@ -219,3 +219,10 @@ app/auth/callback/route.ts 调用 callback-notice.mjs；auth-callback-notice.tes
 ## 2026-10-12 · 论坛多图与直接引用
 
 用户确认多图、选择上传、粘贴图片，并同步 Markdown 导入/编辑；仅展开直接回复目标。已实现平铺楼层、引用正文和图片缩略图、完整图片弹窗、首楼论坛身份的楼主标识。图片格式为独立行 `![说明](/api/media/UUID)`，媒体关联与 RLS 由 `202610120001_forum_images.sql` 追加。详见 [设计与契约](../design/forum-images.md)。历史树状缩进/折叠说明由本需求取代。当前为本地待交付工作区，未部署或应用生产迁移。
+
+
+## 2026-10-13 · 功能测试修复
+
+F1–F7/R1 代码完成，lint/typecheck/Windows standalone build 通过；99 项隔离 PostgreSQL 检查通过。正在完成浏览器真实组件与 SSR 验证，再提交源码、事务应用增量迁移、构建 Linux runtime 并部署，最后生产复验。用户已授权上线。
+
+最终真实 RevisionBrowser SSR 专项通过：CRLF/首空行无 React 水合错误，版本切换与 390px 无溢出；带 action 的原地失败表单保留名称/摘要/正文。浏览器临时环境的问题已修正（UTF-8 与测试页面 head），不涉及产品代码。准备 Git 提交及 Linux 发布。
