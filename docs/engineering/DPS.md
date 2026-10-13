@@ -228,3 +228,10 @@ F1–F7/R1 代码完成，lint/typecheck/Windows standalone build 通过；99 �
 最终真实 RevisionBrowser SSR 专项通过：CRLF/首空行无 React 水合错误，版本切换与 390px 无溢出；带 action 的原地失败表单保留名称/摘要/正文。浏览器临时环境的问题已修正（UTF-8 与测试页面 head），不涉及产品代码。准备 Git 提交及 Linux 发布。
 
 头像补充修复浏览器通过：上传期间按钮禁用与 requestSubmit 拦截，完成后提交含头像 ID，显示名称变化撤回旧提示；lint/typecheck 通过。线上增量迁移已事务提交，既有三表数量/指纹未改变，2 触发器/4 索引/迁移记录读回一致。源码 20b29f4 已推送；最终 Linux 产物重建中。
+
+
+## 2026-10-13 · 修复交付完成
+
+功能修复完成并上线。源码修复提交 20b29f4、2c87c39、eb3d6d3 均已推送 deploy/backend；Linux runtime 5cab52dced83ab49947205627a63666889bc3f4b 已推送 deploy/runtime，并通过既有 SSH 更新脚本上线。current 指向同名版本，ktu-community active，前版 403d56d 保留。追加迁移 202610130001 已事务应用，三张既有表数量/内容指纹不变；无生产合成作品、评论或媒体创建。
+
+逐项验收及边界见 verification.md 最新记录。上传锁使用同步 ref，覆盖状态提交前的窗口；无未完成修复或待部署步骤。

@@ -330,3 +330,24 @@ lint、typecheck、Windows 五阶段 build/standalone 通过。node tests/forum-
 头像补充修复浏览器通过：上传期间按钮禁用与 requestSubmit 拦截，完成后提交含头像 ID，显示名称变化撤回旧提示；lint/typecheck 通过。线上增量迁移已事务提交，既有三表数量/指纹未改变，2 触发器/4 索引/迁移记录读回一致。源码 20b29f4 已推送；最终 Linux 产物重建中。
 
 上传启动的同一事件也通过 ref 同步锁定，避免 React 状态提交前的 programmatic requestSubmit 窗口；真实浏览器分别对校刊、补充资料、个人头像即刻提交测试通过。最终重新构建完整 Linux 产物，不修改生成的 bundle。
+
+
+## 2026-10-13 · 修复上线最终验收
+
+功能修复完成并上线。源码修复提交 20b29f4、2c87c39、eb3d6d3 均已推送 deploy/backend；Linux runtime 5cab52dced83ab49947205627a63666889bc3f4b 已推送 deploy/runtime，并通过既有 SSH 更新脚本上线。current 指向同名版本，ktu-community active，前版 403d56d 保留。追加迁移 202610130001 已事务应用，三张既有表数量/内容指纹不变；无生产合成作品、评论或媒体创建。
+
+| 项目 | 结果与实际验证范围 |
+| --- | --- |
+| F1 输入丢失 | 生产真实账号重复 Wiki Slug、重复论坛标识、空白档案名称提交均在原表单报错，名称/摘要/签名/Markdown 保留；未新增档案/身份或 Revision。 |
+| F2 上传竞态 | 真实组件对校刊/补充资料/头像验证上传期间禁用、同一事件内 requestSubmit 同步拦截、完成后图片/头像 ID 进入提交、失败解锁。线上校刊验证相同锁定与恢复，仅拦截上传预约请求，无实际 R2 写入。 |
+| F3 保存提示 | 隔离真实组件验证标题、正文、标签、关联实体、事件节点、资料性质与头像变化撤回旧提示；校刊/资料真实组件的成功动作更新保存基线。动作边界替代，未创建生产测试草稿。 |
+| F4 登录 next | 真实测试账号错误密码后保留目的地，正确登录返回 /create/article；恶意 URL、控制字符、反斜线、无效主机边界单元测试通过。 |
+| F5 历史水合 | CRLF/首空行 SSR hydrate 无错误；线上 /wiki/college/bio/history 原 #418 消失，版本切换和 390px 无溢出，浏览器无 pageerror。 |
+| F6 中文 Auth | 生产错误密码显示中文；其他供应商 code 和未知错误通过单元测试，保留 PKCE/邮件验证。未为测试发送注册邮件。 |
+| F7 空白发布 | 99 项隔离 PostgreSQL 检查含七种空白×三类文本块的文章/补充发布拒绝、已发布清空回滚、空白草稿与纯图片兼容；真实账号直接线上 save_article RPC 返回 400 CONTENT_INVALID_BODY，未创建文章。 |
+| R1 评论分页 | PostgreSQL 111 条同时间记录稳定分页、最新评论首屏可见、隐藏 RLS；真实组件加载全部 111 条；生产匿名 PostgREST 对相同双字段游标、微秒时间戳和作者关联返回 200。未在生产写入 111 条评论。 |
+| 工程门禁 | 最终 lint/typecheck 通过；Windows npm run build、Linux 五阶段构建、依赖补全、standalone 启动及媒体 Origin/中文回调 smoke 通过。180 个运行输入与最终源码逐一 SHA256 一致。复用的 174 个 runtime 包版本按最终 emitter/根安装核对一致，package-lock 未改。 |
+| 回归 | node tests/forum-wiki-database.mjs：99 项通过、16 条迁移重放；Auth/媒体 13 项测试通过，含 26+6 项 Markdown 断言。 |
+| 发布健康 | runtime 5844 文件/58076788 字节，无环境或凭据文件。SSH 更新成功，服务 active，复验时 MemoryCurrent=135671808。首页/论坛/校刊/事件/Wiki/检索/教程 HTTP 200；论坛评论区无加载/JS 错误。原有 kongtian.university 与 portfolio.ventsdenye.com HTTP 200。 |
+
+源码/产物远端 ref 已核对。Git 文档收尾属于证据更新，不改变已部署的运行输入。临时 UI、脚本及截图在仓库外可视化目录或 Git 忽略 output；凭据未保存到文档、产物或 Git。当前 7 类确认缺陷和 1 类评论风险已逐项处理；管理员生产账号及真实 R2 上传不被这些隔离验证替代。

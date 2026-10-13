@@ -257,3 +257,10 @@ app/auth/callback/route.ts 调用 callback-notice.mjs；auth-callback-notice.tes
 ## 2026-10-13 · 功能测试修复
 
 表单使用返回错误的 Action 与客户端手动 dispatch；上传状态从组件上报；保存提示比较内容基线。历史换行归一化并采用确定性 diff 上限。评论使用双字段游标及原 RLS。追加发布触发器与索引，无数据回填。详见 ../design/bugfixes-20261013.md。
+
+
+## 2026-10-13 · 修复交付完成
+
+功能修复完成并上线。源码修复提交 20b29f4、2c87c39、eb3d6d3 均已推送 deploy/backend；Linux runtime 5cab52dced83ab49947205627a63666889bc3f4b 已推送 deploy/runtime，并通过既有 SSH 更新脚本上线。current 指向同名版本，ktu-community active，前版 403d56d 保留。追加迁移 202610130001 已事务应用，三张既有表数量/内容指纹不变；无生产合成作品、评论或媒体创建。
+
+逐项验收及边界见 verification.md 最新记录。上传锁使用同步 ref，覆盖状态提交前的窗口；无未完成修复或待部署步骤。
