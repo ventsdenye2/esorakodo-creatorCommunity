@@ -1,0 +1,1 @@
+function e(e,t){if(!e?.startsWith(`/`)||e.startsWith(`//`)||e.includes(`\\`)||Array.from(e).some(e=>e.charCodeAt(0)<=32))return`/creator`;try{let n=new URL(e,t);return n.origin===t?`${n.pathname}${n.search}${n.hash}`:`/creator`}catch{return`/creator`}}export{e as t};
