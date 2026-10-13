@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, startTransition, useActionState, useState, type ReactNode } from "react";
+import { createContext, startTransition, useActionState, useRef, useState, type ReactNode } from "react";
 
 export const UploadBusyContext = createContext<((busy: boolean) => void) | null>(null);
 
@@ -11,9 +11,11 @@ export function ActionForm({ action, children, className }: {
 }) {
   const [state, dispatch, pending] = useActionState(action, { error: null });
   const [uploading, setUploading] = useState(false);
-  return <UploadBusyContext.Provider value={setUploading}><form action={dispatch} className={className} aria-busy={pending || uploading} onSubmit={event => {
+  const uploadBusy = useRef(false);
+  function uploadStatus(busy: boolean) { uploadBusy.current = busy; setUploading(busy); }
+  return <UploadBusyContext.Provider value={uploadStatus}><form action={dispatch} className={className} aria-busy={pending || uploading} onSubmit={event => {
     event.preventDefault();
-    if (pending || uploading) return;
+    if (pending || uploadBusy.current) return;
     const form = new FormData(event.currentTarget);
     startTransition(() => dispatch(form));
   }}>
