@@ -274,3 +274,9 @@ SSH 当前核验校园站运行 5cab52d、active；官网部署源 652630e。服
 ### 生产交付门禁（未上线）
 
 功能源码提交 b8ef879，官网源码提交 c5aa34f。生产正式迁移执行请求被自动审批明确拒绝：新增 schema 与导入/覆盖 21 词条属于持久生产变更，审批要求用户显式授权。已停止生产变更，不改用其他连接或工具绕过。ROLLBACK 演练已结束；正式 schema、词条内容和两站运行版本均未更改。等待用户批准：应用已审阅迁移与官网优先导入，发布校园站 Linux runtime，再发布官网静态产物。校验、发布包及本地提交可继续准备，不能据此称已上线互通。
+
+### 待授权发布包已完成
+
+Linux 五阶段 build 与 standalone 补全通过（121 个运行依赖包）；Linux 真实 GET handler 合成 transport 验收为 200/CORS */22 条/5 次查询。已准备本地 runtime 提交 addee4b8d9a3b30c7cede69bd7c442839973bfd5，5902 文件/58194302 bytes，扫描未包含环境文件、凭据或测试数据；官网静态 deploy 提交 c675873。所有发布提交均仅在本地，未推送/未重启服务。审批拒绝后再次只读确认生产 migration=0、wiki_articles 不存在、两学院仍为原名称与 version=2。
+
+复现：npm run lint；npm run typecheck；npm run build；node tests/forum-wiki-database.mjs（临时本机 PostgreSQL；可选 OFFICIAL_WIKI_MANIFEST 指定官网清单）；node tools/export-wiki-canon.mjs（官网仓库）。批准后必须先执行已演练的生产迁移/导入，再按设计顺序推送源码、发布 runtime 与官网并作生产浏览器复验。尚未使用真实生产账号写入/恢复词条做端到端验收。
