@@ -83,7 +83,7 @@ try {
   await assert.rejects(db.query("select create_wiki_entity_with_body('college','denied','Denied')")); check(true,'anonymous Markdown creation denied');
   await db.query('set role authenticated'); await db.query("select set_config('request.jwt.claim.sub',$1,false)",[a]);
   const markdown='## 校园记录\n\n**重点**与*补充*\n\n1. 先借书\n2. 再登记\n\n| 日期 | 事件 |\n| --- | --- |\n| 周一 | 开馆 |';
-  for(const type of ['student','college','place']) {
+  for(const type of ['student','college','place','article']) {
     const entity=(await db.query('select create_wiki_entity_with_body($1,$2,$3,$4,null,null,$5) as doc',[type,`qa-${type}`,'档案测试','摘要',markdown])).rows[0].doc;
     check(entity.body===markdown&&entity.version===1,`${type} creates Markdown and first immutable snapshot`);
     const first=(await db.query('select * from wiki_revisions where entity_id=$1',[entity.id])).rows[0];
@@ -95,6 +95,49 @@ try {
     check(restored.version===3&&restored.body===markdown,`${type} restore appends version and restores Markdown`);
     check((await db.query('select count(*)::int as n from wiki_revisions where entity_id=$1',[entity.id])).rows[0].n===3,`${type} failed writes leave no revisions and old history remains`);
   }
+  // Official authority, idempotence, identity preservation and transactional failure.
+  await db.query('reset role');
+  const baseline = [{ official_id:'canon-test',entity_type:'article',slug:'canon-test',source_hash:'a'.repeat(64),name:'官网词条',summary:'官网摘要',body:'## 官网正文' }];
+  const reconcile = entries => db.query('select reconcile_official_wiki($1::jsonb) as result',[JSON.stringify(entries)]);
+  check((await reconcile(baseline)).rows[0].result.changed===1,'official first import creates knowledge record');
+  const canon=(await db.query("select * from wiki_articles where slug='canon-test'")).rows[0];
+  await db.query('set role authenticated');
+  await db.query("select apply_wiki_revision('article',$1,1,'{\"body\":\"校园站补充\"}','补充')",[canon.id]);
+  await assert.rejects(reconcile(baseline),/permission denied/);check(true,'creator cannot impersonate official sync');
+  await assert.rejects(db.query("update wiki_articles set body='绕过历史' where id=$1",[canon.id]),/permission denied/);check(true,'knowledge writes cannot bypass revisions');
+  await assert.rejects(db.query("update wiki_official_sources set source_hash=$1",['b'.repeat(64)]),/permission denied/);check(true,'creator cannot change authority metadata');
+  await db.query('reset role');
+  check((await reconcile(baseline)).rows[0].result.unchanged===1,'repeat baseline sync is idempotent');
+  check((await db.query('select body,version from wiki_articles where id=$1',[canon.id])).rows[0].body==='校园站补充','repeat baseline sync preserves community contribution');
+  const changed=[{...baseline[0],source_hash:'b'.repeat(64),body:'官网新修订'}];
+  await reconcile(changed);
+  const authoritative=(await db.query('select * from wiki_articles where id=$1',[canon.id])).rows[0];
+  check(authoritative.body==='官网新修订'&&Number(authoritative.version)===3,'official changed content wins and appends revision');
+  check((await db.query("select snapshot->>'body' as body from wiki_revisions where entity_id=$1 order by created_at,id",[canon.id])).rows.some(r=>r.body==='校园站补充'),'overridden community revision remains recoverable');
+  await db.query('set role anon');
+  check((await db.query('select * from wiki_articles where id=$1',[canon.id])).rows.length===1,'knowledge articles publicly readable');
+  await assert.rejects(db.query("select create_wiki_entity_with_body('article','anon-test','Denied')"),/permission denied/);check(true,'anonymous knowledge creation denied');
+  await assert.rejects(reconcile(changed),/permission denied/);check(true,'anonymous official sync denied');
+  await db.query('reset role');
+  const existing=(await db.query("select create_wiki_entity_with_body('college','canon-college','校园学院',null,null,null,'原始资料') as doc")).rows[0].doc;
+  await reconcile([{...baseline[0],official_id:'canon-college',entity_type:'college',slug:'canon-college',name:'官网学院',body:'官网学院正文'}]);
+  check((await db.query('select name from colleges where id=$1',[existing.id])).rows[0].name==='官网学院','first overlap favors official while preserving existing UUID');
+  check((await db.query('select count(*)::int n from wiki_revisions where entity_id=$1',[existing.id])).rows[0].n===2,'first overlap preserves old revision');
+  await assert.rejects(reconcile([{...changed[0],source_hash:'c'.repeat(64),body:'不可部分提交'}, {...baseline[0],official_id:'invalid-test',slug:'invalid-test',entity_type:'unsupported'}]),/OFFICIAL_ENTRY_INVALID/);
+  check((await db.query('select body from wiki_articles where id=$1',[canon.id])).rows[0].body==='官网新修订','invalid batch atomically rolls back earlier changes');
+  await assert.rejects(reconcile([{...changed[0],slug:'rebind-test'}]),/OFFICIAL_IDENTITY_CHANGED/);check(true,'official identity cannot silently rebind');
+  await assert.rejects(reconcile([baseline[0],baseline[0]]),/OFFICIAL_ID_DUPLICATED/);check(true,'duplicate official IDs rejected');
+  // Reconcile the actual full official manifest in this disposable database.
+  const {prepareEntries}=await import('../scripts/prepare-official-wiki.mjs');
+  const manifestPath=process.env.OFFICIAL_WIKI_MANIFEST ?? '../../kongtian-university/wiki-canon.json';
+  if(fs.existsSync(manifestPath)) {
+    const manifest=JSON.parse(fs.readFileSync(manifestPath,'utf8'));
+    const allOfficial=prepareEntries(manifest);
+    check(allOfficial.length===manifest.entries.length,'all official entries convert without unsupported HTML');
+    check((await reconcile(allOfficial)).rows[0].result.changed===allOfficial.length,'all official entries import through revision-producing transactions');
+    check((await reconcile(allOfficial)).rows[0].result.unchanged===allOfficial.length,'full import repeated without duplicate entities or revisions');
+  } else console.log('SKIP optional cross-repository manifest acceptance: set OFFICIAL_WIKI_MANIFEST to run it');
+
   const legacy=(await db.query("select create_wiki_entity('college','qa-legacy','旧档案') as doc")).rows[0].doc;
   const old=(await db.query('select id from wiki_revisions where entity_id=$1',[legacy.id])).rows[0];
   await db.query('reset role'); await db.query("update wiki_revisions set snapshot=snapshot-'body' where id=$1",[old.id]);

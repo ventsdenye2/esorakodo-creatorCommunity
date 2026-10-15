@@ -99,7 +99,7 @@ export async function updateWikiEntity(_: WikiSaveState, formData: FormData): Pr
     summary: parsed.data.summary ?? null,
     body: parsed.data.body ?? "",
   };
-  if (parsed.data.entityType !== "college") patch.college_id = parsed.data.collegeId ?? null;
+  if (["student", "place"].includes(parsed.data.entityType)) patch.college_id = parsed.data.collegeId ?? null;
   if (parsed.data.entityType === "student") patch.signature = parsed.data.signature ?? null;
 
   const { error } = await supabase.rpc("apply_wiki_revision", {

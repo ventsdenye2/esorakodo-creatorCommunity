@@ -71,7 +71,7 @@ export default async function WikiDetailPage({ params, searchParams }: PageProps
           <div><p className="archive-label">CAMPUS / FORUM</p><h2 id="forum-traces-title">论坛里的相关讨论</h2></div>
           <ul>{forumTopics.map((topic) => <li key={topic.id}><Link href={`/forum/${topic.id}`}>{topic.title}</Link><time dateTime={topic.published_at ?? ""}>{topic.published_at ? new Date(topic.published_at).toLocaleDateString("zh-CN") : ""}</time></li>)}</ul>
         </section> : null}
-        <EntityTraces type={entity.type} id={entity.id} />
+        {entity.type !== "article" ? <EntityTraces type={entity.type} id={entity.id} /> : null}
       </main>
       <SiteFooter />
     </div>

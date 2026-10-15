@@ -27,7 +27,7 @@ export default async function CreateWikiPage({ searchParams }: PageProps) {
         <header className="wiki-form-header">
           <p className="archive-label">NEW ARCHIVE RECORD</p>
           <h1>建立校园档案</h1>
-          <p>为人物、学院或地点建立档案。每次修改都会保留修订记录。</p>
+          <p>为校园知识、人物、学院或地点建立档案。每次修改都会保留修订记录，并在官网百科公开展示。</p>
           <GuideLink section="wiki">查看档案编辑教程与 Markdown 练习</GuideLink>
         </header>
         {!configured ? (
@@ -38,11 +38,12 @@ export default async function CreateWikiPage({ searchParams }: PageProps) {
           <label>
             <span>档案类型</span>
             <select defaultValue="student" name="entityType">
+              <option value="article">其他 / Other</option>
               <option value="student">人物 / Student</option>
               <option value="college">学院 / College</option>
               <option value="place">地点 / Place</option>
             </select>
-            <small>学院类型会忽略所属学院和人物签名；地点类型会忽略人物签名。</small>
+            <small>“其他”适用于校园知识、规则与机构等词条。其他与学院会忽略所属学院和人物签名；地点会忽略人物签名。</small>
           </label>
           <label><span>档案名称</span><input maxLength={100} name="name" required /></label>
           <label>

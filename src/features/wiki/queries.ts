@@ -1,9 +1,9 @@
 import { isSupabaseConfigured } from "../../lib/supabase/config";
 import { createClient } from "../../lib/supabase/server";
-import type { College, Place, Student } from "../../types/database";
+import type { College, Place, Student, WikiArticle } from "../../types/database";
 import type { WikiEntityDetail, WikiEntitySummary, WikiEntityType, WikiRevisionView } from "./types";
 
-function toSummary(type: WikiEntityType, row: Student | College | Place): WikiEntitySummary {
+function toSummary(type: WikiEntityType, row: Student | College | Place | WikiArticle): WikiEntitySummary {
   return {
     id: row.id,
     type,
@@ -15,7 +15,7 @@ function toSummary(type: WikiEntityType, row: Student | College | Place): WikiEn
   };
 }
 
-function toDetail(type: WikiEntityType, row: Student | College | Place): WikiEntityDetail {
+function toDetail(type: WikiEntityType, row: Student | College | Place | WikiArticle): WikiEntityDetail {
   return {
     ...toSummary(type, row),
     body: row.body,
@@ -30,16 +30,18 @@ export async function listWikiEntities(): Promise<WikiEntitySummary[]> {
   if (!isSupabaseConfigured()) return [];
   const supabase = await createClient();
 
-  const [students, colleges, places] = await Promise.all([
+  const [students, colleges, places, articles] = await Promise.all([
     supabase.from("students").select("*").order("updated_at", { ascending: false }),
     supabase.from("colleges").select("*").order("updated_at", { ascending: false }),
     supabase.from("places").select("*").order("updated_at", { ascending: false }),
+    supabase.from("wiki_articles").select("*").order("updated_at", { ascending: false }),
   ]);
 
-  const firstError = students.error ?? colleges.error ?? places.error;
+  const firstError = students.error ?? colleges.error ?? places.error ?? articles.error;
   if (firstError) throw new Error(firstError.message);
 
   return [
+    ...(articles.data ?? []).map((row) => toSummary("article", row)),
     ...(students.data ?? []).map((row) => toSummary("student", row)),
     ...(colleges.data ?? []).map((row) => toSummary("college", row)),
     ...(places.data ?? []).map((row) => toSummary("place", row)),
@@ -61,6 +63,11 @@ export async function getWikiEntityBySlug(
   if (!isSupabaseConfigured()) return null;
   const supabase = await createClient();
 
+  if (type === "article") {
+    const { data, error } = await supabase.from("wiki_articles").select("*").eq("slug", slug).maybeSingle();
+    if (error) throw new Error(error.message);
+    return data ? toDetail(type, data) : null;
+  }
   if (type === "student") {
     const { data, error } = await supabase.from("students").select("*").eq("slug", slug).maybeSingle();
     if (error) throw new Error(error.message);

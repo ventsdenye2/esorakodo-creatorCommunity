@@ -9,6 +9,18 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      wiki_articles: {
+        Row: { id: string; slug: string; name: string; summary: string | null; body: string; version: number; created_by: string; created_at: string; updated_at: string }
+        Insert: { id?: string; slug: string; name: string; summary?: string | null; body?: string; version?: number; created_by: string; created_at?: string; updated_at?: string }
+        Update: { name?: string; summary?: string | null; body?: string; version?: number }
+        Relationships: []
+      }
+      wiki_official_sources: {
+        Row: { official_id: string; entity_type: string; entity_id: string; source_hash: string; synced_at: string }
+        Insert: { official_id: string; entity_type: string; entity_id: string; source_hash: string; synced_at?: string }
+        Update: { source_hash?: string; synced_at?: string }
+        Relationships: []
+      }
       forum_message_media: {
         Row: { message_id: string; asset_id: string }
         Insert: { message_id: string; asset_id: string }
@@ -1771,5 +1783,6 @@ export type Creator = Database["public"]["Tables"]["profiles"]["Row"];
 export type Student = Database["public"]["Tables"]["students"]["Row"];
 export type College = Database["public"]["Tables"]["colleges"]["Row"];
 export type Place = Database["public"]["Tables"]["places"]["Row"];
+export type WikiArticle = Database["public"]["Tables"]["wiki_articles"]["Row"];
 export type ForumAccount = Database["public"]["Tables"]["forum_accounts"]["Row"];
 export type WikiRevision = Database["public"]["Tables"]["wiki_revisions"]["Row"];

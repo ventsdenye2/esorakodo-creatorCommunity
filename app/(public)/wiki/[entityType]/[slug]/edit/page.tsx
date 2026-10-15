@@ -47,7 +47,7 @@ export default async function EditWikiPage({ params, searchParams }: PageProps) 
           <input name="slug" type="hidden" value={entity.slug} />
           <input name="expectedVersion" type="hidden" value={entity.version} />
           <label><span>档案名称</span><input defaultValue={entity.name} maxLength={100} name="name" required /></label>
-          {entity.type !== "college" ? (
+          {entity.type === "student" || entity.type === "place" ? (
             <label>
               <span>所属学院</span>
               <select defaultValue={entity.collegeId ?? ""} name="collegeId">

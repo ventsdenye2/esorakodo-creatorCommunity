@@ -1,9 +1,9 @@
-import type { College, Json, Place, Student, WikiRevision } from "../../types/database";
+import type { College, Json, Place, Student, WikiArticle, WikiRevision } from "../../types/database";
 
-export const wikiEntityTypes = ["student", "college", "place"] as const;
+export const wikiEntityTypes = ["article", "student", "college", "place"] as const;
 export type WikiEntityType = (typeof wikiEntityTypes)[number];
 
-export type WikiEntity = Student | College | Place;
+export type WikiEntity = Student | College | Place | WikiArticle;
 
 export type WikiEntitySummary = {
   id: string;
@@ -32,7 +32,7 @@ export function isWikiEntityType(value: string): value is WikiEntityType {
 }
 
 export function getWikiEntityLabel(type: WikiEntityType) {
-  return { student: "人物", college: "学院", place: "地点" }[type];
+  return { article: "其他", student: "人物", college: "学院", place: "地点" }[type];
 }
 
 export function getWikiEntityHref(type: WikiEntityType, slug: string) {

@@ -2,7 +2,7 @@ import Link from 'next/link';
 import type {WikiEntityType} from '../wiki/types';
 import {createClient} from '../../lib/supabase/server';
 import {relatedRecords} from './queries';
-export async function EntityTraces({type,id}:{type:WikiEntityType;id:string}){
+export async function EntityTraces({type,id}:{type:Exclude<WikiEntityType, 'article'>;id:string}){
  const db=await createClient();const [records,accounts,students,places]=await Promise.all([
   relatedRecords(type,id),
   type==='student'?db.from('forum_accounts').select('id,display_name,handle').eq('student_id',id).limit(30):null,

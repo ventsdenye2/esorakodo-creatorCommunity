@@ -257,3 +257,16 @@ Supabase sttghkavzjeqeuignpwi 原14条迁移只读核对后，在事务中追加
 头像补充修复浏览器通过：上传期间按钮禁用与 requestSubmit 拦截，完成后提交含头像 ID，显示名称变化撤回旧提示；lint/typecheck 通过。线上增量迁移已事务提交，既有三表数量/指纹未改变，2 触发器/4 索引/迁移记录读回一致。源码 20b29f4 已推送；最终 Linux 产物重建中。
 
 上传启动的同一事件也通过 ref 同步锁定，避免 React 状态提交前的 programmatic requestSubmit 窗口；真实浏览器分别对校刊、补充资料、个人头像即刻提交测试通过。最终重新构建完整 Linux 产物，不修改生成的 bundle。
+
+
+## 2026-10-15 · 官网与校园站共享维基（本地验收中）
+
+用户要求官网只读、修改跳转校园站、数据互通和官网冲突优先，并补充“其他”类别。实现与发布契约见 [shared-wiki](../design/shared-wiki.md)。追加迁移 202610150001；新增独立 wiki_articles、官网基线映射、操作员专用原子同步、匿名公开接口与官网读取/检索/回退。保留现有 UUID、人物关联和修订历史，官网工程学院对应既有 engineering 身份。
+
+当前工作区：校园站 deploy/backend 与官网 main，变更未提交/未部署；原有官网未跟踪 output/.playwright-cli 未动。124 项隔离 PostgreSQL 检查、lint、typecheck 通过；Windows 五阶段 build 已通过，standalone 补全 121 包。浏览器与公开接口验收进行中，生产迁移及两站发布尚未执行。下一步完成桌面/390px、公开 feed 与跨站编辑跳转验证，再按先 schema/内容、校园站运行时、官网静态产物顺序发布并回读。
+
+### 发布前核验
+
+真实构建的公开 GET handler 使用合成 PostgREST transport 验证为 200、CORS *、22 条、5 次分页请求；浏览器使用其生成的 feed 验证 21 官网条目及 1 新增其他词条、关键词过滤、正文更新、危险 HTML/URL 清理，桌面与 390px 截图已人工审阅；修改按钮实际跳转 https://campus.kongtian.university/wiki。真实 Browser 插件未提供，按技能使用 Playwright CLI。截图在 D:/esorakodo/tmp/shared-wiki-{desktop,mobile}.png。早期预览服务连接拒绝已重新加载解决；线上尚无新接口导致的 CORS 错误在隔离 feed 验收时不再出现。
+
+SSH 当前核验校园站运行 5cab52d、active；官网部署源 652630e。服务器实际 wiki-data.js 与本机原文标准化后完全一致。云端 ROLLBACK 演练成功：21 条变更、19 条新建/2 学院覆盖，其他学院/人物/地点内部指纹检查通过；无私有数据导出、无合成生产内容。生产正式迁移、发布和公开浏览器复验尚待执行。

@@ -1,6 +1,6 @@
 import {createClient} from '../../lib/supabase/server';
 import type {WikiEntityType} from '../wiki/types';
-export async function relatedRecords(type:WikiEntityType|'event',id:string){
+export async function relatedRecords(type:Exclude<WikiEntityType, 'article'>|'event',id:string){
  const db=await createClient();const column=`${type}_id` as const;
  const [articles,supplements,events,forum]=await Promise.all([
   db.from('article_entity_links').select('article_id').eq(column,id).limit(60),

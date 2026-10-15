@@ -24,7 +24,7 @@ export default async function WikiPage({ searchParams }: { searchParams: Promise
           <div>
             <p className="archive-label">LIVING ARCHIVE / WIKI</p>
             <h1>校园档案</h1>
-            <p>查阅空天大学的人物、学院与地点资料，了解校园的过去与现在。</p>
+            <p>查阅、补充校园知识、人物、学院与地点资料。修订保留历史，内容与官网百科互通；官网另有修订时以官网为准。</p>
           </div>
           <Link className="button button-primary" href="/create/wiki">建立档案</Link>
         </header>
