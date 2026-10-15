@@ -374,3 +374,17 @@ SSH 当前核验校园站运行 5cab52d、active；官网部署源 652630e。服
 Linux 五阶段 build 与 standalone 补全通过（121 个运行依赖包）；Linux 真实 GET handler 合成 transport 验收为 200/CORS */22 条/5 次查询。已准备本地 runtime 提交 addee4b8d9a3b30c7cede69bd7c442839973bfd5，5902 文件/58194302 bytes，扫描未包含环境文件、凭据或测试数据；官网静态 deploy 提交 c675873。所有发布提交均仅在本地，未推送/未重启服务。审批拒绝后再次只读确认生产 migration=0、wiki_articles 不存在、两学院仍为原名称与 version=2。
 
 复现：npm run lint；npm run typecheck；npm run build；node tests/forum-wiki-database.mjs（临时本机 PostgreSQL；可选 OFFICIAL_WIKI_MANIFEST 指定官网清单）；node tools/export-wiki-canon.mjs（官网仓库）。批准后必须先执行已演练的生产迁移/导入，再按设计顺序推送源码、发布 runtime 与官网并作生产浏览器复验。尚未使用真实生产账号写入/恢复词条做端到端验收。
+
+
+## 2026-10-15 · 共享维基已获授权并上线
+
+用户在本会话明确回复“授权”，批准正式迁移、19 条新词条、2 个学院官网优先覆盖及两站发布；此前自动审批门禁已据此解除。本节取代上方待授权/未上线状态。
+
+- 生产迁移 202610150001 已事务提交并读回：migration=1、官网对应关系=21、其他档案=19、普通 Creator 无权执行官网同步。2 学院保持 UUID 与稳定地址，当前 version=3，历史 1/2/3 全部保留。事务中其他学院/人物/地点内容指纹核对通过，无无关内容改写。
+- 校园站已推送源码 deploy/backend 与 Linux runtime deploy/runtime，部署 runtime 为 020a810074e2cb808cc6b5e31fe8c68ad861adb6。/srv/ktu-community/current 指向同名 git release，ktu-community active；原 5cab52d 运行目录保留。更新使用既有 /etc/ktu-community/update-runtime.sh，服务器没有安装依赖或构建。
+- 官网 main=c5aa34f，deploy=c67587363ecb3bc2e675337fa67cb71f40cc956a，均已推送。服务器 deploy 从 652630e 快进到 c675873，git archive 覆盖静态发布目录；8 个维基文件 SHA-256 与 Git 一致，nginx -t 通过。该快进也包含原 deploy 分支已有、此前未在服务器发布的院系展示修复。站点备份：/var/backups/kongtian-university/pre-shared-wiki-20261015T125806Z.tar.gz。
+- 真实浏览器（独立 Playwright CLI 会话，无测试桩）核验：校园站其他标题存在；公开 API 200、CORS *、47 条档案，其中其他 19、官网关联 21，Chrome fetch 实测约 2010ms。服务器核对官网基线 hash/标题/摘要 21/21 一致。官网原始 URL /wiki.html 显示 ready=true、47 条、最新词条状态及只读界面；关键词“校训”只返回 1 条，详情正确渲染正文，修改按钮实际跳转校园站 /wiki。390px 词条与历史页无横向溢出。
+- 线上学院历史页保留 v3/v2/v1，选择最旧版本后显示 v1 → v3 差异。其他类别 /wiki/article/motto 的编辑入口对游客实际跳转 /login 并显示中文登录提示。最后浏览器控制台 0 错误/0 警告。未登录真实 Creator 创建/保存/恢复生产内容；这些写入与冲突/回滚语义由本地 124 项 PostgreSQL 检查覆盖，不能将其表述为真实账号生产保存回流测试。
+- 证据位于 D:/esorakodo/tmp/wiki-production-{campus-desktop,official-desktop,official-detail-desktop,official-mobile,history-mobile}.png，已查看官网桌面与手机实际截图。最初详情检查读到异步占位，已改为等待校训标题和 section 完整渲染后复验通过；Playwright API 客户端一次收齐 body 超时、历史页一次连接关闭，Chrome 页内真实 fetch 与后续历史页交互重试通过。过严 label 定位改用实际版本 select 后成功；这些属于验收工具/网络过程，没有新增产品代码变更。
+
+Windows/Linux 构建、lint/typecheck、124 项隔离数据库检查沿用本批已通过证据；本次批准后的交付没有修改功能代码。官网和校园站均已上线，无待部署步骤。后续校园站编辑在官网下次刷新时读取；官网原文有新稿时，仍按 shared-wiki 设计中的导出、审阅、事务同步、发布顺序处理。

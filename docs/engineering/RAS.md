@@ -164,3 +164,17 @@
 ### 生产交付门禁（未上线）
 
 功能源码提交 b8ef879，官网源码提交 c5aa34f。生产正式迁移执行请求被自动审批明确拒绝：新增 schema 与导入/覆盖 21 词条属于持久生产变更，审批要求用户显式授权。已停止生产变更，不改用其他连接或工具绕过。ROLLBACK 演练已结束；正式 schema、词条内容和两站运行版本均未更改。等待用户批准：应用已审阅迁移与官网优先导入，发布校园站 Linux runtime，再发布官网静态产物。校验、发布包及本地提交可继续准备，不能据此称已上线互通。
+
+
+## 2026-10-15 · 共享维基已获授权并上线
+
+用户在本会话明确回复“授权”，批准正式迁移、19 条新词条、2 个学院官网优先覆盖及两站发布；此前自动审批门禁已据此解除。本节取代上方待授权/未上线状态。
+
+- 生产迁移 202610150001 已事务提交并读回：migration=1、官网对应关系=21、其他档案=19、普通 Creator 无权执行官网同步。2 学院保持 UUID 与稳定地址，当前 version=3，历史 1/2/3 全部保留。事务中其他学院/人物/地点内容指纹核对通过，无无关内容改写。
+- 校园站已推送源码 deploy/backend 与 Linux runtime deploy/runtime，部署 runtime 为 020a810074e2cb808cc6b5e31fe8c68ad861adb6。/srv/ktu-community/current 指向同名 git release，ktu-community active；原 5cab52d 运行目录保留。更新使用既有 /etc/ktu-community/update-runtime.sh，服务器没有安装依赖或构建。
+- 官网 main=c5aa34f，deploy=c67587363ecb3bc2e675337fa67cb71f40cc956a，均已推送。服务器 deploy 从 652630e 快进到 c675873，git archive 覆盖静态发布目录；8 个维基文件 SHA-256 与 Git 一致，nginx -t 通过。该快进也包含原 deploy 分支已有、此前未在服务器发布的院系展示修复。站点备份：/var/backups/kongtian-university/pre-shared-wiki-20261015T125806Z.tar.gz。
+- 真实浏览器（独立 Playwright CLI 会话，无测试桩）核验：校园站其他标题存在；公开 API 200、CORS *、47 条档案，其中其他 19、官网关联 21，Chrome fetch 实测约 2010ms。服务器核对官网基线 hash/标题/摘要 21/21 一致。官网原始 URL /wiki.html 显示 ready=true、47 条、最新词条状态及只读界面；关键词“校训”只返回 1 条，详情正确渲染正文，修改按钮实际跳转校园站 /wiki。390px 词条与历史页无横向溢出。
+- 线上学院历史页保留 v3/v2/v1，选择最旧版本后显示 v1 → v3 差异。其他类别 /wiki/article/motto 的编辑入口对游客实际跳转 /login 并显示中文登录提示。最后浏览器控制台 0 错误/0 警告。未登录真实 Creator 创建/保存/恢复生产内容；这些写入与冲突/回滚语义由本地 124 项 PostgreSQL 检查覆盖，不能将其表述为真实账号生产保存回流测试。
+- 证据位于 D:/esorakodo/tmp/wiki-production-{campus-desktop,official-desktop,official-detail-desktop,official-mobile,history-mobile}.png，已查看官网桌面与手机实际截图。最初详情检查读到异步占位，已改为等待校训标题和 section 完整渲染后复验通过；Playwright API 客户端一次收齐 body 超时、历史页一次连接关闭，Chrome 页内真实 fetch 与后续历史页交互重试通过。过严 label 定位改用实际版本 select 后成功；这些属于验收工具/网络过程，没有新增产品代码变更。
+
+Windows/Linux 构建、lint/typecheck、124 项隔离数据库检查沿用本批已通过证据；本次批准后的交付没有修改功能代码。官网和校园站均已上线，无待部署步骤。后续校园站编辑在官网下次刷新时读取；官网原文有新稿时，仍按 shared-wiki 设计中的导出、审阅、事务同步、发布顺序处理。
