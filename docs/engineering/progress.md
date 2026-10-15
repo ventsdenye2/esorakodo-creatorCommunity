@@ -321,3 +321,18 @@ Windows/Linux 构建、lint/typecheck、Linux standalone 冒烟及真实数据�
 基线 39d592b 与 runtime 195b857 已保留，checkpoint/campus-before-official-theme-20261015 已推送。新主题只改根布局和主题 CSS，设计见 official-campus-theme；首页桌面/390px 初步外观检查无横向溢出，lint/typecheck 通过。调整次级色为官网 #4F6A80，确保淡紫背景上正文对比度 4.64:1；先前构建在检查后中止，最终产物必须重建。尚未上线。 详见 [official-campus-theme](../design/official-campus-theme.md)。
 
 Windows/Linux 最终构建、lint/typecheck、真实产物桌面/390px/无 JS/减少动态效果、目录筛选、轮播、dialog/焦点返回均通过，截图已查看。准备源码和运行包提交；线上尚未更新。
+
+
+### 官网主题已上线 · 2026-10-15
+
+源码功能提交 80309f8，已推送独立 design/official-campus-theme，并以 fast-forward 更新 deploy/backend。改版前源码 39d592b 的 annotated tag checkpoint/campus-before-official-theme-20261015 已推送远端。Linux runtime 为 ab0f844674a4e5e40ffc7ad738cc7895f2ac80d4，5904 文件/58228930 bytes 逐个 SHA-256 与构建一致，无多余文件、环境文件或应用测试数据。
+
+既有 update-runtime.sh 执行成功，服务器 current 指向 /srv/ktu-community/releases/git-ab0f844674a4e5e40ffc7ad738cc7895f2ac80d4，服务 active，检查时内存约 89 MiB。旧 runtime 195b857 仍在 releases 中可回滚；无数据库、Nginx、其他站点或运行依赖变更。
+
+公开 HTTPS 浏览器真实复验：1440×1000 首页 HTTP 200、SSR 主题类存在、主按钮 #123B5A 和 8px、卡片 18px、展台 28px；无空白、框架错误层或横向溢出。四栏目客户端跳转标题与新主题保持一致，按钮均为 8px。轮播 01/06 → 02/06；dialog 为 28px、居中，Tab/Escape/焦点返回通过。本轮桌面监听 0 console error/warning、0 pageerror。
+
+390×844 手机实际无溢出，展台 22px；47 条档案筛选校训得到 1 条，输入框 8px；减少动态效果时新增入场=0、隐藏目标=0、自动轮播停用。中文登录错误提示、28px 认证面板和 8px 输入框正常；独立无 JS 浏览器仍显示校训和新主题。较早本地会话累计出现 3 条路由 CSS 预加载未使用警告，不影响交互，未将它描述成整个会话零警告。
+
+最终截图 D:/esorakodo/tmp/theme-production-{desktop,full,wiki,dialog,mobile,filter-mobile,login-mobile}.png 已查看并对照官网参考；可见圆角、背景、边框、按钮和纸张层次已经对齐。保留真实内容与上一批动效。校刊/事件有内容列表和登录后的 Creator 写入仍未在生产实测，本次只验证真实空状态及公开阅读/表单呈现。
+
+本批已交付，无待发布步骤。最后仅同步本文档，不需要重建运行包。

@@ -288,3 +288,5 @@ Windows/Linux 构建、lint/typecheck、124 项隔离数据库检查沿用本批
 改版前检查点标签已推送，实施分支 design/official-campus-theme；主题实现及 lint/typecheck 完成，浏览器视觉/多路由验证和最终 Linux 构建进行中。 详见 [official-campus-theme](../design/official-campus-theme.md)。
 
 本地真实产物验收完成，详见 verification.md；下一步推送源码、artifact-only runtime 并执行既有发布脚本，复验公开站点。
+
+生产发布和公开桌面/手机复验完成：source=80309f8、runtime=ab0f844，旧版 195b857 保留；检查点标签已推送。交付完成，详见 verification.md。
