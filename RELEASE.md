@@ -1,18 +1,17 @@
-﻿# Kongtian University Linux runtime
+# Shared encyclopedia Linux runtime -- prepared, NOT deployed
 
-Source revision: eb3d6d3f03e728d320b775584eeefdb659a43aa8 (deploy/backend).
-Release: 2026-10-13 creator form retention, upload/save locking, accurate saved
-notices, safe login return, Chinese errors, stable revision hydration and comment pages.
-Requires additive migration 202610130001_publication_body_guard (already applied).
+Feature source: b8ef879 (deploy/backend), 2026-10-15.
+Adds Other wiki records and an anonymous public feed for the read-only official site.
+Requires migration 202610150001_shared_wiki AND reviewed 21-entry official import.
+Production migration/import was rejected by automatic approval review pending
+explicit user authorization. Do not deploy before that approval and migration.
 
-Linux x86_64 runtime built in WSL Ubuntu with Node 24.19.0. Entry point:
-dist/standalone/server.js. Server uses its existing isolated Node 22 runtime.
-Local Linux standalone startup, callback and media-origin smoke checks passed.
-99 isolated PostgreSQL checks passed, including Unicode whitespace rejection and
-111 same-timestamp comment paging. Real component browser/SSR/mobile checks passed.
-Production verification follows deployment; no synthetic public posts are published.
+Validation: lint/typecheck, Windows and Linux five-stage builds, standalone
+dependency completion (121 packages), 124 PostgreSQL acceptance checks, Windows
+and Linux built feed handler (22 synthetic records), desktop/390px browser reading,
+search, HTML/URL sanitization and actual campus /wiki edit-link navigation.
+Production ROLLBACK rehearsal passed; read-only follow-up confirms no new schema
+or canonical record changes persisted. No synthetic production records created.
 
-No environment files, credentials, local tests or creator fixture data included.
-Only NEXT_PUBLIC deployment configuration is compiled. Server configuration
-remains in /etc/ktu-community. Deploy with its existing update-runtime.sh,
-which fetches this artifact branch, switches releases and checks health.
+Prepared local artifact commit only. No push, deployment or service restart.
+No environment files, credentials or test fixture data included.

@@ -1,0 +1,1 @@
+import{a as e}from"./headers-XMSdQxxK.js";import{t}from"./config-CbQDm_95.js";import{t as n}from"./createServerClient-R6rWHBSi.js";async function r(){let r=await e(),{url:i,anonKey:a}=t();return n(i,a,{cookies:{getAll(){return r.getAll()},setAll(e){try{e.forEach(({name:e,value:t,options:n})=>{r.set(e,t,n)})}catch{}}}})}export{r as t};

@@ -1,0 +1,1 @@
+var e=[`article`,`student`,`college`,`place`];function t(t){return e.includes(t)}function n(e){return{article:`其他`,student:`人物`,college:`学院`,place:`地点`}[e]}function r(e,t){return`/wiki/${e}/${encodeURIComponent(t)}`}export{e as i,n,t as r,r as t};
