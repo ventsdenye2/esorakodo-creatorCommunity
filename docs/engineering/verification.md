@@ -388,3 +388,27 @@ Linux 五阶段 build 与 standalone 补全通过（121 个运行依赖包）；
 - 证据位于 D:/esorakodo/tmp/wiki-production-{campus-desktop,official-desktop,official-detail-desktop,official-mobile,history-mobile}.png，已查看官网桌面与手机实际截图。最初详情检查读到异步占位，已改为等待校训标题和 section 完整渲染后复验通过；Playwright API 客户端一次收齐 body 超时、历史页一次连接关闭，Chrome 页内真实 fetch 与后续历史页交互重试通过。过严 label 定位改用实际版本 select 后成功；这些属于验收工具/网络过程，没有新增产品代码变更。
 
 Windows/Linux 构建、lint/typecheck、124 项隔离数据库检查沿用本批已通过证据；本次批准后的交付没有修改功能代码。官网和校园站均已上线，无待部署步骤。后续校园站编辑在官网下次刷新时读取；官网原文有新稿时，仍按 shared-wiki 设计中的导出、审阅、事务同步、发布顺序处理。
+
+
+## 2026-10-15 · 校园组件动效验收（进行中）
+
+工作树基线 deploy/backend=3df4a31，新增根布局动效增强和显式组件标记。Browser plugin 未列出，使用既有 Playwright CLI 的独立 campus-motion 会话。公开官网与校园站已实际打开并查看截图，官网参考为标题错峰、分区 reveal、入口微抬缓出；官网没有修改。
+
+- npm run lint、npm run typecheck、Windows npm run build 通过，standalone 补全 121 包。
+- 本地 Windows 生产预览 1440×1000：实际 Element.animate 调用记录证明 hero 依次 0/65/130/195/260ms、卡片展台 760ms；无空白/框架错误层/横向溢出。按钮 computed translate 为 0 -3px，箭头 4px。轮播 01/03 → 02/03；dialog 实际运行 campus-dialog-enter，Escape 关闭并返回触发按钮。
+- 390×844：入场调用数从首屏 5 → 滚动 12 → 页尾 14，返回页首仍为 14，不重播；页面无横向溢出。动态切换 reduced-motion 后新增动画 0，dialog animation=none/opacity=1，轮播暂停按钮 disabled。
+- 本地开发服务器曾缓存新 CSS 文件不存在状态；Windows 生产构建和真实生产预览正常。目录页初次验收失败，原因已定位为 Windows build 使用 .env.local 的本地后端地址并内联到运行产物，换启动环境不能覆盖它。以公开 build.env 做出的 Linux 构建不含该本地地址，正在完成打包。独立 Node 经现有代理请求云端公开数据库返回 200，未写数据。此处尚不把真实目录导航记为通过。
+- 截图 D:/esorakodo/tmp/motion-{official-reference,campus-before,campus-after-desktop,campus-after-mobile,mobile-sections,dialog-desktop}.png 已查看手机和桌面弹窗；弹窗截图包含入场中间帧，最终静态态待补充。
+
+尚未上线；后续补充 Linux/真实目录、无 JavaScript、键盘、公开站点和最终发布证据。
+
+
+### Linux 与真实公开数据复验通过
+
+Linux 五阶段 build 与 standalone 121 包补全通过；既有 smoke.mjs 验证正式 Origin 达到媒体配置门禁 503、外域 403，缺 code/缺 PKCE 的中文回调和外跳限制通过。14 个相关源文件与 Linux 构建目录逐一比较一致。
+
+同一 Linux standalone 在本机 127.0.0.1:3013 以现有代理读取真实公开数据：6 张近况卡片；校园档案 47 条，搜索校训实际变成 1 条。主导航 /wiki → /forum → /press → /events 的标题、主体、动效、新路由及无横向溢出均通过；本轮监听 0 pageerror/0 console error。会话早期累积 3 条 CSS 预加载未使用警告，不作为零警告宣称。校刊和校史当前没有公开记录，只验证标题/空状态，不把有内容列表记为生产实测。
+
+390×844 筛选目录无溢出；reduced-motion 首次载入实际动画调用=0、透明隐藏目标=0；关闭 JavaScript 的独立浏览器 context 仍显示校园档案标题与校训条目且可见。证据 D:/esorakodo/tmp/motion-{real-home-desktop,wiki-desktop,wiki-filter-mobile,no-js-mobile}.png。动效相关数据库查询全部只读，没有生产账号写入。
+
+生产发布准备中，尚不能据此声称线上已有动效。

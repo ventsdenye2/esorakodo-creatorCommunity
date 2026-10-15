@@ -294,3 +294,10 @@ Linux 五阶段 build 与 standalone 补全通过（121 个运行依赖包）；
 - 证据位于 D:/esorakodo/tmp/wiki-production-{campus-desktop,official-desktop,official-detail-desktop,official-mobile,history-mobile}.png，已查看官网桌面与手机实际截图。最初详情检查读到异步占位，已改为等待校训标题和 section 完整渲染后复验通过；Playwright API 客户端一次收齐 body 超时、历史页一次连接关闭，Chrome 页内真实 fetch 与后续历史页交互重试通过。过严 label 定位改用实际版本 select 后成功；这些属于验收工具/网络过程，没有新增产品代码变更。
 
 Windows/Linux 构建、lint/typecheck、124 项隔离数据库检查沿用本批已通过证据；本次批准后的交付没有修改功能代码。官网和校园站均已上线，无待部署步骤。后续校园站编辑在官网下次刷新时读取；官网原文有新稿时，仍按 shared-wiki 设计中的导出、审阅、事务同步、发布顺序处理。
+
+
+## 2026-10-15 · 校园组件动效
+
+在干净的 deploy/backend=3df4a31 基线上实现官网风格动效：标题错峰、分区入场、入口反馈与校园视界展开。lint/typecheck 通过；生产构建与桌面/移动浏览器验收进行中。源码工作区未提交，线上尚未更新。 设计契约见 [campus-motion](../design/campus-motion.md)。
+
+Windows/Linux 构建、lint/typecheck、Linux standalone 冒烟及真实数据桌面/390px/无 JS/减少动态效果复验均通过。47 条档案与校训单条筛选通过；校刊/事件目前只能验证真实空状态。准备提交源码和 artifact-only runtime，随后公开站点复验。

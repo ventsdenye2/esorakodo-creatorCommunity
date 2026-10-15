@@ -20,7 +20,7 @@ export default async function WikiPage({ searchParams }: { searchParams: Promise
     <div>
       <SiteHeader current="wiki" />
       <main id="main-content" className="wiki-page">
-        <header className="wiki-page-header">
+        <header className="wiki-page-header" data-motion>
           <div>
             <p className="archive-label">LIVING ARCHIVE / WIKI</p>
             <h1>校园档案</h1>
@@ -49,14 +49,14 @@ export default async function WikiPage({ searchParams }: { searchParams: Promise
               const items = entities.filter((entity) => entity.type === type);
               return (
                 <section className="wiki-group" key={type}>
-                  <div className="wiki-group-heading">
+                  <div className="wiki-group-heading" data-motion>
                     <h2>{getWikiEntityLabel(type)}</h2>
                     <span>{String(items.length).padStart(2, "0")} RECORDS</span>
                   </div>
                   {items.length === 0 ? (
                     <p className="wiki-group-empty">此类别暂无档案。</p>
                   ) : (
-                    <ul className="wiki-index">
+                    <ul className="wiki-index" data-motion-group>
                       {items.map((entity) => (
                         <li key={entity.id}>
                           <Link href={getWikiEntityHref(type, entity.slug)}>

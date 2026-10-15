@@ -1,0 +1,62 @@
+/* Official-site rhythm: a short rise, staggered paper, quiet directional cues. */
+:root {
+  --motion-quick: 180ms;
+  --motion-hover: 280ms;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .button, .deck-controls button {
+    transition: background-color var(--motion-quick) ease, border-color var(--motion-quick) ease,
+      color var(--motion-quick) ease, translate var(--motion-hover) var(--ease-out), box-shadow var(--motion-hover) var(--ease-out);
+  }
+  :is(.button, .section-link, .activity-heading a, .activity-empty a, .event-heading-row a,
+    .card-bottom a, .campus-relation-list > a, .campus-sheet-list button) svg {
+    transition: translate var(--motion-hover) var(--ease-out);
+  }
+  :is(.button, .section-link, .activity-heading a, .activity-empty a, .event-heading-row a,
+    .card-bottom a, .campus-relation-list > a, .campus-sheet-list button):focus-visible svg { translate: 4px 0; }
+  .site-header nav a::after {
+    right: 0;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--motion-hover) var(--ease-out);
+  }
+  .site-header nav a:is(:hover, :focus-visible, [aria-current="page"])::after { transform: scaleX(1); }
+  .campus-layer-symbol { transition: rotate 420ms var(--ease-out); }
+  .campus-layer-trigger:is(:hover, :focus-visible) .campus-layer-symbol { rotate: 90deg; }
+  .campus-layer-dialog[open] { animation: campus-dialog-enter 420ms var(--ease-out) both; }
+  .campus-layer-dialog[open]::backdrop { animation: campus-backdrop-enter 280ms ease both; }
+  .campus-layer-sheet { animation: campus-sheet-enter 360ms var(--ease-out) both; }
+
+  @media (hover: hover) and (pointer: fine) {
+    .button:not(:disabled):hover { translate: 0 -3px; box-shadow: 0 8px 18px -12px #0a21474d; }
+    .button:not(:disabled):active { translate: 0 0; box-shadow: none; }
+    .deck-controls button:not(:disabled):hover { translate: 0 -2px; }
+    :is(.button, .section-link, .activity-heading a, .activity-empty a, .event-heading-row a,
+      .card-bottom a, .campus-relation-list > a, .campus-sheet-list button):hover svg { translate: 4px 0; }
+    :is(.activity-list > a, .campus-relation-list > a, .wiki-index a, .entity-path > li,
+      .forum-topic-list > li, .press-list > li, .events-register > ol > li) {
+      transition: background-color var(--motion-hover) ease, translate var(--motion-hover) var(--ease-out),
+        box-shadow var(--motion-hover) var(--ease-out);
+    }
+    :is(.wiki-index a, .press-list > li):hover {
+      translate: 0 -4px;
+      background-color: color-mix(in srgb, var(--sky) 4%, transparent);
+      box-shadow: 0 10px 24px -22px #0a214780;
+    }
+    :is(.campus-relation-list > a, .entity-path > li):hover { translate: 4px 0; }
+    :is(.forum-topic-list > li, .events-register > ol > li):hover { background-color: color-mix(in srgb, var(--sky) 4%, transparent); }
+    .activity-list > a:hover { background-color: #ffffff0a; }
+  }
+}
+
+@keyframes campus-dialog-enter {
+  from { opacity: 0; translate: 0 18px; scale: .985; }
+  to { opacity: 1; translate: 0 0; scale: 1; }
+}
+@keyframes campus-backdrop-enter { from { opacity: 0; } to { opacity: 1; } }
+@keyframes campus-sheet-enter { from { opacity: 0; translate: 8px 0; } to { opacity: 1; translate: 0 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .campus-layer-dialog, .campus-layer-dialog::backdrop, .campus-layer-sheet { animation: none; }
+}

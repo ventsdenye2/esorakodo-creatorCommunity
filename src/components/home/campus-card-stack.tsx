@@ -47,7 +47,7 @@ export function CampusCardStack({ cards, failed }: { cards: CampusCard[]; failed
   }
 
   return (
-    <section className="campus-view" aria-label="校园视界" aria-roledescription="轮播"
+    <section className="campus-view" data-motion="view" aria-label="校园视界" aria-roledescription="轮播"
       onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
       onFocusCapture={() => setFocused(true)}
       onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false); }}>
