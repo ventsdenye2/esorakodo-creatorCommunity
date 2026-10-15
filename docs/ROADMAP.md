@@ -214,3 +214,8 @@ M2 新增“其他”知识档案，官网只读、校园站修订共用公开�
 ## 2026-10-15 · 官网风格组件动效
 
 首页、公开目录、导航与校园视界新增渐进增强动效，保留现有媒介结构。设计与无障碍约束见 [campus-motion](design/campus-motion.md)，构建、浏览器与发布证据见 engineering/verification.md。无数据库变更。
+
+
+## 2026-10-15 · 官网视觉主题
+
+以独立可回滚主题层对齐官网配色和 8/18/28px 圆角系统，保留媒介版式和既有动效。基线检查点已推送；设计及验收见 design/official-campus-theme.md 和 engineering/verification.md。

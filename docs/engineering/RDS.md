@@ -294,3 +294,8 @@ Windows/Linux 构建、lint/typecheck、124 项隔离数据库检查沿用本批
 ## 2026-10-15 · 校园组件动效
 
 使用显式 data-motion 标记、IntersectionObserver 和原生 Web Animations API；根布局无 DOM 客户端增强支持流式与客户端路由，CSS 管理悬停与 dialog 动效；不增加依赖或改变数据契约。 设计契约见 [campus-motion](../design/campus-motion.md)。
+
+
+## 2026-10-15 · 官网视觉主题
+
+根布局增加 campus-theme 作用域和独立 CSS；官网 8/18/28px 几何尺度、浅天蓝/纸白/深海蓝配色映射到公共组件及现有领域令牌；不新增客户端逻辑、依赖、数据库迁移或图片。 详见 [official-campus-theme](../design/official-campus-theme.md)。

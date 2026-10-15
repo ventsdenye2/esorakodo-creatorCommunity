@@ -281,3 +281,10 @@ Windows/Linux 构建、lint/typecheck、124 项隔离数据库检查沿用本批
 实现和本地验收已完成：Windows/Linux build、lint/typecheck、真实目录筛选、客户端导航、无 JS、390px、减少动态效果、轮播与弹窗焦点返回均通过。下一步发布 runtime 并记录公开站点复验。
 
 发布及公开站点验收完成：runtime=195b857，服务 active，旧版保留；桌面/390px、真实筛选、弹窗/轮播、减少动态效果通过，线上最终本轮 0 错误/警告。详见 verification.md。
+
+
+## 2026-10-15 · 官网视觉主题
+
+改版前检查点标签已推送，实施分支 design/official-campus-theme；主题实现及 lint/typecheck 完成，浏览器视觉/多路由验证和最终 Linux 构建进行中。 详见 [official-campus-theme](../design/official-campus-theme.md)。
+
+本地真实产物验收完成，详见 verification.md；下一步推送源码、artifact-only runtime 并执行既有发布脚本，复验公开站点。

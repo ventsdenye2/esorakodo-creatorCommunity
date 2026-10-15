@@ -314,3 +314,10 @@ Windows/Linux 构建、lint/typecheck、Linux standalone 冒烟及真实数据�
 线上截图 D:/esorakodo/tmp/motion-production-{desktop,mobile,filter-mobile}.png；本地无 JS、减少动态效果、四栏目导航及键盘证据沿用同一 Linux 产物验收。已查看最终截图。校刊与校史目前无公开记录，有内容列表的入场效果尚无生产数据实测；当前验证覆盖其正常空状态。
 
 本批完成，无待发布步骤；源码提交后最终文档补充另行提交，不影响运行包。
+
+
+## 2026-10-15 · 官网视觉主题
+
+基线 39d592b 与 runtime 195b857 已保留，checkpoint/campus-before-official-theme-20261015 已推送。新主题只改根布局和主题 CSS，设计见 official-campus-theme；首页桌面/390px 初步外观检查无横向溢出，lint/typecheck 通过。调整次级色为官网 #4F6A80，确保淡紫背景上正文对比度 4.64:1；先前构建在检查后中止，最终产物必须重建。尚未上线。 详见 [official-campus-theme](../design/official-campus-theme.md)。
+
+Windows/Linux 最终构建、lint/typecheck、真实产物桌面/390px/无 JS/减少动态效果、目录筛选、轮播、dialog/焦点返回均通过，截图已查看。准备源码和运行包提交；线上尚未更新。

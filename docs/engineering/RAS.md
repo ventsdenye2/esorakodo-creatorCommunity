@@ -183,3 +183,8 @@ Windows/Linux 构建、lint/typecheck、124 项隔离数据库检查沿用本批
 ## 2026-10-15 · 校园组件动效
 
 依据官网设计语言为校园站增加组件动效；范围为首页、公共目录、导航与校园视界弹窗，保持媒介版式与无障碍。 设计契约见 [campus-motion](../design/campus-motion.md)。
+
+
+## 2026-10-15 · 官网视觉主题
+
+依据官网设计系统对齐校园站圆角、颜色、边框、背景与层次；保留内容、五栏目、数据和已发布动效。 详见 [official-campus-theme](../design/official-campus-theme.md)。

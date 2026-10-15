@@ -1,0 +1,206 @@
+/* Kongtian University's existing palette and component geometry. */
+:root {
+  --paper: #fbfdff;
+  --paper-soft: #edf7fc;
+  --ink: #102d46;
+  --ink-soft: #4f6a80;
+  --rule: #cadce7;
+  --rule-soft: #e0ebf1;
+  --sky: #277eaf;
+  --sky-dark: #1f6697;
+  --signal: #946923;
+  --campus-ground: #e5f1f4;
+  --content-max: 1320px;
+  --radius-control: 8px;
+  --radius-small: 10px;
+  --radius-panel: 18px;
+  --radius-feature: 28px;
+  --surface: #fbfdff;
+  --surface-blue: #edf7fc;
+  --brand-deep: #123b5a;
+  --brand-aura: #7064aa;
+  --shadow-panel: 0 12px 36px rgb(18 59 90 / 6%);
+  --shadow-feature: 0 20px 60px rgb(21 65 96 / 10%);
+}
+
+body.campus-theme {
+  background: radial-gradient(ellipse at 8% 6%, #e8f5fb 0, transparent 40rem),
+    linear-gradient(180deg, #f7fbfd, #edf6fb 45%, #f8fbfd);
+}
+.campus-theme :is(a, button, input, textarea, select, summary):focus-visible {
+  outline: 3px solid var(--sky-dark);
+  outline-offset: 4px;
+}
+.campus-theme :is(.button, .event-contribute, .event-related a, .work-community button,
+  .guide-practice-heading > button, .forum-form button, .event-form button,
+  .block-tools button, .block-add button, .editor-actions button) { border-radius: var(--radius-control); }
+.campus-theme .button-primary {
+  background: var(--brand-deep);
+  border-color: var(--brand-deep);
+  color: white;
+  box-shadow: 0 10px 24px rgb(18 59 90 / 13%);
+}
+.campus-theme .button-primary:hover { background: var(--sky-dark); border-color: var(--sky-dark); }
+.campus-theme .button-secondary { background: var(--surface); border-color: #adc5d6; color: var(--brand-deep); }
+.campus-theme .button-secondary:hover { background: var(--surface-blue); border-color: var(--sky); }
+.campus-theme .site-header {
+  background: #f7fbfd;
+  border-color: var(--rule);
+  box-shadow: 0 6px 24px rgb(20 58 84 / 4%);
+  border-radius: 0 0 var(--radius-panel) var(--radius-panel);
+}
+.campus-theme .site-header nav { gap: 4px; }
+.campus-theme .site-header nav a { padding-inline: 11px; border-radius: var(--radius-control); color: var(--ink-soft); }
+.campus-theme .site-header nav a:is(:hover, :focus-visible, [aria-current="page"]) { color: var(--brand-deep); background: #e5f1f8; }
+.campus-theme .site-header nav a::after { left: 11px; right: 11px; }
+.campus-theme .campus-layer-trigger { border-radius: var(--radius-control); }
+.campus-theme .brand-copy { color: var(--brand-deep); }
+.campus-theme .site-footer { border-top: 1px solid var(--rule); }
+.campus-theme .site-footer p { color: var(--ink-soft); }
+
+/* Homepage: sky-toned surroundings, with paper as the focal material. */
+.campus-theme .campus-home { --view-mist: #eaf5fb; --view-lilac: #e8e4f3; }
+.campus-theme .home-hero { gap: 40px; }
+.campus-theme .hero-emphasis { color: var(--sky-dark); }
+.campus-theme .hero-kicker::before { background: var(--sky); }
+.campus-theme .campus-home .hero-actions .button { border-radius: var(--radius-control); }
+.campus-theme .hero-note span { color: var(--ink-soft); }
+.campus-theme .campus-view {
+  border: 1px solid #cfdfec;
+  border-radius: var(--radius-feature);
+  background: radial-gradient(ellipse at 100% 0, #e5e8f5 0, transparent 70%), #eaf5fb;
+  box-shadow: var(--shadow-feature);
+}
+.campus-theme .campus-view::before { opacity: .18; }
+.campus-theme .campus-card {
+  border-radius: var(--radius-panel);
+  border-color: #cddde7;
+  box-shadow: 0 22px 40px -24px #153f6266, 0 2px 7px #153f620d;
+}
+.campus-theme .card-art { border-radius: var(--radius-small); color: #3d3b69; }
+.campus-theme .campus-card[data-tone="1"] .card-art { background: #dceef4; color: var(--brand-deep); }
+.campus-theme .campus-card[data-tone="2"] .card-art { background: #e1efed; color: #285963; }
+.campus-theme .deck-controls button { background: var(--surface); border-color: #b6cddc; }
+.campus-theme .deck-count > span { color: var(--ink-soft); }
+.campus-theme .deck-caption { color: var(--ink-soft); }
+.campus-theme .campus-home .activity-rail {
+  width: min(calc(100% - 48px), calc(var(--content-max) - 48px));
+  margin: 20px auto 0;
+  padding: 22px 30px 8px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-panel);
+  background: #e9f4fa;
+  color: var(--ink);
+  box-shadow: var(--shadow-panel);
+}
+.campus-theme .campus-home .activity-heading { border-color: var(--rule); }
+.campus-theme .campus-home :is(.activity-heading span, .activity-empty p, .activity-list > a span, .activity-list > a small) { color: var(--ink-soft); }
+.campus-theme .campus-home :is(.activity-heading a, .activity-empty a) { color: var(--sky-dark); }
+.campus-theme .campus-home .activity-list > a { color: var(--ink); border-color: var(--rule); }
+.campus-theme .campus-home .activity-list > a:hover { background: #ffffff70; }
+.campus-theme .campus-home .editorial-feed {
+  width: min(calc(100% - 48px), calc(var(--content-max) - 48px));
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-feature);
+  background: var(--surface);
+  box-shadow: var(--shadow-panel);
+}
+.campus-theme .editorial-feed article { padding: 42px 32px 52px; }
+.campus-theme .forum-feed { border-radius: var(--radius-feature) 0 0 var(--radius-feature); }
+.campus-theme .campus-home .press-feed { background: #f0f5fa; border-radius: 0 var(--radius-feature) var(--radius-feature) 0; }
+.campus-theme .event-archive {
+  width: min(calc(100% - 48px), calc(var(--content-max) - 48px));
+  margin: 48px auto 0;
+  border: 1px solid #205778;
+  border-radius: var(--radius-feature);
+  background: linear-gradient(115deg, #123b5a, #1c5675);
+  box-shadow: var(--shadow-feature);
+}
+.campus-theme .event-archive-inner { padding: 38px 32px 48px; }
+.campus-theme .event-intro { gap: 48px; }
+.campus-theme .campus-relation-list > a { padding-inline: 14px; border-radius: var(--radius-small); }
+.campus-theme .campus-relation-list > a:hover { background: var(--surface); }
+
+/* Directories retain their BBS, publication and archive structures. */
+.campus-theme :is(.wiki-page-header, .wiki-form-header, .forum-heading, .press-masthead, .events-index-heading, .portal-heading) {
+  padding: 28px 30px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-panel);
+  background: linear-gradient(110deg, #edf7fc, #f7fbfe 80%);
+}
+.campus-theme .wiki-page-header { min-height: 240px; }
+.campus-theme .wiki-page-header h1 { font-size: clamp(44px, 5vw, 68px); letter-spacing: -.025em; }
+.campus-theme .archive-label { color: var(--sky-dark); }
+.campus-theme .wiki-groups { gap: 24px; border: 0; align-items: start; }
+.campus-theme .wiki-group {
+  padding: 26px 24px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-panel);
+  background: var(--surface);
+  box-shadow: var(--shadow-panel);
+}
+.campus-theme .wiki-group-heading { gap: 12px; }
+.campus-theme .wiki-group-heading h2 { font-size: 25px; }
+.campus-theme :is(.wiki-group-heading span, .wiki-index small, .wiki-record-actions > span) { color: var(--ink-soft); }
+.campus-theme .wiki-index a { padding-inline: 8px; border-radius: var(--radius-small); }
+.campus-theme .forum-boards { margin-top: 24px; border: 1px solid var(--rule); border-radius: var(--radius-control); background: var(--surface); }
+.campus-theme .forum-boards a[aria-current="page"] { background: #e6f2f9; color: var(--sky-dark); box-shadow: inset 0 -2px var(--sky); }
+.campus-theme .forum-list-head { border-radius: var(--radius-control) var(--radius-control) 0 0; background: #e9f3f9; }
+.campus-theme .forum-topic-section { border: 1px solid var(--rule); border-radius: var(--radius-panel); background: var(--surface); }
+.campus-theme .forum-topic-list li:last-child { border-bottom: 0; border-radius: 0 0 var(--radius-panel) var(--radius-panel); }
+.campus-theme :is(.press-shell, .press-preview) { --press-ink: var(--ink); --press-moss: var(--sky-dark); --press-line: var(--rule); }
+.campus-theme .press-masthead h1 { color: var(--brand-deep); }
+.campus-theme .press-masthead p:not(.press-kicker) { color: var(--ink-soft); }
+.campus-theme .press-filter a { border-radius: var(--radius-control); }
+.campus-theme :is(.press-empty, .press-status, .event-empty, .wiki-empty, .portal-empty) { border-radius: var(--radius-panel); background: #edf6fb; padding: 38px 28px; }
+.campus-theme .events-shell { --event-paper: var(--paper); --event-wash: var(--paper-soft); --event-ink: var(--ink); --event-night: var(--brand-deep); --event-blue: var(--sky-dark); --event-rule: var(--rule); }
+.campus-theme :is(.event-cover, .wiki-record-header) { border-radius: var(--radius-panel); }
+.campus-theme .wiki-record-header { padding-inline: 28px; background: var(--surface-blue); border: 1px solid var(--rule); }
+.campus-theme :is(.event-kind, .thread-quote, .forum-reply, .guide-note, .auth-notice) { border-radius: var(--radius-small); }
+
+/* Form geometry is shared, while error/success colors keep their meaning. */
+.campus-theme :is(.content-editor, .block-editor) { --editor-ink: var(--ink); --editor-line: var(--rule); --editor-paper: #f1f7fb; }
+.campus-theme :is(.auth-form, .portal-form, .campus-search, .forum-form, .events-filter, .event-form,
+  .content-editor, .block-item, .guide-practice-controls, .work-community) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea) {
+  border-radius: var(--radius-control);
+  border-color: #b6cddc;
+  background: var(--surface);
+  color: var(--ink);
+  accent-color: var(--sky-dark);
+}
+.campus-theme :is(.block-item, .event-node-editor, .event-preview, .guide-practice, .event-form fieldset) { border-radius: var(--radius-panel); }
+.campus-theme .auth-page { background: transparent; }
+.campus-theme .auth-panel { border-radius: var(--radius-feature); box-shadow: var(--shadow-feature); }
+.campus-theme .auth-intro { border-radius: var(--radius-feature) 0 0 var(--radius-feature); background: linear-gradient(145deg, #e6f3fa, #f2f6fc); }
+.campus-theme .auth-form-column { border-radius: 0 var(--radius-feature) var(--radius-feature) 0; }
+.campus-theme .campus-layer-dialog { margin: auto; border-radius: var(--radius-feature); box-shadow: 0 24px 80px rgb(8 30 47 / 24%); }
+.campus-theme .campus-layer-dialog::backdrop { background: rgb(18 45 66 / 55%); }
+.campus-theme :is(.campus-layer-close, .campus-map-stop, .campus-map-stop span) { border-radius: var(--radius-control); }
+.campus-theme .campus-layer-sheet { background: var(--surface); }
+
+@media (max-width: 980px) {
+  .campus-theme .home-hero { gap: 24px; }
+  .campus-theme .event-intro { gap: 28px; }
+}
+@media (max-width: 700px) {
+  .campus-theme .site-header { border-radius: 0; }
+  .campus-theme .site-header nav a { padding-inline: 8px; }
+  .campus-theme .home-hero { gap: 0; }
+  .campus-theme .campus-view { border-radius: 22px; padding-inline: 21px; }
+  .campus-theme .campus-home :is(.activity-rail, .editorial-feed, .event-archive) { width: calc(100% - 40px); }
+  .campus-theme .campus-home .activity-rail { padding: 20px 20px 8px; margin-top: 0; }
+  .campus-theme .editorial-feed article { padding: 30px 22px 36px; }
+  .campus-theme .forum-feed { border-radius: var(--radius-feature) var(--radius-feature) 0 0; }
+  .campus-theme .campus-home .press-feed { border-radius: 0 0 var(--radius-feature) var(--radius-feature); }
+  .campus-theme .event-archive { margin-top: 28px; }
+  .campus-theme .event-archive-inner { padding: 30px 22px 36px; }
+  .campus-theme :is(.wiki-page-header, .wiki-form-header, .forum-heading, .press-masthead, .events-index-heading, .portal-heading) { padding: 24px 20px; }
+  .campus-theme .wiki-page-header { min-height: 0; }
+  .campus-theme .wiki-page-header h1 { font-size: 44px; }
+  .campus-theme .wiki-group { padding: 24px 20px; }
+  .campus-theme .wiki-groups { gap: 20px; }
+  .campus-theme .wiki-record-header { padding-inline: 20px; }
+  .campus-theme .auth-intro { border-radius: var(--radius-feature) var(--radius-feature) 0 0; }
+  .campus-theme .auth-form-column { border-radius: 0 0 var(--radius-feature) var(--radius-feature); }
+  .campus-theme .campus-layer-dialog { border-radius: 0; }
+}

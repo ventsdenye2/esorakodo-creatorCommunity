@@ -425,3 +425,31 @@ Linux 五阶段 build 与 standalone 121 包补全通过；既有 smoke.mjs 验�
 线上截图 D:/esorakodo/tmp/motion-production-{desktop,mobile,filter-mobile}.png；本地无 JS、减少动态效果、四栏目导航及键盘证据沿用同一 Linux 产物验收。已查看最终截图。校刊与校史目前无公开记录，有内容列表的入场效果尚无生产数据实测；当前验证覆盖其正常空状态。
 
 本批完成，无待发布步骤；源码提交后最终文档补充另行提交，不影响运行包。
+
+
+## 2026-10-15 · 官网视觉主题（验收中）
+
+基线源码 39d592b，改版前检查点 checkpoint/campus-before-official-theme-20261015 已推送，独立分支 design/official-campus-theme。实现为根布局增加主题类和 app/campus-theme.css，200 余行主题层，无 !important、图片、依赖、迁移或数据写入。
+
+参考已实际打开官网，浏览器读取按钮 8px、主色 rgb(18,59,90)、面板 18px；查看官网完整首屏/目录截图并对照本批原型。范围为既有设计系统内的主题对齐，不改变内容信息架构。Browser 插件未列出，采用现有 Playwright CLI 独立会话。
+
+初步原型验证将本地 CSS 应用到现有线上 DOM，只用于设计检查，不能作为新构建上线的证据。首页 1440×1000 / 390×844，论坛、校刊、事件、带中文错误提示的登录、检索、校训详情均无横向溢出。Wiki 47 条仍显示；桌面三栏组宽 376px、18px 圆角，表单与按钮 8px，主题主按钮 #123B5A。已查看首页全页、官网目录、手机登录与事件截图，未新增内容或生产测试记录。
+
+对比度：白字/主按钮 11.67:1；次级文字改用官网 #4F6A80，在最深淡紫背景上 4.64:1；深蓝链接/浅蓝底 5.67:1，索引金/纸白 4.79:1。原 #557189 在淡紫底仅 4.18:1，已修正并中止此前 Linux 构建，最终版本重新构建中。lint/typecheck 已通过；最终 Windows/Linux build、真实构建的多路由/动效/键盘/减少动态效果验证和公开发布待完成。
+
+原型证据 D:/esorakodo/tmp/theme-{official-reference,official-components,before-desktop,before-wiki,prototype-desktop,prototype-mobile,prototype-wiki,prototype-login-mobile,prototype-events-mobile}.png。截图位于仓库外；官网源文件未修改。
+
+补充原型响应式：首页及 Wiki 在 320/768/1024/1920px 均无横向溢出，320px 导航自身可横向滚动。登录错误提示、事件筛选及空状态的手机截图已查看，未发送登录/发布请求。Windows 五阶段 build 和 121 包补全通过；最终 Linux 五阶段编译完成，standalone 打包进行中。最终复验将使用生成产物，不使用 CSS 注入。
+
+
+### 最终构建与真实产物验证通过
+
+Windows/Linux 五阶段 build、standalone 121 包补全、lint/typecheck 通过；Linux smoke 验证正式/异域 Origin 门禁、中文回调和不可信 next 不外跳。Windows 构建使用本地开发参数，只作为构建兼容性检查；实际交付为使用既有公开 build.env 的 Linux 产物。根布局和 CSS 与 Linux 构建目录逐一匹配。
+
+真实 Linux standalone 127.0.0.1:3015，没有 CSS 注入：1440×1000 首页 HTTP 200，主题类由 SSR 输出，主按钮 #123B5A、8px，卡片 18px、展台 28px，无空白/错误层/溢出。轮播 01/06 → 02/06；28px dialog 居中 x=80/y≈131，初始焦点与 Tab 留在 dialog，Escape 返回触发按钮。四栏目客户端导航正确，按钮持续 8px、主题保持，无溢出；本轮监听 0 console error/warning 和 pageerror。
+
+390×844：首页无溢出，展台缩为 22px；入场调用从 5 增至滚动后 12。Wiki 实际 47 条，校训筛选返回 1 条，输入框 8px。reduced-motion 重新载入入场调用=0、隐藏目标=0、轮播自动切换停用。中文登录错误提示保留，认证面板 28px、输入框 8px，无溢出。独立禁用 JS context 仍显示校训条目和新主题，输入框 8px。
+
+已用 view_image 对照官网参考与实际构建截图：D:/esorakodo/tmp/theme-built-{desktop,full,wiki,dialog,mobile,filter-mobile,login-mobile}.png。背景、按钮和面板尺度符合官网设计系统；保留原数字校园文案与卡片堆，官网插画未复制到校园站。校刊/事件目前无公开记录，仅实际验证空状态；需要登录的 Creator 表单沿用 CSS 家族，未登录真实账号进行写入验收。
+
+本地验证完成，准备提交、发布 Linux runtime，再复验公开网址。当前仍不能将原型截图称为上线结果。
