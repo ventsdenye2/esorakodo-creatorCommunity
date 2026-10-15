@@ -270,3 +270,7 @@ Supabase sttghkavzjeqeuignpwi 原14条迁移只读核对后，在事务中追加
 真实构建的公开 GET handler 使用合成 PostgREST transport 验证为 200、CORS *、22 条、5 次分页请求；浏览器使用其生成的 feed 验证 21 官网条目及 1 新增其他词条、关键词过滤、正文更新、危险 HTML/URL 清理，桌面与 390px 截图已人工审阅；修改按钮实际跳转 https://campus.kongtian.university/wiki。真实 Browser 插件未提供，按技能使用 Playwright CLI。截图在 D:/esorakodo/tmp/shared-wiki-{desktop,mobile}.png。早期预览服务连接拒绝已重新加载解决；线上尚无新接口导致的 CORS 错误在隔离 feed 验收时不再出现。
 
 SSH 当前核验校园站运行 5cab52d、active；官网部署源 652630e。服务器实际 wiki-data.js 与本机原文标准化后完全一致。云端 ROLLBACK 演练成功：21 条变更、19 条新建/2 学院覆盖，其他学院/人物/地点内部指纹检查通过；无私有数据导出、无合成生产内容。生产正式迁移、发布和公开浏览器复验尚待执行。
+
+### 生产交付门禁（未上线）
+
+功能源码提交 b8ef879，官网源码提交 c5aa34f。生产正式迁移执行请求被自动审批明确拒绝：新增 schema 与导入/覆盖 21 词条属于持久生产变更，审批要求用户显式授权。已停止生产变更，不改用其他连接或工具绕过。ROLLBACK 演练已结束；正式 schema、词条内容和两站运行版本均未更改。等待用户批准：应用已审阅迁移与官网优先导入，发布校园站 Linux runtime，再发布官网静态产物。校验、发布包及本地提交可继续准备，不能据此称已上线互通。
