@@ -1,18 +1,17 @@
-# Shared encyclopedia Linux runtime -- authorized release
+# Campus component motion Linux runtime
 
-Feature source: b8ef879 (deploy/backend), 2026-10-15.
-Adds Other wiki records and an anonymous public feed for the read-only official site.
-Requires migration 202610150001_shared_wiki AND reviewed 21-entry official import.
-The user explicitly authorized production migration/import and both site releases
-on 2026-10-15. Verify migration/import before deploying this runtime.
+Source: e986aac (deploy/backend), 2026-10-15.
+Adds official-site entrance rhythm, staggered archive rows, pointer feedback and
+campus guide dialog transitions. No new dependencies or database migrations.
 
-Validation: lint/typecheck, Windows and Linux five-stage builds, standalone
-dependency completion (121 packages), 124 PostgreSQL acceptance checks, Windows
-and Linux built feed handler (22 synthetic records), desktop/390px browser reading,
-search, HTML/URL sanitization and actual campus /wiki edit-link navigation.
-Production ROLLBACK rehearsal passed; read-only follow-up confirms no new schema
-or canonical record changes persisted. No synthetic production records created.
+Validation: lint/typecheck, Windows and Linux five-stage builds, 121-package
+standalone completion and Linux origin/callback smoke. Playwright verified
+1440x1000 and 390x844, real 47-record wiki and one-record keyword filter,
+four primary route transitions, six-card homepage, manual carousel, dialog
+Escape/Tab/focus return, reduced motion and JavaScript off. Press and Events
+have no current public records; their empty states were checked.
+Previous runtime 020a810 remains the rollback target. Release using only
+/etc/ktu-community/update-runtime.sh on the existing campus service.
 
-Release is approved; production deployment and public verification are recorded
-in the source repository engineering documents.
-No environment files, credentials or test fixture data included.
+No environment files, credentials, screenshots or application fixtures included.
+Existing third-party package sources are retained by the standalone packager.
