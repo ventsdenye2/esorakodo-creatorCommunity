@@ -279,3 +279,5 @@ Windows/Linux 构建、lint/typecheck、124 项隔离数据库检查沿用本批
 设计与实现已完成，lint/typecheck 通过；构建和浏览器验收进行中，待记录实际证据。 设计契约见 [campus-motion](../design/campus-motion.md)。
 
 实现和本地验收已完成：Windows/Linux build、lint/typecheck、真实目录筛选、客户端导航、无 JS、390px、减少动态效果、轮播与弹窗焦点返回均通过。下一步发布 runtime 并记录公开站点复验。
+
+发布及公开站点验收完成：runtime=195b857，服务 active，旧版保留；桌面/390px、真实筛选、弹窗/轮播、减少动态效果通过，线上最终本轮 0 错误/警告。详见 verification.md。

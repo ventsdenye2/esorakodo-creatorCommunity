@@ -412,3 +412,16 @@ Linux 五阶段 build 与 standalone 121 包补全通过；既有 smoke.mjs 验�
 390×844 筛选目录无溢出；reduced-motion 首次载入实际动画调用=0、透明隐藏目标=0；关闭 JavaScript 的独立浏览器 context 仍显示校园档案标题与校训条目且可见。证据 D:/esorakodo/tmp/motion-{real-home-desktop,wiki-desktop,wiki-filter-mobile,no-js-mobile}.png。动效相关数据库查询全部只读，没有生产账号写入。
 
 生产发布准备中，尚不能据此声称线上已有动效。
+
+
+### 2026-10-15 · 动效已上线并完成公开复验
+
+源码功能提交 e986aac；Linux runtime 发布 195b8576222873bf0d481691598dc9f2078f409b（产物提交 5968e2c，发布说明提交 195b857），两个分支已推送。5904 个文件/58208211 bytes 与 Linux standalone 逐个 SHA-256 一致，无多余产物、环境文件或应用测试数据。初版打包扫描误把第三方 Zod 包自带 tests 判为应用测试目录，已收窄为应用根目录/环境路径；第三方依赖按既有打包规则保留，没有改依赖。
+
+服务器既有 /etc/ktu-community/update-runtime.sh 成功；current 指向 /srv/ktu-community/releases/git-195b8576222873bf0d481691598dc9f2078f409b，服务 active，检查时内存约 69 MiB，旧 020a810 发布目录保留可回滚。无生产数据库写入、迁移、其他站点或 Nginx 修改。
+
+公开 https://campus.kongtian.university/ HTTP 200。独立 Playwright CLI 真实浏览器 1440×1000：正确标题和主体，无错误层/横向溢出，实际入场调用 10 次；卡片下一张切到 02/06；dialog computed animationName=campus-dialog-enter，Escape 关闭返回触发按钮。390×844 滚动后实际调用增至 16，动态启用 reduced-motion 并刷新后调用=0。校园档案导航实际 47 条，搜索校训返回 1 条，手机无溢出。最终线上这轮监听 0 console error、0 warning、0 pageerror。其他早期本机后端/开发缓存问题仅见上方过程记录，不属于最终线上结果。
+
+线上截图 D:/esorakodo/tmp/motion-production-{desktop,mobile,filter-mobile}.png；本地无 JS、减少动态效果、四栏目导航及键盘证据沿用同一 Linux 产物验收。已查看最终截图。校刊与校史目前无公开记录，有内容列表的入场效果尚无生产数据实测；当前验证覆盖其正常空状态。
+
+本批完成，无待发布步骤；源码提交后最终文档补充另行提交，不影响运行包。
