@@ -21,3 +21,7 @@ Yjs可合并更新写入私有编辑文档；PostgreSQL乐观序号与行锁保�
 新增成员/编辑文档/会话/身份池均显式关系与RLS。协作者可使用作品身份和本人身份；不能修改别人管理的全局账号资料。新增图片校验上传者仍在本作品可用范围，不能引用无关作者私有媒体。协作撤销不删除已有贡献、引用或身份。历史迁移不改写，旧版draft RPC不能绕过公开写入入口。无额外WebSocket服务、无service_role浏览器密钥。
 
 源资料：[Yjs更新](https://docs.yjs.dev/api/document-updates)、[相对位置](https://docs.yjs.dev/api/relative-positions)。
+
+根因确认：PostgREST对自定义40001无限事务重试，追加202610170002将应用CAS版本冲突改为P0001，应用自己重新取版并合并。官方说明：https://supabase.com/docs/guides/troubleshooting/high-cpu-and-infinite-transaction-retries-when-using-custom-error-codes-in-rpc-functions-77326b 。前一迁移保持历史不改写。
+
+交付状态：2026-10-17已上线，runtime8175c71；19迁移含40001业务冲突修复。真实双账号14项及匿名5项通过，临时账号/作品已清理。详细证据见../engineering/verification.md。
