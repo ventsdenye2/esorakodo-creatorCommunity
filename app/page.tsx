@@ -1,25 +1,20 @@
-import { CampusActivity } from "../src/components/home/campus-activity";
+import Link from "next/link";
 import { CampusHero } from "../src/components/home/campus-hero";
-import { CampusTrace } from "../src/components/home/campus-trace";
-import { EditorialFeed } from "../src/components/home/editorial-feed";
-import { EventArchive } from "../src/components/home/event-archive";
-import { WikiTrail } from "../src/components/home/wiki-trail";
-import { SiteFooter } from "../src/components/layout/site-footer";
 import { SiteHeader } from "../src/components/layout/site-header";
+import "../src/components/home/home-welcome.css";
 
+// A single, focused campus entrance.
 export default function Home() {
   return (
     <div className="campus-home">
-      <SiteHeader current="campus" />
+      <SiteHeader current="campus" compact />
       <main id="main-content">
         <CampusHero />
-        <CampusActivity />
-        <CampusTrace />
-        <EditorialFeed />
-        <EventArchive />
-        <WikiTrail />
       </main>
-      <SiteFooter />
+      <footer className="home-footer">
+        <Link href="https://kongtian.university/">空天大学官网</Link>
+        <Link href="/guide">创作指南</Link>
+      </footer>
     </div>
   );
 }

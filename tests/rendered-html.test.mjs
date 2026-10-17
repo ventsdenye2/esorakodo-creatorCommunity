@@ -28,12 +28,12 @@ test("server-renders the campus homepage", async () => {
 
   const html = await response.text();
   assert.match(html, /空天大学/);
-  assert.match(html, /立足此间/);
-  assert.match(html, /CAMPUS VIEW/);
-  assert.match(html, /下一张/);
-  assert.match(html, /Campus Trace/);
-  assert.match(html, /检索校园/);
-  assert.match(html, /校园论坛/);
+  assert.match(html, /向星辰，向太空/);
+  assert.match(html, /创建角色/);
+  assert.match(html, /创作论坛体/);
+  assert.match(html, /href="\/create\/character"/);
+  assert.match(html, /href="\/create\/forum"/);
+  assert.doesNotMatch(html, /CAMPUS VIEW|Campus Trace|AROUND THE CAMPUS|KNOWLEDGE \/ DISCOVERY/);
   assert.doesNotMatch(html, /campus-trace\.png/i);
   assert.doesNotMatch(html, /codex-preview|SkeletonPreview|react-loading-skeleton/i);
 });

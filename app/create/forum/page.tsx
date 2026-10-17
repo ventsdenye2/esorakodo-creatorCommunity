@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "创作论坛主题" };
 export default async function CreateForumPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const [{ error }, creatorId, drafts] = await Promise.all([searchParams, getAuthenticatedCreatorId(), listEditableForumTopics()]);
-  if (isSupabaseConfigured() && !creatorId) redirect("/login");
+  if (isSupabaseConfigured() && !creatorId) redirect("/login?next=%2Fcreate%2Fforum");
   return <div><SiteHeader current="forum" /><main id="main-content" className="forum-shell forum-form-page">
     <nav className="forum-crumb"><Link href="/forum">校园论坛</Link><span>/</span>创作主题</nav>
     <p className="archive-label">CREATOR / FORUM</p><h1>创作论坛主题</h1>

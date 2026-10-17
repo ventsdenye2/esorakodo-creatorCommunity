@@ -529,3 +529,15 @@ Windows/Linux 五阶段 build、standalone 121 包补全、lint/typecheck 通过
 - 本机真实远程学院/人物读取失败，实际创建页面显示可跳过提示；非必要读取已加6秒取消信号。正向数据使用明确标注的测试学院，不写入生产。首次QA等待函数未判空导致开发错误遮罩、首次关闭焦点等待过早，已修正等待/关闭顺序并复验。夹具初版因Node模块测试钩子影响PostCSS、扫描到服务器模块而失败；拆开API/前端进程后通过，夹具首次加载仍超过60秒，随后页面正常；不据此声称冷启动性能通过。夹具favicon404与已有开发期上下文警告单独记录，未宣称所有历史控制台记录零错误。
 
 截图位于 C:/Users/VENTSDENYE5/.codex/visualizations/2026/10/17/01a14755-1123-7c92-a97c-5508b6d0763a/：character-intro.png、character-home-entry.png、character-card-centered.png、character-card-mobile.png、character-face.png、character-face-mobile.png、character-question-mobile.png、character-ability-fixture.png。已目视复核居中卡片及手机捏脸；ability-fixture只用于行为证据，非完整站点样式验收。早期character-all-skipped.png为居中修正前截图，以card-centered/mobile为准。新生产迁移/发布/真实媒体链路尚未执行。
+
+## 2026-10-17 · 首页精简验收
+
+设计基准为实际 https://kongtian.university/（浏览器首屏及仓库原始CSS），官网校徽/群像与本站副本Buffer逐字节一致。Browser skill未列出，使用Playwright CLI验证本机http://localhost:3046/，另通过CUA读取用户现有IAB首页AX确认已显示校名/校训和两个入口，未创建或切换用户页面。
+
+- 信息层级：main直属section从6变1，1440×1000整页高从2654降为1000；不含CAMPUS VIEW、EARTH CAMPUS、Campus Trace等装饰标签。图库解码成功，最终加载未出现pageerror或框架遮罩。
+- 入口：桌面两个246×88，390×844两个165×72，320×740两个280×64竖排；均位于首屏内，无横向溢出。1280×800也无溢出。手机图片改为contain，保全五个人物。
+- 实际交互6项通过：1280布局、可见键盘焦点、两入口相邻Tab顺序、减少动效transition-property:none、角色入口打开真实五题页、论坛入口转/login?next=%2Fcreate%2Fforum且隐藏next字段正确。未建立新作品、未执行生产登录。
+- 原有node --test首页SSR用例更新后1/1通过；npm run lint、npm run typecheck、npm run build通过，standalone补全124包。只跑相关首页渲染用例，不宣称依赖远程数据的全站测试通过。
+- 初次HMR在CSS文件创建前缓存了缺失导入，页面出现500；文件齐备后触发入口模块更新，再载入通过。首次减少动效断言严格比较0s而失败，实际全站兼容规则为1e-05s且transition-property:none；按实际关闭过渡契约复验通过。历史console另有favicon404/字符页预加载提示，不称整个开发会话零告警。
+
+截图保存于C:/Users/VENTSDENYE5/.codex/visualizations/2026/10/17/01a14755-1123-7c92-a97c-5508b6d0763a/：home-official-reference.png、home-before-simplify.png、home-simplified-desktop.png、home-simplified-mobile.png、home-simplified-320.png。桌面/手机已目视对照。未发布runtime/未部署、没有生产验收。

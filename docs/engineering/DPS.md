@@ -326,3 +326,7 @@ Windows/Linux 构建、lint/typecheck、124 项隔离数据库检查沿用本批
 ## 2026-10-17 · 角色创建任务完成情况
 
 已完成首页入口、五屏问答/跳过、原画捏脸桥接、照片上传裁剪、能力示例/暂停、姓名默认、居中学生证/下载、Creator 确认、Student/Wiki 原子建档与公开卡片展示、本机草稿及重新开始、幂等/RLS/Server Action 测试、桌面/手机/键盘/减少动效验收。静态检查与 Windows 五阶段构建通过。新增迁移 202610170003_student_character_cards.sql 待生产演练/应用；Linux 运行包交付、线上 Supabase Auth+R2 完整创建尚未执行，不能把本地夹具当作线上验收。
+
+## 2026-10-17 · 首页精简交付
+
+已完成官网实景/源码对照、设计简报、单开屏、两个大面积创作入口、紧凑导航、原图复用、移动端完整群像、键盘/减少动效与匿名登录返回检查。同步首页既有SSR测试；执行lint/typecheck/build。未修改或发布官网，不变更Supabase schema或作品数据，本批未上线。设计/证据见../design/home-creation-entrances.md和verification.md。

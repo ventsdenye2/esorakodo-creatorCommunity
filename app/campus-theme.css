@@ -204,6 +204,3 @@ body.campus-theme {
   .campus-theme .auth-form-column { border-radius: 0 0 var(--radius-feature) var(--radius-feature); }
   .campus-theme .campus-layer-dialog { border-radius: 0; }
 }
-
-/* Character creator entrance: a small admissions slip within the Campus hero. */
-.hero-character-entry{display:flex;align-items:center;gap:16px;width:fit-content;max-width:100%;margin-top:25px;padding:10px 24px 10px 10px;border:1px solid #bad1df;border-left:3px solid #277eaf;background:#f2f8fc;color:#123b5a;text-decoration:none;transition:background .2s}.hero-character-entry:hover{background:#e4f1f8}.hero-character-entry:focus-visible{outline:3px solid #946923;outline-offset:4px}.hero-character-entry>img{width:45px;height:60px;object-fit:cover;background:#e4f1f8}.hero-character-entry>span{display:grid;gap:8px}.hero-character-entry small{font-size:11px;letter-spacing:.04em;color:#4f6a80}.hero-character-entry strong{font:18px "Songti SC",SimSun,serif;display:flex;justify-content:space-between;gap:45px}.hero-character-entry strong>span{font:18px sans-serif;color:#277eaf}@media(prefers-reduced-motion:reduce){.hero-character-entry{transition:none}}

@@ -330,3 +330,9 @@ Windows/Linux 构建、lint/typecheck、124 项隔离数据库检查沿用本批
 /create/character 服务端并行读取学院、能力示例和登录状态；非必要资料读取设置6秒取消信号，失败保留自由创作。前端以五个问题屏幕和档案留影预览组成，短纸页转场、能力轮播可暂停，支持减少动效。捏脸使用 public/character-maker 的原工具副本（63份 PNG 保留原字节），独立 localStorage、禁用打印网络、严格同源及窗口校验；大素材仅打开捏脸时加载。首页缩略图约10KB。校园卡1016×638，保留原底图，只绘入姓名/学号与照片。上传照片居中裁为720×960，限定 PNG/JPEG/WebP、10MB、4000万像素；服务端沿用已有媒体所有权、ready、文件大小与魔数验证。
 
 新 student_character_cards 显式关联 Student、Creator、portrait/card 媒体，记录外观与幂等请求UUID。create_student_character 认证后以事务级锁串行同一创建请求，校验所有者媒体及学院，调用 create_wiki_entity_with_body 产生 Student 和初始 Revision，再写关联，同事务提交。公开仅可读已关联 ready 媒体；客户端无表写权限。卡片是创建时的留档，之后 Wiki 名称/学院修订以正文为准，不悄悄改动历史卡片。相关类型、源文件及迁移均在同批 Git 中。
+
+## 2026-10-17 · 首页官网风格与聚焦入口
+
+已读取 https://kongtian.university/ 实际首屏，并核对官方 main.css/orbital.css。首页使用同色板、宋体校名、浅天空留白及官网原始群像/校徽副本（字节一致，官网只读）。CampusHero改为纯Server Component，首页不再读取资讯feed或挂载轮播客户端。独立home-welcome.css以专用选择器限定首页；SiteHeader新增compact变体，仅在首页显示中文品牌、五栏目、检索与登录/创作中心，其他页面保持默认导航。手机人物图contain以保全五人，两个入口390px并排、320px竖排。只保留静态页脚官网和指南导航。
+
+创建入口分别直达/create/character及/create/forum；后者现有匿名保护增加next=/create/forum，登录动作沿用已有安全返回路径验证，无权限变化。修改既有SSR首页断言以覆盖新入口和去除旧标签，不新增镜像式单元测试。
