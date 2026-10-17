@@ -1,8 +1,8 @@
-# Character creation and campus homepage runtime
+# Campus creation homepage and character creation
 
-Source: c2fc8362168cceb143346508fe1e96affb7eb7ff (deploy/backend), 2026-10-17.
-Requires migration 202610170003_student_character_cards.sql, transactionally applied and verified.
-Optional five-question character creation, original face maker, student card and revisioned archive.
-Official-inspired homepage with large creation entrances and retained live news stack.
-Linux x86_64 WSL build Node24.19.0; lint/typecheck/build passed.
-Previous runtime8175c71 retained for rollback. No environment or QA credentials included.
+Source: 8983230828edd89e5fbd365af699f5265da08afd (deploy/backend), 2026-10-17.
+News stack replaces the hero cast artwork, alongside large creation entrances.
+Original university palette, emblem, serif masthead and restrained spacing.
+Includes previously verified optional character creation; migration202610170003 already applied.
+Linux WSL lint/typecheck/build passed. No environment or temporary credentials included.
+Previous runtime59bd4de remains rollback.
