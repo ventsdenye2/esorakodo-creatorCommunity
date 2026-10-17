@@ -338,3 +338,5 @@ Windows/Linux 构建、lint/typecheck、124 项隔离数据库检查沿用本批
 创建入口分别直达/create/character及/create/forum；后者现有匿名保护增加next=/create/forum，登录动作沿用已有安全返回路径验证，无权限变化。修改既有SSR首页断言以覆盖新入口和去除旧标签，不新增镜像式单元测试。
 
 最终以c2fc836源码构建runtime59bd4de上线，迁移202610170003已应用；资讯堆叠窄屏增加内距，320px实测不溢出。所有新页面沿用原官网视觉语言。
+
+资讯组件作为CampusHero的Server Component子插槽，仍在Suspense中读取；替换原右侧群像。home-news全宽防止手机flex收缩，桌面左右双列、手机纵向，保留窄屏内距。原群像资源不再由首页加载。
