@@ -188,3 +188,15 @@ Windows/Linux 构建、lint/typecheck、124 项隔离数据库检查沿用本批
 ## 2026-10-15 · 官网视觉主题
 
 依据官网设计系统对齐校园站圆角、颜色、边框、背景与层次；保留内容、五栏目、数据和已发布动效。 详见 [official-campus-theme](../design/official-campus-theme.md)。
+
+
+## 2026-10-17 · 自然式论坛创作（本地完成，未上线）
+
+需求 KTU-FORUM-NATURAL：首帖优先、成品样式内创作；点击消息弹出回复/编辑/删除/反应数/设为楼主/向上插楼/身份选择。回复追加末尾并直接引用；默认生成可修改昵称与头像；首楼禁止删除或向上插入；底部常驻发言输入。沿用原子草稿保存、权限与发布冻结，无 schema 变更。设计见 [自然式创作](../design/forum-natural-authoring.md)。基线 deploy/backend=27b2e1b，初始工作树干净；本批改动保留在未提交工作区，未推送、未部署。验收使用实际组件配隔离 action/media 桩，见 engineering/verification.md（本目录使用 verification.md）。
+
+
+## 2026-10-17 · 发布后改写与实时协作（本地完成，未上线）
+
+用户已确认：范围先落实当前论坛体；已发布作品可重新编辑，有效改动及时同步公开阅读页；作者按创作者@账号增删协作者，协作者可共同编辑，作者保留首次发布与成员管理权限。前端明确使用 frontend-design skill，保留自然回帖，新增轻量在线成员/正在编辑位置/同步状态及作者管理面板。实现采用 Yjs 文本/结构合并、认证HTTP增量写入和SSE通知，编辑状态与公开关系表分开。本批重新执行迁移、权限、并发、撤权与浏览器验收，实际证据见 engineering/verification.md。
+
+实现、教程与本地验收已完成；未提交、未推送、未上线。新契约取代前一节发布冻结和手动保存说明。详见 [forum-collaboration](../design/forum-collaboration.md) 与 verification.md。Yjs 合并通过认证 HTTP+SSE；仅作者首次发布/管理成员，协作者有效改写直接公开。新增迁移文件为 202610170001_forum_collaboration.sql（迁移总数18），新增 yjs 依赖。

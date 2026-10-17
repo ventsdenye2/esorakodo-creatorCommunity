@@ -4,9 +4,8 @@ import { redirect } from "next/navigation";
 import { SiteHeader } from "../../../src/components/layout/site-header";
 import { SiteFooter } from "../../../src/components/layout/site-footer";
 import { createForumDraft } from "../../../src/features/forum/actions";
-import { listOwnDrafts } from "../../../src/features/forum/queries";
-import { forumBoards, boardLabel } from "../../../src/features/forum/schemas";
-import { listOwnForumAccounts } from "../../../src/features/forum-accounts/queries";
+import { listEditableForumTopics } from "../../../src/features/forum/queries";
+import { boardLabel } from "../../../src/features/forum/schemas";
 import { getAuthenticatedCreatorId } from "../../../src/features/wiki/queries";
 import { isSupabaseConfigured } from "../../../src/lib/supabase/config";
 import "../../../src/features/forum/forum.css";
@@ -14,19 +13,15 @@ import "../../../src/features/forum/forum.css";
 export const dynamic = "force-dynamic";
 export const metadata = { title: "创作论坛主题" };
 export default async function CreateForumPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
-  const [{ error }, creatorId, accounts, drafts] = await Promise.all([searchParams, getAuthenticatedCreatorId(), listOwnForumAccounts(), listOwnDrafts()]);
+  const [{ error }, creatorId, drafts] = await Promise.all([searchParams, getAuthenticatedCreatorId(), listEditableForumTopics()]);
   if (isSupabaseConfigured() && !creatorId) redirect("/login");
   return <div><SiteHeader current="forum" /><main id="main-content" className="forum-shell forum-form-page">
     <nav className="forum-crumb"><Link href="/forum">校园论坛</Link><span>/</span>创作主题</nav>
     <p className="archive-label">CREATOR / FORUM</p><h1>创作论坛主题</h1>
-    <p>以 Forum Account 编排戏内讨论。主题由你的 Creator 账号管理，发布后公开阅读。</p>
-    <GuideLink section="forum">第一次编排？查看论坛创作教程</GuideLink>
-    <form action={createForumDraft} className="forum-form"><input type="hidden" name="title" value="待导入的主题" /><input type="hidden" name="board" value="campus" /><button type="submit">从 Markdown 开始</button><p>建立空白草稿，再选择文件导入；缺少的发言身份会自动创建。</p></form>
+    <p>先写下楼主的第一条消息，再让讨论自然发生。昵称和头像会自动准备好，随时可以改。</p>
     {error && <p className="forum-error" role="alert">{error}</p>}
-    {accounts.length === 0 ? <section className="forum-empty-note"><h2>先建立一个发言身份</h2><p>填写昵称与账号标识即可创建，无需关联人物档案。</p><Link className="button button-primary" href="/create/forum/account">建立论坛身份</Link></section> : <>
-      <div className="forum-account-strip"><span>可用身份 {accounts.length}</span>{accounts.map((account) => <Link key={account.id} href={`/forum/accounts/${account.handle}`}>@{account.handle}</Link>)}<Link href="/create/forum/account">＋ 添加身份</Link></div>
-      <form action={createForumDraft} className="forum-form forum-new-topic"><label>主题标题<input name="title" maxLength={160} required /></label><label>版面<select name="board">{forumBoards.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}</select></label><button className="button button-primary" type="submit">建立草稿并编排楼层</button></form>
-    </>}
-    <section className="forum-drafts"><h2>我的草稿</h2>{drafts.length === 0 ? <p>目前没有草稿。</p> : <ul>{drafts.map((draft) => <li key={draft.id}><Link href={`/create/forum/${draft.id}`}><strong>{draft.title}</strong><span>{boardLabel(draft.board)} · {draft.floorCount} 层 · {new Date(draft.updated_at).toLocaleDateString("zh-CN")}</span></Link></li>)}</ul>}</section>
+    <form action={createForumDraft} className="forum-form forum-start-writing"><input type="hidden" name="title" value="未命名主题" /><input type="hidden" name="board" value="campus" /><button className="button button-primary" type="submit">开始写帖子</button><p className="forum-form-hint">也可以进入后，在“帖子设置与导入”中导入 Markdown。</p></form>
+    <GuideLink section="forum">查看论坛创作说明</GuideLink>
+    <section className="forum-drafts"><h2>我的帖子与协作</h2>{drafts.length === 0 ? <p>还没有帖子或协作邀请。</p> : <ul>{drafts.map((draft) => <li key={draft.id}><Link href={`/create/forum/${draft.id}`}><strong>{draft.title}</strong><span>{draft.creator_id !== creatorId ? "协作 · " : ""}{draft.status === "published" ? "已发布，可继续改写" : "草稿"} · {boardLabel(draft.board)} · {draft.floorCount} 层</span></Link></li>)}</ul>}</section>
   </main><SiteFooter /></div>;
 }

@@ -9,6 +9,11 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+forum_collaborators: { Row: { topic_id: string; creator_id: string; added_by: string; created_at: string }; Insert: { topic_id?: string; creator_id?: string; added_by?: string; created_at?: string }; Update: { topic_id?: string; creator_id?: string; added_by?: string; created_at?: string }; Relationships: [] };
+forum_edit_documents: { Row: { topic_id: string; state: string; revision: number; first_id: string | null; updated_by: string; updated_at: string; public_revision: number; publish_error: string | null }; Insert: { topic_id?: string; state?: string; revision?: number; first_id?: string | null; updated_by?: string; updated_at?: string; public_revision?: number; publish_error?: string | null }; Update: { topic_id?: string; state?: string; revision?: number; first_id?: string | null; updated_by?: string; updated_at?: string; public_revision?: number; publish_error?: string | null }; Relationships: [] };
+forum_edit_presence: { Row: { session_id: string; topic_id: string; creator_id: string; field: string; seen_at: string }; Insert: { session_id?: string; topic_id?: string; creator_id?: string; field?: string; seen_at?: string }; Update: { session_id?: string; topic_id?: string; creator_id?: string; field?: string; seen_at?: string }; Relationships: [] };
+forum_topic_accounts: { Row: { topic_id: string; account_id: string }; Insert: { topic_id?: string; account_id?: string }; Update: { topic_id?: string; account_id?: string }; Relationships: [] };
+forum_topic_edit_media: { Row: { topic_id: string; asset_id: string }; Insert: { topic_id?: string; asset_id?: string }; Update: { topic_id?: string; asset_id?: string }; Relationships: [] };
       wiki_articles: {
         Row: { id: string; slug: string; name: string; summary: string | null; body: string; version: number; created_by: string; created_at: string; updated_at: string }
         Insert: { id?: string; slug: string; name: string; summary?: string | null; body?: string; version?: number; created_by: string; created_at?: string; updated_at?: string }
@@ -1454,6 +1459,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+can_edit_forum: { Args: { p_topic_id: string }; Returns: boolean };
+list_forum_edit_accounts: { Args: { p_topic_id: string }; Returns: ForumAccount[] };
+manage_forum_collaborator: { Args: { p_topic_id: string; p_handle?: string | null; p_remove_id?: string | null }; Returns: undefined };
+touch_forum_presence: { Args: { p_topic_id: string; p_session_id: string; p_field?: string; p_leave?: boolean }; Returns: undefined };
+initialize_forum_edit: { Args: { p_topic_id: string; p_state: string }; Returns: Database["public"]["Tables"]["forum_edit_documents"]["Row"] };
+commit_forum_edit: { Args: { p_topic_id: string; p_expected_revision: number; p_state: string; p_first_id: string | null; p_snapshot?: Json; p_publish?: boolean }; Returns: Database["public"]["Tables"]["forum_edit_documents"]["Row"] };
       content_body_has_content: { Args: { p_body: Json }; Returns: boolean }
       apply_wiki_revision: {
         Args: {

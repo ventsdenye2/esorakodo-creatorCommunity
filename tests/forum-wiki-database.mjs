@@ -6,7 +6,7 @@ import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import EmbeddedPostgres from '../output/pg-check/node_modules/embedded-postgres/dist/index.js';
 
-const cluster = new EmbeddedPostgres({ databaseDir: path.resolve(`output/pg-check/data-${Date.now()}`), user: 'postgres', password: randomUUID(), port: 55449, persistent: true, initdbFlags: ['--encoding=UTF8', '--locale=C'], postgresFlags: ['-h', '127.0.0.1'], onLog() {}, onError() {} });
+const cluster = new EmbeddedPostgres({ databaseDir: path.resolve(`output/pg-check/data-${Date.now()}`), user: 'postgres', password: randomUUID(), port: Number(process.env.KTU_TEST_PG_PORT || 55449), persistent: true, initdbFlags: ['--encoding=UTF8', '--locale=C'], postgresFlags: ['-h', '127.0.0.1'], onLog() {}, onError() {} });
 let db, passed = 0;
 function check(value, message) { assert.ok(value, message); passed++; console.log(`PASS ${passed}: ${message}`); }
 try {
@@ -69,7 +69,7 @@ try {
   check((await db.query('select * from forum_messages where topic_id=$1',[topic])).rows.length===0,'other author cannot read draft');
   await assert.rejects(save(input),/FORUM_TOPIC_NOT_OWNED/); check(true,'other author cannot change counts');
   await db.query("select set_config('request.jwt.claim.sub',$1,false)",[a]); await save([{...input[0],body:input[0].body+'\n![现场](/api/media/'+image+')'},...input.slice(1)],true);
-  await assert.rejects(save(input),/FORUM_TOPIC_NOT_DRAFT/); check(true,'published counts frozen');
+  await assert.rejects(save(input),/FORUM_TOPIC_NOT_DRAFT/); check(true,'legacy draft RPC cannot mutate published counts');
   await db.query('set role anon');
   rows=(await db.query('select * from forum_messages where topic_id=$1 order by floor_no',[topic])).rows;
   check(rows[0].like_count===42,'anonymous reader sees published authored counts');

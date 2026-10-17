@@ -468,3 +468,39 @@ Windows/Linux 五阶段 build、standalone 121 包补全、lint/typecheck 通过
 最终截图 D:/esorakodo/tmp/theme-production-{desktop,full,wiki,dialog,mobile,filter-mobile,login-mobile}.png 已查看并对照官网参考；可见圆角、背景、边框、按钮和纸张层次已经对齐。保留真实内容与上一批动效。校刊/事件有内容列表和登录后的 Creator 写入仍未在生产实测，本次只验证真实空状态及公开阅读/表单呈现。
 
 本批已交付，无待发布步骤。最后仅同步本文档，不需要重建运行包。
+
+
+## 2026-10-17 · KTU-FORUM-NATURAL 本地验收
+
+基线 deploy/backend=27b2e1b；本批代码、教程截图和设计/工程文档保留为未提交工作区改动。没有切换/清理分支，没有数据库迁移、生产数据写入、推送或部署。
+
+- 最终 npm run lint、npm run typecheck、npm run build 全部退出 0，Windows standalone 打包完成（121 个运行依赖）。构建既有 middleware 弃用、代理环境提示及插件耗时提示仍存在，不是运行错误。没有安装或升级依赖。
+- 新增 tests/forum-natural-authoring.test.mjs 11/11：插楼后引用原消息、末尾回复、首楼保护、删除目标保留直接回复、100层上限、保存恢复序列；新身份 action 的输入/认证/本人草稿检查、服务端账号归属、唯一格式 handle、本人账号更新和写入拒绝。action 测试的 Supabase 查询边界使用桩，不把它描述为真实 Auth/API 端到端。
+- 既有 Markdown 解析 26 项和论坛图片解析 6 项通过；媒体 same-origin 6 项通过。tests/forum-wiki-database.mjs 在独立 PostgreSQL 17 原样执行17迁移，124项回归通过，包含论坛计数、原子保存、引用、版本冲突、RLS、图片和发布冻结；Auth 边界为该测试原有的 SQL claim 模拟。没有 Docker/Supabase 本地服务，未重置数据库。
+- Browser plugin not available；使用已有缓存 Playwright CLI。Windows 沙箱内 Chrome crashpad 启动失败后，在已通过审批的沙箱外本地浏览器完成验证；未安装浏览器依赖。测试服务 http://127.0.0.1:3021 为真实 React 编辑组件/入口页面配隔离 server-action/media 桩，数据仅在页面和 localStorage/sessionStorage 中。
+- 主浏览器脚本39项断言、补充脚本18项断言、最后修复2项断言，共59项通过。覆盖：无预建身份开始、首帖、消息菜单、首楼不可删除/上插、Escape回焦、回复切换保留正文、末尾引用、上插后引用重编号不串楼、反应数边界、设为楼主同步昵称/头像/标记、身份选取/修改、删除影响提示、未发消息阻止保存、保存错误保留、头像上传、图片多选/粘贴/完整预览、重复提交同步锁、fixture保存刷新、Markdown导入、非法图片编辑拒绝和保存后提示清理。循环Tab保持dialog内，减少动效下仍可操作；桌面1440×1000与390×844无横向溢出。最终这几轮监听无相关 console error/warning/pageerror。更早夹具路径与媒体拦截错误已修正，不计作产品通过证据。
+- 真实最终 standalone 在 http://127.0.0.1:3023 的 /guide#forum 返回200，标题“创作指南 · 空天大学”，新首帖/菜单/连续讨论三张图全部 decode 成功，旧先建身份/添加独立发言文案已移除；390px无溢出。匿名 /create/forum 实际跳转 /login，最终200登录页。该轮无相关控制台或页面错误。
+- 截图已目视检查：D:/esorakodo/tmp/forum-natural-{first-desktop,thread-desktop,menu-desktop,thread-mobile,menu-mobile,identity-mobile,guide-mobile}.png；站内三张真实组件截图位于 public/guide/forum-natural-{first,menu,thread}.png。消息操作弹窗居中、44px触控区、默认字头像与标题透明样式已复核。
+- 复现脚本在 D:/esorakodo/tmp/forum-natural-qa/{config.mjs,check.js,extra.js,final-check.js,built-check.js,capture.js}。编辑器和图片的浏览器写入使用桩；真实Creator登录后的新身份/草稿保存、真实R2/CORS、真实发布、生产站点未在本批实测，不能以这些本地结果声称已上线。
+
+
+## 2026-10-17 · KTU-FORUM-COLLAB 本地验收
+
+本批延续 deploy/backend=27b2e1b 的未提交工作区；无生产 schema/数据写入、推送或部署。下列结果取代上一节仅自然式编辑器的发布冻结边界。
+
+- 最终 lint/typecheck/build 退出0；Windows standalone 完成124个运行依赖。增加 yjs 依赖，追加 202610170001_forum_collaboration.sql；全部18迁移在隔离 PostgreSQL17 原样执行。构建保留既有 middleware 弃用、代理和插件耗时提示。
+- 自然式+CRDT单元回归19/19：同楼并发插入、同位置/重复投递收敛、插楼引用、删除不复活、首楼保护、无效临时内容、关联档案与元数据并发、emoji UTF16、身份操作边界。
+- 新增真实 PostgreSQL/RLS + 实际 mergeForumEdit 服务31项通过：公开即时更新、CAS并发保留双方输入、保留 published_at、公开回滚/私有留存、按handle授权、匿名/无关成员与私有表隔离、撤权、在线会话、共享身份与图片、撤权后贡献保留、无关私有媒体拒绝、首楼ID保护、作者首次发布。Auth使用SQL claim模拟；没有冒充真实Supabase登录。
+- 既有 forum-wiki-database 原样18迁移回归124/124；旧draft RPC仍不能写已发布作品，而新协作入口允许。端口55462；测试新增 KTU_TEST_PG_PORT 支持避免本地服务冲突。
+- Browser plugin unavailable；使用缓存 Playwright CLI，沙箱外Chrome已获审批。浏览器 http://127.0.0.1:3031 使用真实 React/原生文本框、实际 API/stream route/服务/action 与隔离 PostgreSQL/RLS；只有认证用测试会话替代。媒体复用数据库夹具，无实际R2上传。
+- 主流程14项：独立作者/协作者/匿名三个上下文，邀请、作者控制、2人在线、同楼同时改写合并、匿名开页不手动刷新更新、空白内容保留公开旧版、协作者建立身份发言、指定回复、公开新楼、390px无溢出、撤权后已打开页面锁定/API403。重复主流程通过，监听无非预期控制台错误；403是有意验收。
+- 恢复/输入/键盘6项：中文composition期间远端更新不打断，结束后合并双方内容；断网后保留本地改写，恢复网络与在线编辑合并；相对位置维持光标；成员dialog键盘focus/Escape返回。故意断网出现预期网络错误，未描述成全会话零错误。首帖后立刻首次发布另1项通过，覆盖自动同步正在请求的窗口。
+- 最终教程截图重新生成并目视检查：public/guide/forum-natural-{first,menu,thread}.png、forum-collaboration.png、forum-members.png；移动成品 D:/esorakodo/tmp/forum-collaboration-clean-mobile.png。同步条、成员列表、实时公开提示和静态底部操作区符合 frontend-design 简报，390px无横向溢出。
+- 复现脚本 D:/esorakodo/tmp/forum-collaboration-qa/{server.mjs,check.js,resilience.js,first-publish.js,capture.js,first-capture.js,built-check.js}。测试数据库仅本机一次性夹具；本地预览不代表真实Creator身份/R2或生产Supabase多机长连接已经验收。上线前需先应用新增迁移、发布runtime，再以真实账号验证。
+
+最终standalone http://127.0.0.1:3037 /guide#forum HTTP200，五张新截图全部decode成功，390px无溢出、无相关console/pageerror；匿名 /create/forum 跳转/login、协作私有API返回401。额外执行既有 rendered-html + auth-redirect 7项时4通过、3失败（公开目录/维基/整站发现读取返回错误边界）。沙箱外同样复现；临时EnvHttpProxyAgent诊断记录反复 PUBLIC_FETCH_FAILED UND_ERR_SOCKET，停止重复网络重试。这组依赖远程公开数据的整站检查未通过，不据此声称全站回归通过；没有修改无关目录逻辑或用测试桩掩盖结果。
+
+
+## 2026-10-17 · 论坛自然创作与协作发布
+
+用户明确要求“继续，上线”，授权本批源码、运行包和协作迁移交付。已核对线上当前runtime ab0f844、源码27b2e1b，采用原有artifact-only更新脚本；不在服务器构建。云端17条旧迁移与本地吻合，32张既有表计数/指纹及6个被替换函数定义留存在Git忽略的output/forum-collab-release。新增迁移在目标云库事务演练后ROLLBACK成功，正式应用与Linux发布构建进行中。

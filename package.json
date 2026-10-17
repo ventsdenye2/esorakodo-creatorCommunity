@@ -28,6 +28,7 @@
     "remark-rehype": "^11.1.2",
     "server-only": "^0.0.1",
     "unified": "^11.0.5",
+    "yjs": "^13.6.33",
     "zod": "^4.4.3"
   },
   "devDependencies": {

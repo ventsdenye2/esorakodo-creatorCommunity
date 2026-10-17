@@ -87,6 +87,22 @@ export async function listOwnDrafts(): Promise<ForumTopicView[]> {
   return enrichTopics(data ?? []);
 }
 
+export async function listEditableForumTopics(): Promise<ForumTopicView[]> {
+  if (!isSupabaseConfigured()) return [];
+  const db = await createClient();
+  const { data: { user } } = await db.auth.getUser();
+  if (!user) return [];
+  const memberships = await db.from("forum_collaborators").select("topic_id").eq("creator_id", user.id);
+  if (memberships.error) throw new Error(memberships.error.message);
+  const ids = (memberships.data ?? []).map(member => member.topic_id);
+  const [owned, invited] = await Promise.all([
+    db.from("forum_topics").select("*").eq("creator_id", user.id).in("status", ["draft", "published"]).order("updated_at", { ascending: false }).limit(50),
+    ids.length ? db.from("forum_topics").select("*").in("id", ids).in("status", ["draft", "published"]).order("updated_at", { ascending: false }).limit(50) : { data: [], error: null },
+  ]);
+  if (owned.error || invited.error) throw new Error(owned.error?.message ?? invited.error?.message);
+  return enrichTopics([...(owned.data ?? []), ...(invited.data ?? [])].sort((a, b) => b.updated_at.localeCompare(a.updated_at)));
+}
+
 export async function getForumTopic(id: string, draft = false): Promise<{ topic: ForumTopicView; floors: ForumFloor[]; links: ForumEntityReference[] } | null> {
   if (!isSupabaseConfigured()) return null;
   const supabase = await createClient();

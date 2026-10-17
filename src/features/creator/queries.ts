@@ -1,5 +1,5 @@
 import {createClient} from '../../lib/supabase/server';
-export type CreatorWork={id:string;title:string;status:string;kind:string;href:string;editHref:string;date:string};
+export type CreatorWork={id:string;title:string;status:string;kind:string;href:string;editHref:string;date:string;collaborating?:boolean};
 export async function creatorWorks(creatorId:string,own=false):Promise<{works:CreatorWork[];failed:boolean}>{
  const db=await createClient();
  let forum=db.from('forum_topics').select('id,title,status,updated_at').eq('creator_id',creatorId).order('updated_at',{ascending:false}).limit(50);
@@ -8,16 +8,20 @@ export async function creatorWorks(creatorId:string,own=false):Promise<{works:Cr
  let supplements=db.from('event_supplements').select('id,title,status,event_id,updated_at').eq('creator_id',creatorId).order('updated_at',{ascending:false}).limit(50);
  if(!own){forum=forum.eq('status','published');press=press.eq('status','published');events=events.eq('status','published');supplements=supplements.eq('status','published');}
  const results=await Promise.all([forum,press,events,supplements]);
+ const memberships=own?await db.from('forum_collaborators').select('topic_id').eq('creator_id',creatorId):{data:[],error:null};
+ const invitedIds=(memberships.data??[]).map(member=>member.topic_id);
+ const invited=invitedIds.length?await db.from('forum_topics').select('id,title,status,updated_at').in('id',invitedIds).in('status',['draft','published']):{data:[],error:null};
  const parentIds=[...new Set((results[3].data??[]).map(row=>row.event_id))];
  const parents=parentIds.length?await db.from('events').select('id').in('id',parentIds).eq('status','published'):{data:[],error:null};
  const publicParents=new Set((parents.data??[]).map(parent=>parent.id));
  const works:CreatorWork[]=[
+ ...(invited.data??[]).map(r=>({...r,kind:"校园论坛",href:`/forum/${r.id}`,editHref:`/create/forum/${r.id}`,date:r.updated_at,collaborating:true})),
  ...(results[0].data??[]).map(r=>({...r,kind:'校园论坛',href:`/forum/${r.id}`,editHref:`/create/forum/${r.id}`,date:r.updated_at})),
  ...(results[1].data??[]).map(r=>({...r,kind:'校刊·部刊',href:`/press/${r.id}`,editHref:`/create/article/${r.id}`,date:r.updated_at})),
  ...(results[2].data??[]).map(r=>({...r,kind:'校史事件',href:`/events/${r.id}`,editHref:`/create/event/${r.id}`,date:r.updated_at})),
  ...(results[3].data??[]).filter(r=>own||publicParents.has(r.event_id)).map(r=>({...r,status:publicParents.has(r.event_id)?r.status:'hidden',kind:'事件补充',href:`/events/${r.event_id}/supplements/${r.id}`,editHref:`/create/event/supplement/${r.id}`,date:r.updated_at})),
  ];
- return {works:works.sort((a,b)=>b.date.localeCompare(a.date)||a.id.localeCompare(b.id)),failed:results.some(r=>r.error)||Boolean(parents.error)};
+ return {works:works.sort((a,b)=>b.date.localeCompare(a.date)||a.id.localeCompare(b.id)),failed:results.some(r=>r.error)||Boolean(parents.error||memberships.error||invited.error)};
 }
 export async function creatorBookmarks(creatorId:string){
  const db=await createClient();

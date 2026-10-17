@@ -336,3 +336,24 @@ Windows/Linux 最终构建、lint/typecheck、真实产物桌面/390px/无 JS/�
 最终截图 D:/esorakodo/tmp/theme-production-{desktop,full,wiki,dialog,mobile,filter-mobile,login-mobile}.png 已查看并对照官网参考；可见圆角、背景、边框、按钮和纸张层次已经对齐。保留真实内容与上一批动效。校刊/事件有内容列表和登录后的 Creator 写入仍未在生产实测，本次只验证真实空状态及公开阅读/表单呈现。
 
 本批已交付，无待发布步骤。最后仅同步本文档，不需要重建运行包。
+
+
+## 2026-10-17 · 自然式论坛创作（本地完成，未上线）
+
+需求 KTU-FORUM-NATURAL：首帖优先、成品样式内创作；点击消息弹出回复/编辑/删除/反应数/设为楼主/向上插楼/身份选择。回复追加末尾并直接引用；默认生成可修改昵称与头像；首楼禁止删除或向上插入；底部常驻发言输入。沿用原子草稿保存、权限与发布冻结，无 schema 变更。设计见 [自然式创作](../design/forum-natural-authoring.md)。基线 deploy/backend=27b2e1b，初始工作树干净；本批改动保留在未提交工作区，未推送、未部署。验收使用实际组件配隔离 action/media 桩，见 engineering/verification.md（本目录使用 verification.md）。
+
+最终本地验收完成：lint/typecheck/build、11项新增回归、32项解析检查、124项隔离PostgreSQL检查和59项浏览器断言通过。真实standalone教程与匿名登录保护复验通过。浏览器写入使用隔离action/media桩，真实账号/R2/线上发布尚未验收。证据详见 verification.md 最新记录；本批工作区未提交、未部署。
+
+
+## 2026-10-17 · 发布后改写与实时协作（本地完成，未上线）
+
+用户已确认：范围先落实当前论坛体；已发布作品可重新编辑，有效改动及时同步公开阅读页；作者按创作者@账号增删协作者，协作者可共同编辑，作者保留首次发布与成员管理权限。前端明确使用 frontend-design skill，保留自然回帖，新增轻量在线成员/正在编辑位置/同步状态及作者管理面板。实现采用 Yjs 文本/结构合并、认证HTTP增量写入和SSE通知，编辑状态与公开关系表分开。本批重新执行迁移、权限、并发、撤权与浏览器验收，实际证据见 engineering/verification.md。
+
+实现、教程与本地验收已完成；未提交、未推送、未上线。新契约取代前一节发布冻结和手动保存说明。详见 [forum-collaboration](../design/forum-collaboration.md) 与 verification.md。Yjs 合并通过认证 HTTP+SSE；仅作者首次发布/管理成员，协作者有效改写直接公开。新增迁移文件为 202610170001_forum_collaboration.sql（迁移总数18），新增 yjs 依赖。
+
+最终静态检查、构建、19单元、31新增数据库、124既有数据库、21编辑器浏览器断言与standalone教程/匿名保护均通过。额外整站渲染7项为4通过3失败，远程公开读取错误边界，诊断出现UND_ERR_SOCKET；尚需网络可用时补验。真实Supabase身份/R2/生产SSE尚未验收。详见verification.md。
+
+
+## 2026-10-17 · 论坛自然创作与协作发布
+
+用户明确要求“继续，上线”，授权本批源码、运行包和协作迁移交付。已核对线上当前runtime ab0f844、源码27b2e1b，采用原有artifact-only更新脚本；不在服务器构建。云端17条旧迁移与本地吻合，32张既有表计数/指纹及6个被替换函数定义留存在Git忽略的output/forum-collab-release。新增迁移在目标云库事务演练后ROLLBACK成功，正式应用与Linux发布构建进行中。
