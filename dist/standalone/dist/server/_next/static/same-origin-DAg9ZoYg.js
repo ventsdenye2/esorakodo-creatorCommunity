@@ -1,0 +1,1 @@
+function e(e,{production:t,siteUrl:n}){let r=e.headers.get(`origin`);if(!r||r===`null`)return!1;try{let i=n===void 0?null:new URL(n);if(i&&(!/^https?:$/.test(i.protocol)||i.username||i.password||i.pathname!==`/`||i.search||i.hash)||t&&!i)return!1;let a=t?i:new URL(e.url);return!!(a&&/^https?:$/.test(a.protocol)&&r===a.origin)}catch{return!1}}export{e as t};
