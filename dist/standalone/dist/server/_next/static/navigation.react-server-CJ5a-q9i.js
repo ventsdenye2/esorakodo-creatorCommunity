@@ -1,0 +1,1 @@
+import"./navigation-errors-Ctqu1Za_.js";import"./navigation-server-CiuEbxnz.js";function e(e){return`${e} only works in Client Components. Add the "use client" directive at the top of the file to use it. Read more: https://nextjs.org/docs/messages/react-client-hook-in-server-component`}export{e as t};

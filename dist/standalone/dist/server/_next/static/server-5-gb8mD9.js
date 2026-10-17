@@ -1,0 +1,1 @@
+import{r as e,t}from"./config-CbQDm_95.js";import{t as n}from"./same-origin-NuBwccoz.js";function r(){let n=process.env.SUPABASE_SERVICE_ROLE_KEY;if(!n)throw Error(`MEDIA_UNAVAILABLE`);return e(t().url,n,{auth:{persistSession:!1,autoRefreshToken:!1}})}function i(e){return n(e,{production:!0,siteUrl:`https://campus.kongtian.university`})}export{i as n,r as t};
