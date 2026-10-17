@@ -105,3 +105,26 @@
   .campus-home .welcome-create { transition: none; }
   .welcome-create:hover { transform: none; }
 }
+
+/* Retain the campus news stack as the homepage’s only content section. */
+.home-news { max-width: 740px; margin: 0 auto; padding: 36px 28px 52px; }
+.home-news .campus-view { margin: 0; padding: 30px 32px 24px; background: #edf7fc; }
+.home-news .campus-view::before { content: none; }
+.home-news .campus-view-heading h2 { margin: 0; color: #123b5a; font-size: 30px; }
+.home-news .card-topline > span:first-child, .home-news .card-copy p, .home-news .card-bottom a { font-size: 14px; }
+.home-news .card-bottom time { font-size: 12px; }
+.home-news .deck-caption { font-size: 13px; }
+@media (max-width: 700px) {
+  .home-news { padding: 24px 20px 36px; }
+  .home-news .campus-view { padding: 24px 20px 18px; }
+  .home-news .campus-view-heading h2 { font-size: 26px; }
+  .home-news .campus-deck { height: 432px; }
+}
+@media (max-width: 360px) {
+  .home-news { padding-inline: 12px; }
+  .home-news .campus-view { padding-inline: 16px; }
+  .home-news .card-copy h3 { font-size: 23px; }
+  .home-news .deck-toolbar { gap: 6px; }
+  .home-news .deck-dots { display: none; }
+  .home-news .deck-count { margin-right: auto; }
+}

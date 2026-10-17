@@ -541,3 +541,7 @@ Windows/Linux 五阶段 build、standalone 121 包补全、lint/typecheck 通过
 - 初次HMR在CSS文件创建前缓存了缺失导入，页面出现500；文件齐备后触发入口模块更新，再载入通过。首次减少动效断言严格比较0s而失败，实际全站兼容规则为1e-05s且transition-property:none；按实际关闭过渡契约复验通过。历史console另有favicon404/字符页预加载提示，不称整个开发会话零告警。
 
 截图保存于C:/Users/VENTSDENYE5/.codex/visualizations/2026/10/17/01a14755-1123-7c92-a97c-5508b6d0763a/：home-official-reference.png、home-before-simplify.png、home-simplified-desktop.png、home-simplified-mobile.png、home-simplified-320.png。桌面/手机已目视对照。未发布runtime/未部署、没有生产验收。
+
+## 2026-10-17 · 上线前保留资讯堆叠
+
+用户明确要求保留资讯堆叠；维持官网式主视觉与两个大创作入口，在下方恢复既有真实资讯轮播，仅保留“校园近况”、内容类别/标题/摘要/日期/链接和切换控件，移除装饰性英文/角落小字。复用既有暂停、焦点、减少动效与空/失败降级。角色创建迁移生产事务演练已回滚通过，37张既有表指纹未变；正式部署及新UI验证继续进行，尚不能认定新批次已上线。

@@ -51,17 +51,17 @@ export function CampusCardStack({ cards, failed }: { cards: CampusCard[]; failed
       onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
       onFocusCapture={() => setFocused(true)}
       onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false); }}>
-      <div className="campus-view-heading"><div><span>CAMPUS VIEW</span><h2>空天 · 近况</h2></div><span className="view-status">{cards.length ? "校园新讯" : "校园一览"}</span></div>
+      <div className="campus-view-heading"><div><h2>校园近况</h2></div></div>
       <div className="campus-deck" aria-live={playing ? "off" : "polite"}>
         {items.map((card, index) => {
           const position = (index - current + items.length) % items.length;
           return (
             <article key={card.id} className="campus-card" data-position={position} data-tone={index % 3}
               aria-hidden={position !== 0} inert={position !== 0} aria-roledescription="幻灯片" aria-label={`${index + 1} / ${items.length}`}>
-              <div className="card-topline"><span>{card.kind}</span><span>{cards.length && index === 0 ? "NEWEST" : "KTU / ARCHIVE"}</span></div>
-              <div className="card-art" aria-hidden="true"><span>{card.motif}</span><i /><b>KONGTIAN<br />UNIVERSITY</b></div>
+              <div className="card-topline"><span>{card.kind}</span></div>
+              <div className="card-art" aria-hidden="true"><span>{card.motif}</span><i /></div>
               <div className="card-copy"><h3>{card.title}</h3><p>{card.summary}</p></div>
-              <div className="card-bottom"><span>{card.date ? <time dateTime={card.date}>{new Intl.DateTimeFormat("zh-CN", { year: "numeric", month: "2-digit", day: "2-digit", timeZone: "Asia/Shanghai" }).format(new Date(card.date))}</time> : "KONGTIAN UNIVERSITY"}</span><Link href={card.href}>{cards.length ? "阅读全文" : "了解更多"}<ArrowIcon /></Link></div>
+              <div className="card-bottom"><span>{card.date ? <time dateTime={card.date}>{new Intl.DateTimeFormat("zh-CN", { year: "numeric", month: "2-digit", day: "2-digit", timeZone: "Asia/Shanghai" }).format(new Date(card.date))}</time> : null}</span><Link href={card.href}>{cards.length ? "阅读全文" : "了解更多"}<ArrowIcon /></Link></div>
             </article>
           );
         })}
@@ -72,7 +72,7 @@ export function CampusCardStack({ cards, failed }: { cards: CampusCard[]; failed
           <button type="button" onClick={() => setPaused((value) => !value)} disabled={reduced || items.length < 2} aria-label={paused ? "开启自动切换" : "暂停自动切换"} aria-pressed={paused}>{paused || reduced ? "播放" : "暂停"}</button>
           <button type="button" onClick={() => step(1)} disabled={items.length < 2} aria-label="下一张">→</button></div>
       </div>
-      <p className="deck-caption">{failed ? "部分校园资讯暂时无法加载，请稍后刷新。" : "人物、见闻与日常。与空天保持联系。"}</p>
+      {failed && <p className="deck-caption" role="status">部分校园资讯暂时无法加载，请稍后刷新。</p>}
     </section>
   );
 }
