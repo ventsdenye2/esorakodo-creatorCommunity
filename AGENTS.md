@@ -33,6 +33,8 @@
 
 ## UI direction: Living Campus v2 (proposed)
 
+- User requirement (2026-10-17): every newly created page must follow the original Kongtian University official website style. Reuse its pale sky/sea blue palette, Chinese serif display type, spacing, existing campus visual assets and institutional tone; keep each medium’s functional structure. Inspect the official reference before new UI work.
+
 - `docs/design/campus-view-stack.md` and `docs/design/full-platform.md` describe the current implementation; earlier homepage/v2 documents retain historical and proposed material. Campus View uses real content; the optional SVG campus guide is schematic. Do not describe 3D or coordinate bindings as shipped.
 - Design the co-creation site as a campus that can be explored, read, traced and written: Entity (what), Relation/Trace (how connected), Campus/Space (where), Time (when). This is an interface model, not a universal Entity database table.
 - Preserve Institutional × Editorial × Spatial × Living Archive, grounded in a university, archive and publication system. Avoid generic SaaS dashboards, uniform card waterfalls, dark neon HUDs, glassmorphism and decorative relationship lines.

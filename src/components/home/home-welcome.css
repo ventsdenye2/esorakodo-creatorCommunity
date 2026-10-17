@@ -128,3 +128,7 @@
   .home-news .deck-dots { display: none; }
   .home-news .deck-count { margin-right: auto; }
 }
+
+@media (max-width: 360px) {
+  .home-news .campus-deck { margin-inline: 14px; }
+}
