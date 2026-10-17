@@ -97,7 +97,7 @@
 }
 
 /* Campus news replaces the original cast artwork beside the creation entrances. */
-.home-news { min-width: 0; align-self: center; padding: 32px max(28px, calc((100vw - 1180px) / 2)) 32px 28px; }
+.home-news { width: 100%; box-sizing: border-box; min-width: 0; align-self: center; padding: 32px max(28px, calc((100vw - 1180px) / 2)) 32px 28px; }
 .home-news .campus-view { margin: 0; padding: 30px 32px 24px; background: #edf7fc; }
 .home-news .campus-view::before { content: none; }
 .home-news .campus-view-heading h2 { margin: 0; color: #123b5a; font-size: 30px; }
