@@ -24,4 +24,6 @@ Campus首页增加角色创建入口，进入独立/create/character页面；这
 
 ## 实施与结果
 
-实现和本地验收已完成；新增迁移202610170003_student_character_cards.sql未上线。重新开始会确认清除本机草稿，已建角色不受影响；每次成功建档后可再创建一位。具体证据及本机远程读取/生产媒体链路边界见../engineering/verification.md。
+实现和本地验收已完成；新增迁移202610170003_student_character_cards.sql已生产应用，角色创建与真实Auth/R2建档已验收上线。重新开始会确认清除本机草稿，已建角色不受影响；每次成功建档后可再创建一位。具体证据及本机远程读取/生产媒体链路边界见../engineering/verification.md。
+
+发布source c2fc836 / runtime59bd4de；生产验证与清理证据见../engineering/verification.md。

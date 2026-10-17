@@ -333,6 +333,8 @@ Windows/Linux 构建、lint/typecheck、124 项隔离数据库检查沿用本批
 
 ## 2026-10-17 · 首页官网风格与聚焦入口
 
-已读取 https://kongtian.university/ 实际首屏，并核对官方 main.css/orbital.css。首页使用同色板、宋体校名、浅天空留白及官网原始群像/校徽副本（字节一致，官网只读）。CampusHero改为纯Server Component，首页不再读取资讯feed或挂载轮播客户端。独立home-welcome.css以专用选择器限定首页；SiteHeader新增compact变体，仅在首页显示中文品牌、五栏目、检索与登录/创作中心，其他页面保持默认导航。手机人物图contain以保全五人，两个入口390px并排、320px竖排。只保留静态页脚官网和指南导航。
+已读取 https://kongtian.university/ 实际首屏，并核对官方 main.css/orbital.css。首页使用同色板、宋体校名、浅天空留白及官网原始群像/校徽副本（字节一致，官网只读）。CampusHero改为纯Server Component，首页主视觉不依赖资讯feed；下方以Suspense恢复既有真实资讯叠层，保留暂停/键盘/减少动效并简化装饰。独立home-welcome.css以专用选择器限定首页；SiteHeader新增compact变体，仅在首页显示中文品牌、五栏目、检索与登录/创作中心，其他页面保持默认导航。手机人物图contain以保全五人，两个入口390px并排、320px竖排。只保留静态页脚官网和指南导航。
 
 创建入口分别直达/create/character及/create/forum；后者现有匿名保护增加next=/create/forum，登录动作沿用已有安全返回路径验证，无权限变化。修改既有SSR首页断言以覆盖新入口和去除旧标签，不新增镜像式单元测试。
+
+最终以c2fc836源码构建runtime59bd4de上线，迁移202610170003已应用；资讯堆叠窄屏增加内距，320px实测不溢出。所有新页面沿用原官网视觉语言。

@@ -15,12 +15,11 @@ export default function Home() {
     <div className="campus-home">
       <SiteHeader current="campus" compact />
       <main id="main-content">
-        <CampusHero />
-        <div className="home-news">
+        <CampusHero>
           <Suspense fallback={<CampusCardStack cards={[]} failed={false} />}>
             <CampusNews />
           </Suspense>
-        </div>
+        </CampusHero>
       </main>
       <footer className="home-footer">
         <Link href="https://kongtian.university/">空天大学官网</Link>

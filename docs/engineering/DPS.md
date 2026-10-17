@@ -330,3 +330,7 @@ Windows/Linux 构建、lint/typecheck、124 项隔离数据库检查沿用本批
 ## 2026-10-17 · 首页精简交付
 
 已完成官网实景/源码对照、设计简报、单开屏、两个大面积创作入口、紧凑导航、原图复用、移动端完整群像、键盘/减少动效与匿名登录返回检查。同步首页既有SSR测试；执行lint/typecheck/build。未修改或发布官网，不变更Supabase schema或作品数据，本批未上线。设计/证据见../design/home-creation-entrances.md和verification.md。
+
+## 2026-10-17 · 发布任务闭环
+
+角色创建与保留资讯堆叠的首页共同上线：source c2fc836 / runtime59bd4de；迁移已事务应用，Linux检查、公开HTTPS、真实Auth/R2建档与匿名读取通过。临时账号/档案/两张图片已清理并复核为零。用户新增官网风格统一约束已记录AGENTS.md。此前未上线条目为阶段历史，当前无待部署项。详见verification.md。
