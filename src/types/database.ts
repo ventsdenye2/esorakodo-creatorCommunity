@@ -9,6 +9,11 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      student_character_cards: {
+        Row: { student_id: string; creator_id: string; request_id: string; portrait_asset_id: string; card_asset_id: string; appearance: Json; student_number: string; created_at: string };
+        Insert: { student_id: string; creator_id: string; request_id: string; portrait_asset_id: string; card_asset_id: string; appearance?: Json; student_number: string; created_at?: string };
+        Update: { appearance?: Json }; Relationships: [];
+      };
 forum_collaborators: { Row: { topic_id: string; creator_id: string; added_by: string; created_at: string }; Insert: { topic_id?: string; creator_id?: string; added_by?: string; created_at?: string }; Update: { topic_id?: string; creator_id?: string; added_by?: string; created_at?: string }; Relationships: [] };
 forum_edit_documents: { Row: { topic_id: string; state: string; revision: number; first_id: string | null; updated_by: string; updated_at: string; public_revision: number; publish_error: string | null }; Insert: { topic_id?: string; state?: string; revision?: number; first_id?: string | null; updated_by?: string; updated_at?: string; public_revision?: number; publish_error?: string | null }; Update: { topic_id?: string; state?: string; revision?: number; first_id?: string | null; updated_by?: string; updated_at?: string; public_revision?: number; publish_error?: string | null }; Relationships: [] };
 forum_edit_presence: { Row: { session_id: string; topic_id: string; creator_id: string; field: string; seen_at: string }; Insert: { session_id?: string; topic_id?: string; creator_id?: string; field?: string; seen_at?: string }; Update: { session_id?: string; topic_id?: string; creator_id?: string; field?: string; seen_at?: string }; Relationships: [] };
@@ -1459,6 +1464,7 @@ forum_topic_edit_media: { Row: { topic_id: string; asset_id: string }; Insert: {
       [_ in never]: never
     }
     Functions: {
+      create_student_character: { Args: { p_request_id: string; p_portrait_asset_id: string; p_card_asset_id: string; p_name?: string; p_college_id?: string | null; p_ability?: string; p_traits?: string; p_appearance?: Json }; Returns: Json };
 can_edit_forum: { Args: { p_topic_id: string }; Returns: boolean };
 list_forum_edit_accounts: { Args: { p_topic_id: string }; Returns: ForumAccount[] };
 manage_forum_collaborator: { Args: { p_topic_id: string; p_handle?: string | null; p_remove_id?: string | null }; Returns: undefined };

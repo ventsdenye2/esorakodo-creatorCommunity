@@ -15,6 +15,7 @@ const eslintConfig = defineConfig([
     "output/**",
     "build/**",
     "next-env.d.ts",
+    "public/character-maker/**",
   ]),
   eslint.configs.recommended,
   ...tseslint.configs.recommended,

@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#31affb">
+  <link id="favicon" rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='7' fill='%2331affb'/%3E%3C/svg%3E">
+  <title>角色形象制作 · 空天大学</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="activity.css">
+  <script src="assets.js?v=20261010-ktu" defer></script>
+  <script src="catalog.js?v=20261010-braids" defer></script>
+  <script src="app.js?v=20261010j" defer></script>
+  <link rel="stylesheet" href="embedded.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="university" href="../index.html" aria-label="返回空天大学官网">
+      <img id="university-seal" width="54" height="54" alt="空天大学校徽">
+      <span><strong>空天大学</strong><small>KONGTIAN UNIVERSITY</small></span>
+    </a>
+    <div class="header-tools"><span class="save-state" id="save-state">形象保存在本机</span><button type="button" class="quiet-button" id="reset-button">重新开始</button></div>
+  </header>
+
+  <main class="page-shell">
+    <div class="page-intro">
+      <div><h1>下一站，<span>空天大学。</span></h1><p>捏一个喜欢的自己，领取你的专属校园卡。</p></div>
+      <div class="intro-stamp" aria-hidden="true"><span>CAMPUS CARD</span><strong>校园卡制作处</strong><span>86 × 54 mm</span></div>
+    </div>
+
+    <nav class="steps" aria-label="校园卡制作步骤">
+      <button type="button" class="step is-active" data-step="0" aria-current="step"><span class="step-number">1</span><span>角色形象</span><small>CREATE YOUR LOOK</small></button>
+      <span class="step-connector" aria-hidden="true"></span>
+      <button type="button" class="step" data-step="1"><span class="step-number">2</span><span>学籍信息</span><small>MAKE IT YOURS</small></button>
+      <span class="step-connector" aria-hidden="true"></span>
+      <button type="button" class="step" data-step="2"><span class="step-number">3</span><span>领取校园卡</span><small>READY FOR CAMPUS</small></button>
+    </nav>
+
+    <div class="studio-layout">
+      <section class="studio" aria-label="角色与学籍编辑">
+        <div class="portrait-column">
+          <div class="panel-heading"><span class="section-title">你的证件照</span><span class="small-caption">LIVE PORTRAIT</span></div>
+          <div class="portrait-stage" id="portrait-stage">
+            <div class="photo-corner corner-tl" aria-hidden="true"></div><div class="photo-corner corner-tr" aria-hidden="true"></div><div class="photo-corner corner-bl" aria-hidden="true"></div><div class="photo-corner corner-br" aria-hidden="true"></div>
+            <canvas id="portrait" width="720" height="960" role="img" aria-label="当前角色的证件照"></canvas>
+            <span class="portrait-tag">空天大学 · 入学留影</span>
+            <div class="loading-overlay" id="loading-overlay" role="status">正在准备你的校园形象…</div>
+          </div>
+          <div class="portrait-tools">
+            <button type="button" class="outline-button" id="random-button"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="8" cy="8" r=".8"/><circle cx="16" cy="8" r=".8"/><circle cx="12" cy="12" r=".8"/><circle cx="8" cy="16" r=".8"/><circle cx="16" cy="16" r=".8"/></svg>随机一个形象</button>
+            <button type="button" class="icon-button" id="undo-button" aria-label="撤销上一次形象调整" title="撤销"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 4-5 5 5 5M3 9h10a6 6 0 0 1 0 12"/></svg></button>
+          </div>
+          <p class="portrait-note">每一种样子，都有自己的校园故事。</p>
+        </div>
+
+        <div class="editor-column">
+          <section id="appearance-panel" class="step-panel" aria-labelledby="appearance-heading">
+            <div class="panel-heading"><h2 id="appearance-heading">捏出你的样子</h2><span class="small-caption" id="part-count"></span></div>
+            <div class="category-tabs" id="category-tabs" role="tablist" aria-label="形象部件分类"></div>
+            <div class="part-area" id="part-area" role="tabpanel" tabindex="0">
+              <div class="part-toolbar"><div class="subcategories" id="subcategories" aria-label="部件类型"></div><span id="options-count" class="small-caption"></span></div>
+              <div class="option-grid" id="option-grid" role="group" aria-label="选择部件"></div>
+            </div>
+            <div id="hair-colors" class="color-row"><span>发色</span><div class="swatches" id="swatches" role="group" aria-label="选择发色"></div></div>
+            <details class="fine-tune" id="fine-tune">
+              <summary><span>微调这个部件</span><span class="summary-hint">位置 · 大小</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+              <div class="adjustment-content">
+                <div class="adjustment-label"><span id="adjustment-part">当前部件</span><button type="button" class="text-button" id="reset-adjustment">还原微调</button></div>
+                <label class="range-row"><span>左右位置</span><input id="adjust-x" type="range" min="-80" max="80" value="0"><output for="adjust-x" id="value-x">0</output></label>
+                <label class="range-row"><span>上下位置</span><input id="adjust-y" type="range" min="-80" max="80" value="0"><output for="adjust-y" id="value-y">0</output></label>
+                <label class="range-row"><span>部件大小</span><input id="adjust-scale" type="range" min="75" max="125" value="100"><output for="adjust-scale" id="value-scale">100%</output></label>
+                <label class="range-row"><span>部件宽度</span><input id="adjust-width" type="range" min="80" max="120" value="100"><output for="adjust-width" id="value-width">100%</output></label>
+              </div>
+            </details>
+            <div class="panel-footer"><span>随心组合，预览会同步更新。</span><button type="button" class="primary-button" id="next-identity">填写学籍<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></button></div>
+          </section>
+
+          <section id="identity-panel" class="step-panel" aria-labelledby="identity-heading" hidden>
+            <div class="panel-heading"><h2 id="identity-heading">认识一下，新同学</h2><span class="small-caption">STUDENT PROFILE</span></div>
+            <p class="section-description">把姓名和学号写在卡上，它就属于你了。</p>
+            <form id="identity-form" novalidate>
+              <label class="field-label" for="student-name">角色姓名 <span>NAME</span></label>
+              <input class="text-input" id="student-name" name="studentName" autocomplete="off" maxlength="32" placeholder="你的名字，或角色的名字" aria-describedby="name-hint name-error">
+              <p class="field-hint" id="name-hint">支持中文与英文，最多 16 个字符。</p><p class="field-error" id="name-error" hidden></p>
+              <label class="field-label" for="student-number">学号 <span>STUDENT ID</span></label>
+              <div class="input-with-action"><input class="text-input" id="student-number" name="studentNumber" autocomplete="off" maxlength="24" spellcheck="false" placeholder="自定一个专属学号" aria-describedby="number-hint number-error"><button type="button" class="text-button" id="generate-number">生成学号</button></div>
+              <p class="field-hint" id="number-hint">1–24 位字母、数字或短横线，可保留开头的 0。</p><p class="field-error" id="number-error" hidden></p>
+              <fieldset class="degree-fieldset"><legend class="field-label">学生类型 <span>STUDENT TYPE</span></legend>
+                <div class="degree-options">
+                  <label class="degree-choice"><input type="radio" name="degree" value="undergraduate" checked><span class="degree-content"><strong>本科生</strong><small>UNDERGRADUATE</small></span><span class="radio-dot"></span></label>
+                  <label class="degree-choice"><input type="radio" name="degree" value="graduate"><span class="degree-content"><strong>研究生</strong><small>POSTGRADUATE</small></span><span class="radio-dot"></span></label>
+                </div>
+              </fieldset>
+              <div class="local-note"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><span>形象与学籍保存在本机；仅点击「打印」才会提交校园卡。</span></div>
+              <div class="panel-footer"><button type="button" class="text-button back-button" id="back-appearance">返回捏脸</button><button type="submit" class="primary-button">预览校园卡<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></button></div>
+            </form>
+          </section>
+
+          <section id="export-panel" class="step-panel" aria-labelledby="export-heading" hidden>
+            <div class="panel-heading"><h2 id="export-heading">你的校园生活，从这里开始</h2></div>
+            <p class="section-description">确认卡面信息，带上你的专属校园卡。</p>
+            <div class="student-summary"><img id="summary-seal" width="58" height="58" alt=""><div><strong id="summary-name"></strong><p><span id="summary-degree"></span><span class="summary-separator">/</span><span id="summary-number"></span></p></div></div>
+            <dl class="export-specs"><div><dt>成品尺寸</dt><dd>86 × 54 mm <span>横向</span></dd></div><div><dt>图片规格</dt><dd>PNG · 300 DPI</dd></div><div><dt>导出像素</dt><dd>1016 × 638 px</dd></div><div><dt>下载内容</dt><dd>校园卡正面与背面</dd></div><div><dt>正面名称</dt><dd id="export-filename">姓名+学号.png</dd></div><div><dt>背面名称</dt><dd>正面文件名加「_背面」</dd></div></dl>
+            <div class="export-actions"><button type="button" class="primary-button export-main" id="download-front"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/></svg>下载校园卡</button><button type="button" class="outline-button" id="print-card" disabled>打印</button></div>
+            <p class="print-status">下载包含正面和背面 PNG 的 ZIP 压缩包，解压后即可使用。</p>
+            <div id="download-fallback" class="print-status" hidden><p><a id="download-zip-again">下载正反面压缩包</a> · <a id="download-front-again">下载正面</a> · <a id="download-back-again">下载背面</a></p></div>
+            <p class="print-status" id="print-status" role="status" aria-live="polite">正在查询打印提交状态…</p>
+            <p class="export-hint">「打印」将正面图片提交给活动管理员。同名图片直接替换，只保留最新一张。</p>
+            <div class="panel-footer"><button type="button" class="text-button back-button" id="back-identity">修改学籍信息</button></div>
+          </section>
+        </div>
+      </section>
+
+      <aside class="card-column" aria-label="校园卡实时预览">
+        <div class="panel-heading"><h2>校园卡预览</h2><span class="live-label"><i></i>实时更新</span></div>
+        <div class="card-preview-area"><div class="card-hanger" aria-hidden="true"><span></span></div><button type="button" class="card-paper" id="enlarge-card" aria-label="放大校园卡预览" title="点击放大预览"><canvas id="card-preview" width="1016" height="638" role="img" aria-label="校园卡正面预览"></canvas></button><div class="card-shadow" aria-hidden="true"></div></div>
+        <div class="card-side-toggle" role="group" aria-label="预览卡片面"><button type="button" id="preview-front" class="is-selected" aria-pressed="true">正面</button><button type="button" id="preview-back" aria-pressed="false">背面</button></div>
+        <div class="card-preview-info"><span>标准校园卡尺寸</span><strong>86 <span>×</span> 54 <small>mm</small></strong><p>你的形象、姓名和学籍，<br>都在这一张小小的卡片里。</p></div>
+        <div class="campus-illustration"><img id="campus-art" alt="空天大学校舍与天文望远镜线稿"></div>
+      </aside>
+    </div>
+    <footer class="site-footer"><span>空天大学 · 校园卡制作处</span><span>让每一位同学，都拥有自己的模样。</span><a href="admin.html">打印管理</a></footer>
+  </main>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <dialog id="preview-dialog" class="preview-dialog" aria-labelledby="preview-dialog-title"><div class="preview-dialog-heading"><h2 id="preview-dialog-title">校园卡正面</h2><button type="button" id="close-preview" class="icon-button" aria-label="关闭放大预览"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><canvas id="large-card-preview" width="1016" height="638" role="img" aria-label="放大的校园卡预览"></canvas><p>86 × 54 mm · PNG · 300 DPI</p></dialog>
+  <dialog id="reset-dialog" class="reset-dialog"><form method="dialog"><h2>重新制作校园卡？</h2><p>这会清除当前浏览器里保存的形象、姓名和学号。</p><div><button value="cancel" class="outline-button">保留当前校园卡</button><button value="reset" class="primary-button">重新开始</button></div></form></dialog>
+  <noscript>请启用浏览器 JavaScript，以使用捏脸和校园卡制作功能。</noscript>
+</body>
+</html>

@@ -1,3 +1,6 @@
+import Image from "next/image";
+import { getStudentCard } from "../../../../../src/features/character/queries";
+import "../../../../../src/features/character/character.css";
 import { Markdown } from "../../../../../src/features/wiki/markdown";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -26,7 +29,7 @@ export default async function WikiDetailPage({ params, searchParams }: PageProps
   ]);
   if (!entity) notFound();
   const college = colleges.find((item) => item.id === entity.collegeId);
-  const forumTopics = entity.type === "student" ? await listPublishedTopicsForStudent(entity.id) : [];
+  const [forumTopics, characterCard] = entity.type === "student" ? await Promise.all([listPublishedTopicsForStudent(entity.id), getStudentCard(entity.id)]) : [[], null];
 
   return (
     <div>
@@ -58,6 +61,7 @@ export default async function WikiDetailPage({ params, searchParams }: PageProps
             {entity.body && <Markdown>{entity.body}</Markdown>}
           </article>
           <aside>
+            {characterCard ? <figure className="student-character-card"><Image unoptimized src={`/api/media/${characterCard.card_asset_id}`} width={1016} height={638} alt={`${entity.name}创建时的学生证`} /><figcaption>创建时的学生证 · {characterCard.student_number}<br />档案之后的修订以正文为准。</figcaption><Link href="/create/character">再创建一位角色 ↗</Link></figure> : null}
             <dl>
               <div><dt>类型</dt><dd>{getWikiEntityLabel(entity.type)}</dd></div>
               <div><dt>稳定地址</dt><dd>{entity.slug}</dd></div>

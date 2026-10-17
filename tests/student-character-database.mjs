@@ -1,0 +1,37 @@
+import assert from 'node:assert/strict';
+import {randomUUID} from 'node:crypto';
+import {registerHooks} from 'node:module';
+import {createForumTestRuntime,authContext} from './helpers/forum-collaboration-runtime.mjs';
+globalThis.characterRevalidations=[];
+registerHooks({resolve(s,c,n){if(s==='next/cache')return {url:'data:text/javascript,export const revalidatePath=p=>globalThis.characterRevalidations.push(p)',shortCircuit:true};return n(s,c);}});
+process.env.NEXT_PUBLIC_SUPABASE_URL='https://example.test';process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY='local-test-only';
+const {createCharacter}=await import('../src/features/character/actions.ts');
+const rt=await createForumTestRuntime(55461); const {ids}=rt; const owner=rt.database(ids.owner),other=rt.database(ids.other),anon=rt.database(null); let count=0;
+const ok=(value,label)=>{assert.ok(value,label);console.log('PASS '+(++count)+': '+label)};
+try {
+ const portrait=randomUUID(),card=randomUUID(),foreign=randomUUID(),pending=randomUUID();
+ for(const [id,user,status] of [[portrait,ids.owner,'ready'],[card,ids.owner,'ready'],[foreign,ids.other,'ready'],[pending,ids.owner,'pending']]) await rt.admin.query("insert into media_assets(id,uploader_id,object_key,filename,mime_type,byte_size,status)values($1,$2,$3,'test.png','image/png',100,$4)",[id,user,'character/'+id,status]);
+ const request=randomUUID(),args={p_request_id:request,p_portrait_asset_id:portrait,p_card_asset_id:card};
+ let result=await anon.rpc('create_student_character',args);ok(result.error?.code==='42501','anonymous writes denied');
+ result=await owner.rpc('create_student_character',{...args,p_portrait_asset_id:foreign});ok(result.error?.message.includes('MEDIA_NOT_READY'),'another creator private image denied');
+ result=await owner.rpc('create_student_character',{...args,p_portrait_asset_id:pending});ok(result.error?.message.includes('MEDIA_NOT_READY'),'pending image denied');
+ result=await owner.rpc('create_student_character',{...args,p_college_id:randomUUID()});ok(result.error?.message.includes('CHARACTER_COLLEGE_INVALID'),'unknown college denied');
+ result=await owner.rpc('create_student_character',{...args,p_name:'a'.repeat(33)});ok(result.error?.message.includes('CHARACTER_INPUT_TOO_LONG'),'server limits enforced');
+ const results=await Promise.all([owner.rpc('create_student_character',args),owner.rpc('create_student_character',args)]);results.forEach(r=>assert.ifError(r.error));ok(results[0].data.id===results[1].data.id,'concurrent retries return one archive');const id=results[0].data.id;
+ let student=(await rt.query(null,'select * from students where id=$1',[id])).rows[0];ok(student.name==='未命名同学'&&student.college_id===null&&student.body===''&&student.summary===null,'all five questions skipped without invented content');
+ const revisions=(await rt.query(null,"select * from wiki_revisions where entity_type='student' and entity_id=$1",[id])).rows;ok(revisions.length===1&&revisions[0].snapshot.name==='未命名同学','first Wiki revision created atomically');
+ let media=await anon.from('media_assets').select('id').in('id',[portrait,card,foreign,pending]);assert.ifError(media.error);ok(media.data.length===2,'only card-linked ready images readable publicly');
+ let direct=await rt.query(ids.other,'update student_character_cards set student_number=$1 where student_id=$2',['hack',id]).catch(e=>e);ok(direct.code==='42501','direct relationship writes denied to authenticated users');
+ result=await other.rpc('create_student_character',args);ok(result.error?.message.includes('MEDIA_NOT_READY'),'same request UUID gives no cross-creator access');
+ const college=randomUUID();await rt.admin.query("insert into colleges(id,slug,name,created_by)values($1,$2,'测试学院',$3)",[college,'test-'+college,ids.owner]);
+ const rich=await owner.rpc('create_student_character',{...args,p_request_id:randomUUID(),p_college_id:college,p_name:'小满',p_ability:'能听见风',p_traits:'随身带着星图'});assert.ifError(rich.error);
+ student=(await rt.query(null,'select * from students where id=$1',[rich.data.id])).rows[0];ok(student.name==='小满'&&student.college_id===college&&student.body.includes('能听见风')&&student.body.includes('随身带着星图'),'answers become editable Student archive');
+ const rollbackCount=await rt.query(null,'select count(*)::int count from students where slug=$1',['student-'+request]);ok(rollbackCount.rows[0].count===1,'failed attempts leave no partial archive');
+ const actionInput={requestId:randomUUID(),portraitAssetId:portrait,cardAssetId:card,name:'',collegeId:null,ability:'',traits:'',appearance:null};
+ let action=await authContext.run(anon,()=>createCharacter(actionInput));ok(action.error?.includes('登录'),'server action denies expired session without losing input');
+ action=await authContext.run(owner,()=>createCharacter({...actionInput,name:'a'.repeat(33)}));ok(action.error?.includes('信息格式'),'server action rejects malformed input before RPC');
+ action=await authContext.run(owner,()=>createCharacter({...actionInput,portraitAssetId:foreign}));ok(Boolean(action.error)&&!action.href,'server action never accepts another creator image');
+ action=await authContext.run(owner,()=>createCharacter(actionInput));ok(action.href==='/wiki/student/student-'+actionInput.requestId,'actual server action creates archive through authenticated RPC');
+ ok(globalThis.characterRevalidations.includes(action.href)&&globalThis.characterRevalidations.includes('/wiki'),'successful server action refreshes public archive paths');
+ console.log('Student character database: '+count+' checks passed');
+} finally {await rt.close()}

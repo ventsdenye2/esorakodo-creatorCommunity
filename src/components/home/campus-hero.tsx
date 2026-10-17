@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowIcon } from "../icons/arrow-icon";
 import { CampusCardStack } from "./campus-card-stack";
@@ -15,6 +16,7 @@ export async function CampusHero() {
           <Link className="button button-primary" href="/wiki">走进空天<ArrowIcon /></Link>
           <Link className="button button-secondary" href="/forum">校园生活<ArrowIcon /></Link>
         </div>
+        <Link className="hero-character-entry" href="/create/character"><Image unoptimized src="/character-maker/default-thumb.webp" alt="" width={54} height={72} /><span><small>一段校园故事，从 ta 开始</small><strong>创建角色 <span aria-hidden="true">↗</span></strong></span></Link>
         <div className="hero-note" aria-label="校园寄语">
           <span>KNOWLEDGE / DISCOVERY / COMMUNITY</span>
           <p>求知于广阔天地，<br />相逢于日常之间。</p>

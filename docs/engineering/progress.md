@@ -370,3 +370,9 @@ Windows/Linux 最终构建、lint/typecheck、真实产物桌面/390px/无 JS/�
 运行包实际Git发布清单6872文件/67931094字节，服务器逐个SHA256一致、0额外文件；本地供应包另有lib0/.claude/settings.local.json被Git忽略，未发布，验证清单已按实际Git内容生成。Linux五阶段编译完成；Windows挂载I/O拖慢重复Linux lint及依赖复制，停止重复静态检查（同源Windows lint/typecheck通过），用Windows文件接口完整复制Linux依赖124包；Linux本地磁盘启动/媒体同源/中文回调冒烟通过。第一次挂载盘冷启动30秒阈值超时，改为Linux本地临时磁盘后通过。该批不重新构建JS的SQLSTATE追加修复经32项数据库（含P0001断言）、124项既有数据库回归通过；最终lint通过。运行包未包含环境文件、凭据或本地测试数据。
 
 截图D:/esorakodo/tmp/forum-collaboration-production-mobile.png已目视复核，生产教程五张新图全部decode成功；公网/forum、/wiki及匿名创作跳转通过。本轮没有真实R2图片上传或邮件注册测试，不能将既有媒体/邮件部署证据当作本轮新验收。此前本地“未上线”说明均为阶段历史，当前无待部署或测试清理步骤。
+
+## 2026-10-17 · 角色创建本地完成
+
+基线 deploy/backend=a319f0a，初始干净；本批仅修改本项目及其捏脸副本，原 campus-card-activity 与官网未改动。使用 frontend-design 形成设计简报，实际实现见 ../design/character-creation.md。用户后续要求已落实：每题可跳过；所有创建弹窗居中；校园卡不写学院，仅姓名/学号。已通过 lint/typecheck/build、3项模型测试、18项数据库/真实Action测试，以及实际 /create/character 的桌面/390px、首页入口、全跳过/下载、照片/捏脸/恢复、焦点/减少动效验收。本地作者夹具另证明失败重试复用2张上传图、只生成1个档案和修订、再次创建/重新开始不删除已存档人物。
+
+学院/人物远程读取在本机仍失败，实际页面已验证降级；正向学院/轮播/保存流程使用本地隔离夹具，不能宣称生产数据源、真实 Supabase 登录或 R2 上传已验收。已记录夹具冷启动与脚本等待问题；修正后交互通过。源码以本批 Git 提交留存，未推送/未部署；下一步是生产迁移演练、Linux运行包和真实HTTPS创作验收。

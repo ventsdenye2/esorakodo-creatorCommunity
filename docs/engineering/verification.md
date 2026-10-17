@@ -519,3 +519,13 @@ Windows/Linux 五阶段 build、standalone 121 包补全、lint/typecheck 通过
 运行包实际Git发布清单6872文件/67931094字节，服务器逐个SHA256一致、0额外文件；本地供应包另有lib0/.claude/settings.local.json被Git忽略，未发布，验证清单已按实际Git内容生成。Linux五阶段编译完成；Windows挂载I/O拖慢重复Linux lint及依赖复制，停止重复静态检查（同源Windows lint/typecheck通过），用Windows文件接口完整复制Linux依赖124包；Linux本地磁盘启动/媒体同源/中文回调冒烟通过。第一次挂载盘冷启动30秒阈值超时，改为Linux本地临时磁盘后通过。该批不重新构建JS的SQLSTATE追加修复经32项数据库（含P0001断言）、124项既有数据库回归通过；最终lint通过。运行包未包含环境文件、凭据或本地测试数据。
 
 截图D:/esorakodo/tmp/forum-collaboration-production-mobile.png已目视复核，生产教程五张新图全部decode成功；公网/forum、/wiki及匿名创作跳转通过。本轮没有真实R2图片上传或邮件注册测试，不能将既有媒体/邮件部署证据当作本轮新验收。此前本地“未上线”说明均为阶段历史，当前无待部署或测试清理步骤。
+
+## 2026-10-17 · 角色创建验收
+
+- Browser plugin not available，使用缓存 Playwright CLI。实际路由 http://localhost:3046/ 与 /create/character；桌面1440×1000、手机390×844。页面身份/非空/图片 decode/无应用遮罩、首页入口导航、五题全跳过/默认名/1016×638 PNG下载、上传格式失败/正常裁剪、原工具长双辫选择与恢复、iframe内Escape、焦点返回、回退保留、刷新恢复、减少动效均已检查。最终卡片/捏脸/重新开始弹窗均水平垂直居中；手机捏脸实测352×689.72、中心偏差0，无横向溢出。
+- 真实本地 PostgreSQL 运行全部20条迁移；node tests/student-character-database.mjs 18/18：匿名/过期会话、他人私图、pending图、无效学院/长度、并发幂等、全空不造设定、初始Revision、仅关联ready图公开、直接表写拒绝、跨作者请求、完整回答、实际Server Action及公共路径刷新。next/cache 与会话使用隔离适配，SQL为真实迁移。
+- node --experimental-strip-types --test tests/student-character-model.test.mjs 3/3：空答案、非法/超长草稿、现有能力正文提取。npm run lint、npm run typecheck、npm run build 均通过；standalone依赖补全124包。本批只验证Windows构建，未生成Linux发布包。
+- 作者浏览器正向流程使用 localhost:3050 隔离组件夹具：学院选择、6秒轮播/暂停/手动翻页、卡片Canvas仅2次文本绘制（姓名与KTU学号）、模拟首次提交失败后重试、只上传2张图、实际Action生成1 Student+1关联+1 Revision、学院/能力/记忆点入库、成功清除本机草稿、重复创建和重新开始4项均通过。AuthContext替代Supabase Auth，上传字节在内存并以临时PG记录状态，最终跳转页为夹具：这不覆盖生产登录、R2/CORS或真实公共档案页图片读取。
+- 本机真实远程学院/人物读取失败，实际创建页面显示可跳过提示；非必要读取已加6秒取消信号。正向数据使用明确标注的测试学院，不写入生产。首次QA等待函数未判空导致开发错误遮罩、首次关闭焦点等待过早，已修正等待/关闭顺序并复验。夹具初版因Node模块测试钩子影响PostCSS、扫描到服务器模块而失败；拆开API/前端进程后通过，夹具首次加载仍超过60秒，随后页面正常；不据此声称冷启动性能通过。夹具favicon404与已有开发期上下文警告单独记录，未宣称所有历史控制台记录零错误。
+
+截图位于 C:/Users/VENTSDENYE5/.codex/visualizations/2026/10/17/01a14755-1123-7c92-a97c-5508b6d0763a/：character-intro.png、character-home-entry.png、character-card-centered.png、character-card-mobile.png、character-face.png、character-face-mobile.png、character-question-mobile.png、character-ability-fixture.png。已目视复核居中卡片及手机捏脸；ability-fixture只用于行为证据，非完整站点样式验收。早期character-all-skipped.png为居中修正前截图，以card-centered/mobile为准。新生产迁移/发布/真实媒体链路尚未执行。

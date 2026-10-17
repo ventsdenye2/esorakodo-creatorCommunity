@@ -324,3 +324,9 @@ Windows/Linux 构建、lint/typecheck、124 项隔离数据库检查沿用本批
 运行包实际Git发布清单6872文件/67931094字节，服务器逐个SHA256一致、0额外文件；本地供应包另有lib0/.claude/settings.local.json被Git忽略，未发布，验证清单已按实际Git内容生成。Linux五阶段编译完成；Windows挂载I/O拖慢重复Linux lint及依赖复制，停止重复静态检查（同源Windows lint/typecheck通过），用Windows文件接口完整复制Linux依赖124包；Linux本地磁盘启动/媒体同源/中文回调冒烟通过。第一次挂载盘冷启动30秒阈值超时，改为Linux本地临时磁盘后通过。该批不重新构建JS的SQLSTATE追加修复经32项数据库（含P0001断言）、124项既有数据库回归通过；最终lint通过。运行包未包含环境文件、凭据或本地测试数据。
 
 截图D:/esorakodo/tmp/forum-collaboration-production-mobile.png已目视复核，生产教程五张新图全部decode成功；公网/forum、/wiki及匿名创作跳转通过。本轮没有真实R2图片上传或邮件注册测试，不能将既有媒体/邮件部署证据当作本轮新验收。此前本地“未上线”说明均为阶段历史，当前无待部署或测试清理步骤。
+
+## 2026-10-17 · 角色创建实现
+
+/create/character 服务端并行读取学院、能力示例和登录状态；非必要资料读取设置6秒取消信号，失败保留自由创作。前端以五个问题屏幕和档案留影预览组成，短纸页转场、能力轮播可暂停，支持减少动效。捏脸使用 public/character-maker 的原工具副本（63份 PNG 保留原字节），独立 localStorage、禁用打印网络、严格同源及窗口校验；大素材仅打开捏脸时加载。首页缩略图约10KB。校园卡1016×638，保留原底图，只绘入姓名/学号与照片。上传照片居中裁为720×960，限定 PNG/JPEG/WebP、10MB、4000万像素；服务端沿用已有媒体所有权、ready、文件大小与魔数验证。
+
+新 student_character_cards 显式关联 Student、Creator、portrait/card 媒体，记录外观与幂等请求UUID。create_student_character 认证后以事务级锁串行同一创建请求，校验所有者媒体及学院，调用 create_wiki_entity_with_body 产生 Student 和初始 Revision，再写关联，同事务提交。公开仅可读已关联 ready 媒体；客户端无表写权限。卡片是创建时的留档，之后 Wiki 名称/学院修订以正文为准，不悄悄改动历史卡片。相关类型、源文件及迁移均在同批 Git 中。

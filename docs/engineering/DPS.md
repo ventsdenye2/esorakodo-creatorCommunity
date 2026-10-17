@@ -322,3 +322,7 @@ Windows/Linux 构建、lint/typecheck、124 项隔离数据库检查沿用本批
 运行包实际Git发布清单6872文件/67931094字节，服务器逐个SHA256一致、0额外文件；本地供应包另有lib0/.claude/settings.local.json被Git忽略，未发布，验证清单已按实际Git内容生成。Linux五阶段编译完成；Windows挂载I/O拖慢重复Linux lint及依赖复制，停止重复静态检查（同源Windows lint/typecheck通过），用Windows文件接口完整复制Linux依赖124包；Linux本地磁盘启动/媒体同源/中文回调冒烟通过。第一次挂载盘冷启动30秒阈值超时，改为Linux本地临时磁盘后通过。该批不重新构建JS的SQLSTATE追加修复经32项数据库（含P0001断言）、124项既有数据库回归通过；最终lint通过。运行包未包含环境文件、凭据或本地测试数据。
 
 截图D:/esorakodo/tmp/forum-collaboration-production-mobile.png已目视复核，生产教程五张新图全部decode成功；公网/forum、/wiki及匿名创作跳转通过。本轮没有真实R2图片上传或邮件注册测试，不能将既有媒体/邮件部署证据当作本轮新验收。此前本地“未上线”说明均为阶段历史，当前无待部署或测试清理步骤。
+
+## 2026-10-17 · 角色创建任务完成情况
+
+已完成首页入口、五屏问答/跳过、原画捏脸桥接、照片上传裁剪、能力示例/暂停、姓名默认、居中学生证/下载、Creator 确认、Student/Wiki 原子建档与公开卡片展示、本机草稿及重新开始、幂等/RLS/Server Action 测试、桌面/手机/键盘/减少动效验收。静态检查与 Windows 五阶段构建通过。新增迁移 202610170003_student_character_cards.sql 待生产演练/应用；Linux 运行包交付、线上 Supabase Auth+R2 完整创建尚未执行，不能把本地夹具当作线上验收。
