@@ -1,6 +1,6 @@
 # Character creation and campus homepage runtime
 
-Source: d063e4a28993a44c2f1f92735d65677059e7cd3a (deploy/backend), 2026-10-17.
+Source: c2fc8362168cceb143346508fe1e96affb7eb7ff (deploy/backend), 2026-10-17.
 Requires migration 202610170003_student_character_cards.sql, transactionally applied and verified.
 Optional five-question character creation, original face maker, student card and revisioned archive.
 Official-inspired homepage with large creation entrances and retained live news stack.
