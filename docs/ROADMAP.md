@@ -262,4 +262,4 @@ Campus 首页已新增“创建角色”入口，独立 /create/character 可重
 
 ## 2026-10-24 · 校园档案维护
 
-取消旧设定、新增艺术学院周延，已完成共享数据事务修订和迁移，官网静态发布及公网验收进行中；进度和最终证据见engineering/progress.md、engineering/verification.md。
+取消旧设定、新增艺术学院周延，已完成共享数据事务修订和迁移、官网静态发布及公网验收；进度和最终证据见engineering/progress.md、engineering/verification.md。

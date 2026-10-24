@@ -578,3 +578,12 @@ Windows/Linux 五阶段 build、standalone 121 包补全、lint/typecheck 通过
 Supabase项目sttghkavzjeqeuignpwi已重新核对。先执行包含迁移+21条官网清单导入+5位人物定点修订+周延学院关联+旧词条撤下的事务回滚演练，匿名/登录SELECT均读不到撤下词条，登录调用修订RPC得到WIKI_ARTICLE_RETIRED；原79条修订及34张无关表指纹不变。再备份受影响公开Wiki内容到Git忽略的output/canon-20261024-before.json，正式事务应用并登记迁移。当前12人物、94修订、1撤下；所有当前Wiki名称/摘要/正文扫描旧设定为0；周延艺术学院关系与全部能力描述已核对。既有修订保留为历史，不将其作为当前设定。
 
 lint、typecheck及Windows五阶段build/standalone依赖补全通过。初次构建被沙箱spawn EPERM阻止，正常权限重跑通过。本次校园运行时逻辑未变化，无需重发Linux运行包；线上数据通过既有服务即时读取。官网静态及公网浏览器验收仍在进行，最终结果随后记录。
+
+
+## 2026-10-24 · 档案修订生产验收完成
+
+Git远端复核官网main=a271a538caa0ce28834c0fd96f714fc59baaf7c8、deploy=8a9e3890bc988cf6924e2c4ff03066f734ac06a4；校园批次8e957b9已推送。服务器按既有静态发布流程备份、clean checkout ff-only更新、git archive发布；9个变更静态文件逐项SHA256与Git一致，nginx -t通过，ktu-community仍active，未更换运行包或修改其他站点。备份/var/backups/kongtian-university/pre-canon-20261024-20261024T125333Z.tar.gz。
+
+真实Chromium（使用本机已有1243浏览器，CLI启动未成功后改同库直驱）验收：本地8页、公网14页，1440×1000和390×1000。官网character.html?id=zhouyan、faculty.html?id=arts、wiki-entry.html?id=zhouyan、wiki.html均可读周延，Wiki搜索可查周延、查旧设定无对应项；校园/wiki/student/zhouyan及周延/旧设定检索亦通过。完整能力/身体代价/被动效果/ADHD自我猜测/高中经历/爱好已核对。各页无横向溢出，pageerror=0；已目视复核手机校园档案和官网桌面Wiki。阻断共享feed仍可读取官网周延存档。
+
+公开/api/wiki/public为48条，当前文本无旧设定，21条官网基线hash/title/summary逐一相符。校园/wiki/article/mark HTTP404；官网wiki-entry.html?id=mark显示未找到条目。生产数据库当前四类实体全文扫描目标文字0，周延college_id关联艺术学院，迁移登记存在。原79条历史修订完整保留，新增后94条；34张无关表指纹不变，未新建测试用户或写入合成内容。验收数据与截图在官网Git忽略的output/playwright/canon-20261024/{local,production}-qa.json及相邻PNG；数据库公开内容备份在校园output/canon-20261024-before.json（11学生/79修订/19其他条目），均未提交。

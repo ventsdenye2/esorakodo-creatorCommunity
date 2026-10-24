@@ -422,3 +422,10 @@ Windows/Linux 最终构建、lint/typecheck、真实产物桌面/390px/无 JS/�
 起始deploy/backend cb0da9e工作树干净；官网main c5aa34f，仅既有未跟踪output/.playwright-cli，均保留。校园批次新增撤下迁移、类型及只生成SQL的update-canon-20261024.mjs；未改界面或运行时业务代码。官网新增周延、名册及Wiki离线存档，清理既有印记描述并刷新脚本版本。
 
 生产回滚演练通过后已备份并事务应用迁移202610240001和内容修订。12位人物、94条修订、1条撤下词条；原79条修订hash不变，34张无关表指纹不变。共享当前内容扫描无旧设定，周延college_id正确关联艺术学院；原校园runtime8e166402继续运行。lint/typecheck/build通过（构建需正常子进程权限）。官网待推送部署、浏览器验证进行中；本段为阶段记录，最终结论见verification最新记录。
+
+
+## 2026-10-24 · 档案修订已上线
+
+官网main a271a538caa0ce28834c0fd96f714fc59baaf7c8、deploy 8a9e3890bc988cf6924e2c4ff03066f734ac06a4均已推送；校园迁移/内容脚本/文档批次8e957b9已推送deploy/backend。服务器clean deploy checkout已ff-only更新并发布，9个变更文件SHA256一致，nginx -t通过、ktu-community active。静态发布前备份/var/backups/kongtian-university/pre-canon-20261024-20261024T125333Z.tar.gz，原部署c675873保留在Git。
+
+公网14页（官网4路由×1440/390，校园档案及两种检索×1440/390）通过；21条官网基线hash/title/summary一致，公开feed48条无旧设定，撤下校园词条404，官网旧链接显示未找到。周延完整资料与学院关联、搜索、无横向溢出、页面脚本错误0、接口断开时官网存档阅读均通过并目视复核。现无本批待发布项；原官网未跟踪output/.playwright-cli保留，校园工作树仅最终验收文档待提交。

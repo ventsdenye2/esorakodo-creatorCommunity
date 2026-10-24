@@ -43,3 +43,6 @@
 当前官网仍为21条基线：撤下mark，新增student/zhouyan；其余18个article、2个college保持对应关系。官网周延正文由characters-data共用档案生成，wiki页面先载入人物数据，清单导出工具也按相同顺序读取。新人物关联现有arts学院，正文和院系名册均为艺术学院，未编造年龄、头像或其他设定。
 
 wiki_articles.retired_at仅用于撤下设定，restrictive SELECT RLS隐藏当前词条，触发器阻止修订RPC改写已撤下正文。原实体和修订在后台保留；旧mark正文先经修订RPC清空后撤下，官网清单缺少条目本身仍不会自动撤下共享数据。此次明确使用scripts/update-canon-20261024.mjs生成可审阅的操作员SQL，保留5位现有人物的非目标内容、所有旧修订及无关表指纹。仅本次明确撤下mark，未引入自动批量删除。
+
+
+本批已完成生产发布和14页公网验收，21条官网基线与共享接口一致；旧条目校园地址404、官网旧链接无对应正文。官网deploy8a9e389、校园迁移批次8e957b9，最终证据见engineering/verification.md最新记录。
