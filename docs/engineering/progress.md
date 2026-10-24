@@ -415,3 +415,10 @@ Windows/Linux 最终构建、lint/typecheck、真实产物桌面/390px/无 JS/�
 最终源码5de7ba3c3b564e301f3e7fd059fd98dee7d112b5，runtime8e1664021ef11e339ebc22ca0b67d9f7b119e9f4，均已推送。Linux最终lint/typecheck/build通过，沿用既有更新脚本上线，服务active；7038个文件/96996839字节SHA256一致、0额外文件。前版59bd4de保留回滚。
 
 公网1440px实测资讯在创作入口右侧，仅1个资讯区域、0个群像图片；390/320px纵向全宽且均无溢出，目视检查阅读链接与卡片内容完整；手动切换、暂停、减少动效通过。截图output/character-release/production-hero-news-{1440,390,320}.png。左侧两个创作入口尺寸保持原验收值。本增量不涉及数据库或角色建档逻辑，上一批真实Auth/R2及临时数据清理结果仍有效，没有再建测试账号。
+
+
+## 2026-10-24 · 取消旧设定并新增周延（发布中）
+
+起始deploy/backend cb0da9e工作树干净；官网main c5aa34f，仅既有未跟踪output/.playwright-cli，均保留。校园批次新增撤下迁移、类型及只生成SQL的update-canon-20261024.mjs；未改界面或运行时业务代码。官网新增周延、名册及Wiki离线存档，清理既有印记描述并刷新脚本版本。
+
+生产回滚演练通过后已备份并事务应用迁移202610240001和内容修订。12位人物、94条修订、1条撤下词条；原79条修订hash不变，34张无关表指纹不变。共享当前内容扫描无旧设定，周延college_id正确关联艺术学院；原校园runtime8e166402继续运行。lint/typecheck/build通过（构建需正常子进程权限）。官网待推送部署、浏览器验证进行中；本段为阶段记录，最终结论见verification最新记录。

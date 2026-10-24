@@ -20,8 +20,8 @@ forum_edit_presence: { Row: { session_id: string; topic_id: string; creator_id: 
 forum_topic_accounts: { Row: { topic_id: string; account_id: string }; Insert: { topic_id?: string; account_id?: string }; Update: { topic_id?: string; account_id?: string }; Relationships: [] };
 forum_topic_edit_media: { Row: { topic_id: string; asset_id: string }; Insert: { topic_id?: string; asset_id?: string }; Update: { topic_id?: string; asset_id?: string }; Relationships: [] };
       wiki_articles: {
-        Row: { id: string; slug: string; name: string; summary: string | null; body: string; version: number; created_by: string; created_at: string; updated_at: string }
-        Insert: { id?: string; slug: string; name: string; summary?: string | null; body?: string; version?: number; created_by: string; created_at?: string; updated_at?: string }
+        Row: { id: string; slug: string; name: string; summary: string | null; body: string; version: number; created_by: string; created_at: string; updated_at: string; retired_at: string | null }
+        Insert: { id?: string; slug: string; name: string; summary?: string | null; body?: string; version?: number; created_by: string; created_at?: string; updated_at?: string; retired_at?: string | null }
         Update: { name?: string; summary?: string | null; body?: string; version?: number }
         Relationships: []
       }

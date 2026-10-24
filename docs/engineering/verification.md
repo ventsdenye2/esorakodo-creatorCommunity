@@ -571,3 +571,10 @@ Windows/Linux 五阶段 build、standalone 121 包补全、lint/typecheck 通过
 最终源码5de7ba3c3b564e301f3e7fd059fd98dee7d112b5，runtime8e1664021ef11e339ebc22ca0b67d9f7b119e9f4，均已推送。Linux最终lint/typecheck/build通过，沿用既有更新脚本上线，服务active；7038个文件/96996839字节SHA256一致、0额外文件。前版59bd4de保留回滚。
 
 公网1440px实测资讯在创作入口右侧，仅1个资讯区域、0个群像图片；390/320px纵向全宽且均无溢出，目视检查阅读链接与卡片内容完整；手动切换、暂停、减少动效通过。截图output/character-release/production-hero-news-{1440,390,320}.png。左侧两个创作入口尺寸保持原验收值。本增量不涉及数据库或角色建档逻辑，上一批真实Auth/R2及临时数据清理结果仍有效，没有再建测试账号。
+
+
+## 2026-10-24 · 档案修订数据库与构建验证
+
+Supabase项目sttghkavzjeqeuignpwi已重新核对。先执行包含迁移+21条官网清单导入+5位人物定点修订+周延学院关联+旧词条撤下的事务回滚演练，匿名/登录SELECT均读不到撤下词条，登录调用修订RPC得到WIKI_ARTICLE_RETIRED；原79条修订及34张无关表指纹不变。再备份受影响公开Wiki内容到Git忽略的output/canon-20261024-before.json，正式事务应用并登记迁移。当前12人物、94修订、1撤下；所有当前Wiki名称/摘要/正文扫描旧设定为0；周延艺术学院关系与全部能力描述已核对。既有修订保留为历史，不将其作为当前设定。
+
+lint、typecheck及Windows五阶段build/standalone依赖补全通过。初次构建被沙箱spawn EPERM阻止，正常权限重跑通过。本次校园运行时逻辑未变化，无需重发Linux运行包；线上数据通过既有服务即时读取。官网静态及公网浏览器验收仍在进行，最终结果随后记录。

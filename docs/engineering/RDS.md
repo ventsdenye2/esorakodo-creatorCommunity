@@ -340,3 +340,8 @@ Windows/Linux 构建、lint/typecheck、124 项隔离数据库检查沿用本批
 最终以c2fc836源码构建runtime59bd4de上线，迁移202610170003已应用；资讯堆叠窄屏增加内距，320px实测不溢出。所有新页面沿用原官网视觉语言。
 
 资讯组件作为CampusHero的Server Component子插槽，仍在Suspense中读取；替换原右侧群像。home-news全宽防止手机flex收缩，桌面左右双列、手机纵向，保留窄屏内距。原群像资源不再由首页加载。
+
+
+## 2026-10-24 · 设定撤下与人物归档
+
+迁移202610240001给wiki_articles增加retired_at，以restrictive SELECT RLS从匿名/登录阅读、列表和公开feed中隐藏撤下词条。更新触发器同时保护SECURITY DEFINER修订RPC，阻止编辑或历史恢复使撤下词条复活；后台可显式清空retired_at后恢复。保留稳定ID、官网源映射和历史修订。内容变更经现有修订RPC；官网原文重新导出hash并同步，周延以student/zhouyan登记并关联现有arts学院。官网Wiki从characters-data复用周延档案，保持离线阅读。现有校园运行包无需更换，RLS与数据库内容立即对现有查询生效。
