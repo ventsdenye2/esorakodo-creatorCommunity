@@ -1,8 +1,6 @@
-# Campus creation homepage and character creation
+# Forum synchronization reliability fix
 
-Source: 5de7ba3c3b564e301f3e7fd059fd98dee7d112b5 (deploy/backend), 2026-10-17.
-News stack replaces the hero cast artwork, alongside large creation entrances.
-Original university palette, emblem, serif masthead and restrained spacing.
-Includes previously verified optional character creation; migration202610170003 already applied.
-Linux WSL lint/typecheck/build passed. No environment or temporary credentials included.
-Previous runtime59bd4de remains rollback.
+Built source: 748296f (deploy/backend), 2026-11-13.
+Full-state Yjs submissions, missing dependency rejection, and durable acknowledgement before clearing browser backups.
+No database migration. Linux lint/typecheck/build, 12 document regressions and standalone smoke passed; 36 local PostgreSQL checks and actual client hook backup test passed.
+No production data or environment files included. Previous runtime 8e166402 retained for rollback.
