@@ -1,6 +1,6 @@
-# Forum synchronization reliability fix
+# Forum save progress dialog
 
-Built source: 748296f (deploy/backend), 2026-11-13.
-Full-state Yjs submissions, missing dependency rejection, and durable acknowledgement before clearing browser backups.
-No database migration. Linux lint/typecheck/build, 12 document regressions and standalone smoke passed; 36 local PostgreSQL checks and actual client hook backup test passed.
-No production data or environment files included. Previous runtime 8e166402 retained for rollback.
+Built source: 0d86a18 (deploy/backend), 2026-11-13.
+Centered saving, success auto-close and persistent failure feedback; manual save waits for in-flight synchronization.
+No database migration. Linux lint/typecheck/build, 12 document regressions and standalone smoke passed; desktop/mobile dialog interaction and client backup/wait tests passed.
+No production data or environment files included. Previous runtime e010494 retained for rollback.
