@@ -353,3 +353,7 @@ Windows/Linux 构建、lint/typecheck、124 项隔离数据库检查沿用本批
 
 ### 2026-11-13 保存状态弹窗
 手动保存/发布显示居中进度，持久确认后成功1.5秒自动关闭（发布随后跳转），失败保留错误及重试/备份。沿用现有权限及同步机制。设计及验收见forum-collaboration设计文档与progress/verification。
+
+
+### 2026-11-13 默认momo身份
+默认路人由每层新建改为每Creator唯一跨帖复用；角色显式创建，默认隐藏于角色管理，未个性化历史路人折叠且保持数据/引用。需追加202611130001迁移，详细契约见forum-collaboration设计及progress/verification实际状态。

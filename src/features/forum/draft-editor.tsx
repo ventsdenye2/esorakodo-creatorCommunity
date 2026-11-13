@@ -9,7 +9,7 @@ import { prepareForumImportAccounts } from "../import/actions";
 import { GuideLink } from "../guide/guide-link";
 import { Avatar } from "../../components/ui/avatar";
 import { saveForumDraft } from "./actions";
-import { saveDraftSpeaker } from "./speaker-actions";
+import { getDefaultDraftSpeaker } from "./speaker-actions";
 import { forumBoards, forumMessageSchema, type ForumEntityReference } from "./schemas";
 import { defaultSpeakerName, insertFloor, prepareFloors, removeFloor, serializeFloors, type DraftFloor, type EditableFloor } from "./draft-model";
 import { ThreadTree } from "./thread-tree";
@@ -81,7 +81,7 @@ export function DraftEditor({ topicId, title, board, tags, initialFloors, accoun
 
   const selected = floors.find(floor => floor.id === selectedId);
   const speaker = accounts.find(account => account.id === composer.accountId);
-  const defaultName = defaultSpeakerName(composer.seed);
+  const defaultName = defaultSpeakerName();
   const target = floors.find(floor => floor.id === (composer.beforeId ?? composer.replyToId));
   const targetNumber = target ? floors.indexOf(target) + 1 : 0;
 
@@ -109,7 +109,7 @@ export function DraftEditor({ topicId, title, board, tags, initialFloors, accoun
     try {
       let account = speaker;
       if (!account) {
-        const result = await saveDraftSpeaker({ topicId, id: null, name: defaultName, avatarId: null });
+        const result = await getDefaultDraftSpeaker(topicId);
         if (result.error || !result.account) { setError(result.error ?? "无法建立发言身份，请重试。"); return; }
         account = result.account; rememberAccount(account);
         // Reuse a successfully created identity even if a later local step fails.
@@ -166,7 +166,7 @@ export function DraftEditor({ topicId, title, board, tags, initialFloors, accoun
       {live && <CollaborationPanel live={live} />}
       <ThreadTree prefix="draft" disabled={pending} nodes={floors.map((floor, index) => {
         const account = accounts.find(item => item.id === floor.forum_account_id);
-        return { id: floor.id, parentId: floor.replyToId, floor: index + 1, body: floor.body, time: floor.in_world_time, name: account?.display_name ?? "校园路人", handle: account?.handle ?? "", avatarId: account?.avatar_asset_id, likes: floor.like_count, questions: floor.question_count };
+        return { id: floor.id, parentId: floor.replyToId, floor: index + 1, body: floor.body, time: floor.in_world_time, name: account?.display_name ?? "校园路人", handle: account?.handle ?? "", isDefault: account?.is_default, avatarId: account?.avatar_asset_id, likes: floor.like_count, questions: floor.question_count };
       })} onMessage={id => { if (!pending) setSelectedId(id); }} />
       <section className="forum-composer" ref={bodyRef} aria-labelledby="forum-composer-title">
         <h2 id="forum-composer-title">{!floors.length ? "先写下楼主的第一条消息" : composer.beforeId ? "插入一条发言" : composer.replyToId ? "回复这条消息" : "接着说点什么"}</h2>
@@ -203,7 +203,7 @@ export function DraftEditor({ topicId, title, board, tags, initialFloors, accoun
       <GuideLink section="forum">查看论坛创作说明</GuideLink>
     </fieldset>
     {saveFeedback && feedbackPhase && <SaveFeedbackDialog phase={feedbackPhase} publishing={saveFeedback.publishing} error={saveFeedback.error || (live ? live.error : state.error) || undefined} onClose={closeSaveFeedback} onRetry={() => { if (saveSubmitter.current) formRef.current?.requestSubmit(saveSubmitter.current); }} onDownload={live?.download} />}
-    {selected && <FloorActionDialog key={selected.id} floor={selected} number={floors.indexOf(selected) + 1} affectedReplies={floors.filter(floor => floor.replyToId === selected.id).length} topicId={topicId} accounts={accounts} locked={pending} onBusy={busy} sharedText={live ? floorText(live.doc, selected.id) : undefined} viewerId={live?.envelope?.viewerId} onClose={() => setSelectedId(null)} onAccount={rememberAccount} onUpdate={patch => patchFloor(selected.id, patch)} onReply={() => context(selected.id)} onInsert={() => { if (floors[0]?.id !== selected.id) context(null, selected.id); }} onOwner={() => { if (floors[0]) patchFloor(selected.id, { forum_account_id: floors[0].forum_account_id }); }} onRemove={() => {
+    {selected && <FloorActionDialog ownerIsDefault={Boolean(accounts.find(a => a.id === floors[0]?.forum_account_id)?.is_default)} key={selected.id} floor={selected} number={floors.indexOf(selected) + 1} affectedReplies={floors.filter(floor => floor.replyToId === selected.id).length} topicId={topicId} accounts={accounts} locked={pending} onBusy={busy} sharedText={live ? floorText(live.doc, selected.id) : undefined} viewerId={live?.envelope?.viewerId} onClose={() => setSelectedId(null)} onAccount={rememberAccount} onUpdate={patch => patchFloor(selected.id, patch)} onReply={() => context(selected.id)} onInsert={() => { if (floors[0]?.id !== selected.id) context(null, selected.id); }} onOwner={() => { if (floors[0]) patchFloor(selected.id, { forum_account_id: floors[0].forum_account_id }); }} onRemove={() => {
       if (floors[0]?.id === selected.id) return;
       const affected = floors.filter(floor => floor.replyToId === selected.id).length;
       setFloors(current => removeFloor(current, selected.id)); setSelectedId(null); setDirty(true);

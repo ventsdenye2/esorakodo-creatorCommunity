@@ -31,9 +31,4 @@ export function removeFloor(floors: EditableFloor[], id: string): EditableFloor[
   return floors.filter((floor) => floor.id !== id).map((floor) => floor.replyToId === id ? { ...floor, replyToId: null } : floor);
 }
 
-export function defaultSpeakerName(seed: string) {
-  const names = ["路过图书馆", "晚自习观察员", "食堂排队中", "走廊的风", "今天没有早八", "操场散步中", "窗边的位置", "课间十分钟"];
-  let hash = 0;
-  for (const char of seed) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
-  return `${names[hash % names.length]}${String(hash % 10000).padStart(4, "0")}`;
-}
+export function defaultSpeakerName() { return "momo"; }

@@ -1,0 +1,34 @@
+import assert from 'node:assert/strict';
+import {randomUUID} from 'node:crypto';
+import {createForumTestRuntime,authContext} from './helpers/forum-collaboration-runtime.mjs';
+const {getDefaultDraftSpeaker,saveDraftSpeaker}=await import('../src/features/forum/speaker-actions.ts');
+const {groupForumAccounts}=await import('../src/features/forum-accounts/account-groups.ts');
+const rt=await createForumTestRuntime(55461),{ids}=rt;let passed=0;const ok=(v,label)=>{assert.ok(v,label);console.log('PASS '+(++passed)+': '+label)};const owner=rt.database(ids.owner),editor=rt.database(ids.editor),other=rt.database(ids.other);
+try{
+ const before=(await rt.admin.query('select count(*)::int n from forum_accounts')).rows[0].n;
+ const results=await Promise.all(Array.from({length:6},()=>authContext.run(owner,()=>getDefaultDraftSpeaker(ids.topic))));
+ results.forEach(r=>assert.equal(r.error,null));const momo=results[0].account;ok(new Set(results.map(r=>r.account.id)).size===1,'simultaneous first uses share exactly one default identity');
+ ok(momo.is_default&&momo.display_name==='momo'&&momo.created_by===ids.owner,'default is owned by current Creator');
+ const second=randomUUID();await rt.admin.query("insert into forum_topics(id,creator_id,title,board)values($1,$2,'第二帖','campus')",[second,ids.owner]);
+ const again=await authContext.run(owner,()=>getDefaultDraftSpeaker(second));ok(again.account.id===momo.id,'different topic reuses the same identity');
+ ok((await rt.admin.query('select count(*)::int n from forum_accounts')).rows[0].n===before+1,'repeated uses grow account table by one total');
+ const unauthorized=await authContext.run(other,()=>getDefaultDraftSpeaker(ids.topic));ok(!!unauthorized.error,'unrelated Creator cannot create default through inaccessible work');
+ const anonymous=await authContext.run(rt.database(null),()=>getDefaultDraftSpeaker(ids.topic));ok(!!anonymous.error,'anonymous default creation rejected');
+ assert.ifError((await owner.rpc('save_forum_draft',{p_topic_id:ids.topic,p_expected_version:1,p_title:'身份测试',p_board:'campus',p_messages:[{forum_account_id:momo.id,body:'首帖',in_world_time:'',reply_to_floor_no:null,like_count:0,question_count:0}],p_tags:[],p_links:[],p_publish:false})).error);
+ assert.ifError((await owner.rpc('manage_forum_collaborator',{p_topic_id:ids.topic,p_handle:'writer_02'})).error);
+ const collaborator=await authContext.run(editor,()=>getDefaultDraftSpeaker(ids.topic));ok(collaborator.account.id!==momo.id&&collaborator.account.created_by===ids.editor,'collaborator reuses own default, never borrows owner identity');
+ await owner.rpc('manage_forum_collaborator',{p_topic_id:ids.topic,p_remove_id:ids.editor});ok(!!(await authContext.run(editor,()=>getDefaultDraftSpeaker(ids.topic))).error,'revocation prevents reuse via that work');
+ const renamed=await authContext.run(owner,()=>saveDraftSpeaker({topicId:ids.topic,id:momo.id,name:'剧情角色',avatarId:null}));ok(!!renamed.error,'default cannot be renamed through ordinary action');
+ ok(!!(await owner.from('forum_accounts').update({is_default:false}).eq('id',momo.id).select('*')).error,'default flag cannot be cleared');
+ ok(!!(await owner.from('forum_accounts').update({is_default:true}).eq('id',ids.account).select('*')).error,'ordinary identity cannot be relabeled as default');
+ ok(!!(await other.from('forum_accounts').insert({created_by:ids.other,handle:'forged_default',display_name:'momo',is_default:true}).select('*')).error,'direct authenticated INSERT cannot forge default');
+ await assert.rejects(()=>rt.admin.query("insert into forum_accounts(created_by,handle,display_name,is_default)values($1,'duplicate_default','momo',true)",[ids.owner]),/duplicate key/);ok(true,'unique index enforces one default per Creator');
+ const custom=await authContext.run(owner,()=>saveDraftSpeaker({topicId:ids.topic,id:null,name:'关键角色',avatarId:null}));ok(!custom.error&&!custom.account.is_default,'explicit new role remains independent');
+ const legacy={...custom.account,handle:'campus_aabbccddeeff',display_name:'课间十分钟0863',account_type:'unknown',signature:null,student_id:null,avatar_key:null,avatar_asset_id:null};
+ const groups=groupForumAccounts([momo,legacy,custom.account,{...legacy,id:'renamed',display_name:'关键角色二'},{...legacy,id:'linked',student_id:randomUUID()}]);
+ ok(groups.defaults.length===1&&groups.legacy.length===1&&groups.characters.length===3,'only unchanged legacy placeholders fold; named/linked roles stay prominent');
+ const payload=Array.from({length:25},(_,i)=>({forum_account_id:momo.id,body:'路人发言'+i,in_world_time:'',reply_to_floor_no:null,like_count:0,question_count:0}));
+ const saved=await owner.rpc('save_forum_draft',{p_topic_id:second,p_expected_version:1,p_title:'momo测试',p_board:'campus',p_messages:payload,p_tags:[],p_links:[],p_publish:false});assert.ifError(saved.error);
+ ok((await rt.query(ids.owner,'select count(distinct forum_account_id)::int n,count(*)::int floors from forum_messages where topic_id=$1',[second])).rows[0].n===1,'25 floors persist with one shared momo identity');
+ console.log('Default speaker acceptance: '+passed+' checks passed.');
+}finally{await rt.close()}

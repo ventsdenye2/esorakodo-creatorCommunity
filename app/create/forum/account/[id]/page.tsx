@@ -17,6 +17,7 @@ export default async function EditForumAccountPage({ params, searchParams }: { p
   if (!creatorId) redirect("/login");
   const account = accounts.find((item) => item.id === id);
   if (!account) notFound();
+  if (account.is_default) redirect("/creator");
   return <div><SiteHeader current="forum" /><main id="main-content" className="forum-shell forum-form-page">
     <nav className="forum-crumb"><Link href="/forum">校园论坛</Link><span>/</span><Link href={`/forum/accounts/${account.handle}`}>@{account.handle}</Link><span>/</span>编辑</nav>
     <p className="archive-label">FORUM IDENTITY / EDIT</p><h1>编辑论坛身份</h1>

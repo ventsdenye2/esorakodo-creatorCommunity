@@ -28,3 +28,5 @@
 .search-group .portal-list {margin:0;}.search-group .portal-list li:first-child {border:0;}
 .creator-monogram {width:64px;height:64px;background:var(--view-mist,#edf2fa);display:grid;place-items:center;font:600 28px var(--font-display);border-radius:50%;}
 @media(max-width:700px){.portal-page{padding-top:36px;}.portal-grid{grid-template-columns:1fr;gap:12px;}.campus-search{grid-template-columns:1fr 100px;}.campus-search label:first-child{grid-column:1/-1;}.search-group{grid-template-columns:1fr;gap:0;}.portal-toolbar{align-items:stretch;}.portal-toolbar .button{flex:1;font-size:12px;padding-inline:12px;}}
+
+.portal-legacy-accounts{margin-top:24px;border-top:1px solid var(--rule,#cbd7e6);padding-top:16px}.portal-legacy-accounts summary{cursor:pointer;min-height:44px;align-content:center;color:var(--ink-soft,#4f6a80)}.portal-legacy-accounts>p{font-size:.85rem;line-height:1.8}

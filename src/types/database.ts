@@ -486,6 +486,7 @@ forum_topic_edit_media: { Row: { topic_id: string; asset_id: string }; Insert: {
       }
       forum_accounts: {
         Row: {
+          is_default: boolean
           account_type: string
           avatar_asset_id: string | null
           avatar_key: string | null
@@ -499,6 +500,7 @@ forum_topic_edit_media: { Row: { topic_id: string; asset_id: string }; Insert: {
           updated_at: string
         }
         Insert: {
+          is_default?: boolean
           account_type?: string
           avatar_asset_id?: string | null
           avatar_key?: string | null
@@ -512,6 +514,7 @@ forum_topic_edit_media: { Row: { topic_id: string; asset_id: string }; Insert: {
           updated_at?: string
         }
         Update: {
+          is_default?: boolean
           account_type?: string
           avatar_asset_id?: string | null
           avatar_key?: string | null
@@ -1464,6 +1467,7 @@ forum_topic_edit_media: { Row: { topic_id: string; asset_id: string }; Insert: {
       [_ in never]: never
     }
     Functions: {
+      get_or_create_default_forum_account: { Args: { p_topic_id: string }; Returns: ForumAccount };
       create_student_character: { Args: { p_request_id: string; p_portrait_asset_id: string; p_card_asset_id: string; p_name?: string; p_college_id?: string | null; p_ability?: string; p_traits?: string; p_appearance?: Json }; Returns: Json };
 can_edit_forum: { Args: { p_topic_id: string }; Returns: boolean };
 list_forum_edit_accounts: { Args: { p_topic_id: string }; Returns: ForumAccount[] };

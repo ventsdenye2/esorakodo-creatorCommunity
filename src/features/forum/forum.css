@@ -141,3 +141,5 @@
 @media(prefers-reduced-motion:reduce){.forum-save-feedback[data-phase="saving"] .forum-save-symbol{animation:none}}
 
 .forum-save-feedback p:focus{outline:none}
+
+.forum-speaker-picker .forum-legacy-toggle{display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--ink-soft,#4f6a80)}.forum-speaker-picker .forum-legacy-toggle input{width:18px;height:18px;margin:0;flex-shrink:0}

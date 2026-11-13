@@ -5,7 +5,7 @@ import { Avatar } from "../../components/ui/avatar";
 import { ForumBody } from "./body-view";
 export type ThreadNode = {
   id: string; parentId: string | null; floor: number; body: string; time: string;
-  name: string; handle: string; avatarId?: string | null; likes: number; questions: number;
+  name: string; handle: string; isDefault?: boolean; avatarId?: string | null; likes: number; questions: number;
 };
 export function ThreadTree({ nodes, renderEditor, onReply, onMessage, disabled = false, prefix = "floor" }: {
   nodes: ThreadNode[]; renderEditor?: (node: ThreadNode) => ReactNode;
@@ -24,7 +24,7 @@ export function ThreadTree({ nodes, renderEditor, onReply, onMessage, disabled =
     return <li key={node.id} className="thread-node" id={prefix + "-" + node.id} tabIndex={-1}>
       <article className="thread-message" data-message-id={node.id}>
         <header className="thread-identity"><Avatar key={node.avatarId} assetId={node.avatarId} name={node.name} />
-          <div>{renderEditor || onMessage ? <strong>{node.name}</strong> : <Link href={"/forum/accounts/" + node.handle}>{node.name}</Link>}<span>@{node.handle || "未选择身份"}</span>{owner && node.handle === owner && <b className="thread-owner">楼主</b>}</div>
+          <div>{renderEditor || onMessage || node.isDefault ? <strong>{node.name}</strong> : <Link href={"/forum/accounts/" + node.handle}>{node.name}</Link>}<span>{node.isDefault ? "默认路人" : "@" + (node.handle || "未选择身份")}</span>{owner && node.handle === owner && (!node.isDefault || node.id === ordered[0]?.id) && <b className="thread-owner">楼主</b>}</div>
           {node.time && <time>{node.time}</time>}<span className="thread-floor">{node.floor}楼</span>{onMessage && <button type="button" className="thread-message-action" aria-label={`操作第 ${node.floor} 楼`} aria-haspopup="dialog" disabled={disabled} onClick={() => onMessage(node.id)}>···</button>}
         </header>
         {parent && <blockquote className="thread-quote"><a className="thread-parent" href={"#" + prefix + "-" + parent.id} onClick={() => document.getElementById(prefix + "-" + parent.id)?.focus()}>{parent.floor}楼 · {parent.name}</a><ForumBody body={parent.body} quoted /></blockquote>}

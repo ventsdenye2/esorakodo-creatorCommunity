@@ -26,3 +26,11 @@ export async function saveDraftSpeaker(input: z.infer<typeof speakerSchema>) {
   if (result.error || !result.data) return { error: "身份保存失败。请检查昵称、头像是否可用后重试，当前输入仍保留。", account: null };
   return { error: null, account: result.data };
 }
+
+export async function getDefaultDraftSpeaker(topicId: string) {
+  if (!z.uuid().safeParse(topicId).success) return { error: "作品信息无效，请重新打开帖子。", account: null };
+  const db = await createClient();
+  const { data, error } = await db.rpc("get_or_create_default_forum_account", { p_topic_id: topicId });
+  if (error || !data) return { error: "默认路人暂时无法使用，请确认登录及编辑权限后重试。当前输入仍保留。", account: null };
+  return { error: null, account: data };
+}

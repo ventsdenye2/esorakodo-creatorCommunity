@@ -10,11 +10,11 @@ import { SpeakerPicker } from "./speaker-picker";
 import { forumMessageSchema } from "./schemas";
 import type { Text } from "yjs";
 
-export function FloorActionDialog({ floor, number, affectedReplies, topicId, accounts, locked, onBusy, onClose, onUpdate, onReply, onInsert, onRemove, onOwner, onAccount, sharedText, viewerId }: {
+export function FloorActionDialog({ floor, number, affectedReplies, topicId, accounts, locked, onBusy, onClose, onUpdate, onReply, onInsert, onRemove, onOwner, onAccount, sharedText, viewerId, ownerIsDefault = false }: {
   floor: EditableFloor; number: number; affectedReplies: number; topicId: string; accounts: ForumAccount[]; locked: boolean;
   onBusy: (busy: boolean) => void; onClose: () => void; onUpdate: (patch: Partial<EditableFloor>) => void;
   onReply: () => void; onInsert: () => void; onRemove: () => void; onOwner: () => void; onAccount: (account: ForumAccount) => void;
-  sharedText?: Text; viewerId?: string;
+  sharedText?: Text; viewerId?: string; ownerIsDefault?: boolean;
 }) {
   const [mode, setMode] = useState("menu");
   const [localBody, setBody] = useState(floor.body);
@@ -30,7 +30,7 @@ export function FloorActionDialog({ floor, number, affectedReplies, topicId, acc
       <button type="button" disabled={number === 1} onClick={() => setMode("delete")}>删除{number === 1 && <span>首楼保留</span>}</button>
       <button type="button" onClick={() => { setCount(floor.like_count); setMode("likes"); }}>修改点赞数<span>{floor.like_count}</span></button>
       <button type="button" onClick={() => { setCount(floor.question_count); setMode("questions"); }}>修改？数<span>{floor.question_count}</span></button>
-      <button type="button" disabled={number === 1} onClick={onOwner}>设为楼主<span>使用楼主的昵称、头像与身份</span></button>
+      <button type="button" disabled={number === 1 || ownerIsDefault} onClick={onOwner}>设为楼主<span>{ownerIsDefault ? "先为首楼选择独立角色身份" : "使用楼主的昵称、头像与身份"}</span></button>
       <button type="button" disabled={number === 1} onClick={onInsert}>向上插入楼层{number === 1 && <span>不能插在首楼之前</span>}</button>
       <button type="button" onClick={() => setMode("identity")}>角色身份选择<span>可选，也可以修改昵称和头像</span></button>
     </div> : mode === "edit" ? <div className="forum-message-edit">
@@ -52,7 +52,7 @@ export function FloorActionDialog({ floor, number, affectedReplies, topicId, acc
         if (!Number.isInteger(count) || count < 0 || count > 999999999) { setError("请填写 0–999999999 的整数。"); return; }
         onUpdate(mode === "likes" ? { like_count: count } : { question_count: count });
       }}>确定</button>
-    </div> : mode === "identity" ? <SpeakerPicker topicId={topicId} accounts={accounts} selectedId={floor.forum_account_id} defaultName="校园路人" viewerId={viewerId} onBusy={onBusy} onAccount={onAccount} onChoose={id => onUpdate({ forum_account_id: id })} />
+    </div> : mode === "identity" ? <SpeakerPicker topicId={topicId} accounts={accounts} selectedId={floor.forum_account_id} defaultName="momo" viewerId={viewerId} onBusy={onBusy} onAccount={onAccount} onChoose={id => onUpdate({ forum_account_id: id })} />
       : <div><ForumBody body={floor.body} quoted /><p>{affectedReplies ? `有 ${affectedReplies} 条回复引用这一楼。删除后，它们会保留正文并取消这条引用。` : "删除后，后续楼层会自动重新编号。"}</p><button data-dialog-focus type="button" className="button button-secondary" onClick={onClose}>保留发言</button> <button type="button" className="button forum-danger" onClick={onRemove}>确认删除</button></div>}
   </AuthorDialog>;
 }

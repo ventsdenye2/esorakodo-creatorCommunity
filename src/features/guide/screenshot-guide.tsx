@@ -4,7 +4,7 @@ type Capture = { title: string; width: number; height: number; marks: Mark[] };
 const captures: Record<string, Capture> = {
   "forum-natural-first": { title: "先写下楼主首帖", width: 960, height: 942, marks: [
     { x: 0, y: 1.06, w: 100, h: 7.75, label: "帖子标题", text: "直接改这里，和读者看到的帖子标题保持一致。" },
-    { x: 2.60, y: 35.92, w: 31.74, h: 4.67, label: "默认身份", text: "昵称和字头像已自动准备好；点击可选其他身份、改昵称或上传头像。" },
+    { x: 2.60, y: 35.92, w: 31.74, h: 4.67, label: "默认身份", text: "默认跨帖复用 momo；点击可选已有角色或新建独立角色。历史示例图中的随机路人已改为 momo。" },
     { x: 2.60, y: 42.08, w: 94.79, h: 10.49, label: "第一条消息", text: "写楼主想说的话，也可以粘贴图片。还没有首帖时，先完成这一条。" },
     { x: 86.24, y: 59.15, w: 11.16, h: 5.52, label: "发出首帖", text: "将消息加入当前帖子，随后就能像回帖一样继续写。离开前检查顶部同步状态。" },
   ] },
