@@ -36,5 +36,17 @@ try{
  const badFirst=await owner.rpc('commit_forum_edit',{p_topic_id:ids.topic,p_expected_revision:blocked.document.revision,p_state:blocked.document.state,p_first_id:randomUUID()});ok(badFirst.error?.message.includes('FIRST_POST'),'database rejects replacement of the established first-floor identifier');
  const draft=randomUUID();await rt.admin.query("insert into forum_topics(id,creator_id,title,board)values($1,$2,'尚未发布的作品','campus')",[draft,ids.owner]);const draftSaved=await owner.rpc('save_forum_draft',{p_topic_id:draft,p_expected_version:1,p_title:'尚未发布的作品',p_board:'campus',p_messages:initial,p_tags:[],p_links:[],p_publish:false});assert.ifError(draftSaved.error);assert.ifError((await owner.rpc('manage_forum_collaborator',{p_topic_id:draft,p_handle:'writer_02'})).error);assert.ifError((await owner.rpc('initialize_forum_edit',{p_topic_id:draft,p_state:'AA=='})).error);
  const forbiddenPublish=await editor.rpc('commit_forum_edit',{p_topic_id:draft,p_expected_revision:1,p_state:'AA==',p_first_id:null,p_snapshot:{title:'越权发布',board:'campus',messages:initial,tags:[],links:[]},p_publish:true});ok(forbiddenPublish.error?.message.includes('OWNER_REQUIRED'),'collaborator cannot first-publish an unpublished work');ok((await rt.query(ids.owner,'select status from forum_topics where id=$1',[draft])).rows[0].status==='draft','failed collaborator publish leaves draft private');
+
+ const recoveryTopic=randomUUID();await rt.admin.query("insert into forum_topics(id,creator_id,title,board)values($1,$2,'恢复回归','campus')",[recoveryTopic,ids.owner]);
+ const recoveryDoc=seedForum({title:'恢复回归',board:'campus',tags:'',links:[],floors:[]});const recoveryVector=Y.encodeStateVector(recoveryDoc);
+ writeFloors(recoveryDoc,Array.from({length:25},(_,i)=>({id:randomUUID(),forum_account_id:ids.account,body:'恢复楼层'+i,in_world_time:'',like_count:0,question_count:0,replyToId:null})));
+ const partial=Buffer.from(Y.encodeStateAsUpdate(recoveryDoc,recoveryVector)).toString('base64');
+ assert.ifError((await owner.rpc('initialize_forum_edit',{p_topic_id:recoveryTopic,p_state:partial})).error);
+ const brokenBefore=(await owner.from('forum_edit_documents').select('*').eq('topic_id',recoveryTopic)).data[0];
+ await assert.rejects(()=>mergeForumEdit(owner,recoveryTopic,ids.owner,partial),e=>e.status===409);ok(true,'missing initialization is rejected by actual merge handler');
+ const brokenAfter=(await owner.from('forum_edit_documents').select('*').eq('topic_id',recoveryTopic)).data[0];assert.deepEqual(brokenAfter,brokenBefore);ok(true,'rejected incomplete sync leaves persisted state and revision untouched');
+ const recovered=await mergeForumEdit(owner,recoveryTopic,ids.owner,Buffer.from(Y.encodeStateAsUpdate(recoveryDoc)).toString('base64'));ok(!recovered.document.publish_error,'complete retry repairs pending dependency state');
+ const recoveredRows=(await rt.query(ids.owner,'select body from forum_messages where topic_id=$1 order by floor_no',[recoveryTopic])).rows;
+ assert.deepEqual(recoveredRows.map(r=>r.body),Array.from({length:25},(_,i)=>'恢复楼层'+i));ok(true,'complete retry persists all 25 floors in order');
  console.log('Collaboration database acceptance complete: '+passed+' checks passed.');
 }catch(error){console.error(error.stack);throw error;}finally{await rt.close();}

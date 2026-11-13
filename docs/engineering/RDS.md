@@ -345,3 +345,7 @@ Windows/Linux 构建、lint/typecheck、124 项隔离数据库检查沿用本批
 ## 2026-10-24 · 设定撤下与人物归档
 
 迁移202610240001给wiki_articles增加retired_at，以restrictive SELECT RLS从匿名/登录阅读、列表和公开feed中隐藏撤下词条。更新触发器同时保护SECURITY DEFINER修订RPC，阻止编辑或历史恢复使撤下词条复活；后台可显式清空retired_at后恢复。保留稳定ID、官网源映射和历史修订。内容变更经现有修订RPC；官网原文重新导出hash并同步，周延以student/zhouyan登记并关联现有arts学院。官网Wiki从characters-data复用周延档案，保持离线阅读。现有校园运行包无需更换，RLS与数据库内容立即对现有查询生效。
+
+
+### 2026-11-13 · 论坛保存完整性
+用户授权修复并发布。保存须传递完整CRDT依赖、服务端拒绝缺依赖提交、客户端以持久状态包含全部操作为备份清除条件。无schema变更；设计见 ../design/forum-collaboration.md，验证/部署状态见 progress.md 与 verification.md。

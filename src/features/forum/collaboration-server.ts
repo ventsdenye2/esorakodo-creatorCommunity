@@ -4,6 +4,8 @@ import type { Database, ForumAccount, Json } from "../../types/database";
 import { getForumTopic } from "./queries";
 import { MAX_DOCUMENT_BYTES, publishableSnapshot, readForum, seedForum } from "./collaboration-document";
 
+import { isForumDocumentComplete } from "./collaboration-sync";
+
 type DB = SupabaseClient<Database>;
 export class ForumAccessError extends Error { constructor(message: string, public status = 403) { super(message); } }
 export type EditDocument = Database["public"]["Tables"]["forum_edit_documents"]["Row"];
@@ -54,6 +56,7 @@ export async function mergeForumEdit(db: DB, id: string, viewerId: string, updat
     try {
       Y.applyUpdate(doc, Buffer.from(current.document.state, "base64"));
       Y.applyUpdate(doc, bytes);
+      if (!isForumDocumentComplete(doc)) throw new ForumAccessError("同步数据不完整，修改尚未保存。请保留当前页面并下载改写备份，再重新连接重试。", 409);
       if (current.document.first_id) doc.getMap("meta").set("firstId", current.document.first_id);
       const content = readForum(doc), parsed = publishableSnapshot(content);
       const state = Y.encodeStateAsUpdate(doc);

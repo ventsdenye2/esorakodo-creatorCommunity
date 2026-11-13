@@ -429,3 +429,15 @@ Windows/Linux 最终构建、lint/typecheck、真实产物桌面/390px/无 JS/�
 官网main a271a538caa0ce28834c0fd96f714fc59baaf7c8、deploy 8a9e3890bc988cf6924e2c4ff03066f734ac06a4均已推送；校园迁移/内容脚本/文档批次8e957b9已推送deploy/backend。服务器clean deploy checkout已ff-only更新并发布，9个变更文件SHA256一致，nginx -t通过、ktu-community active。静态发布前备份/var/backups/kongtian-university/pre-canon-20261024-20261024T125333Z.tar.gz，原部署c675873保留在Git。
 
 公网14页（官网4路由×1440/390，校园档案及两种检索×1440/390）通过；21条官网基线hash/title/summary一致，公开feed48条无旧设定，撤下校园词条404，官网旧链接显示未找到。周延完整资料与学院关联、搜索、无横向溢出、页面脚本错误0、接口断开时官网存档阅读均通过并目视复核。现无本批待发布项；原官网未跟踪output/.playwright-cli保留，校园工作树仅最终验收文档待提交。
+
+
+## 2026-11-13 · 单篇论坛草稿恢复
+
+用户明确授权恢复报告中的草稿。仅对该草稿执行恢复：从已备份的 Yjs 暂存识别到缺失的初始化 client clock 0–6，依据既有 seedForum 的默认标题及 meta 初始化补齐依赖；解码得到18楼、原身份、回复关系及3处图片引用。先事务演练 ROLLBACK，再以原 revision/state/作者/status 双重并发保护调用现有 commit_forum_edit，保持 draft、不发布。提交后独立回读：revision=44、public_revision=44、publish_error=null，完整文档无 pendingStructs，18楼正文/身份逐项一致。不能认定恢复了用户记忆中的全部20多楼。
+
+原始备份、恢复前后快照、SQL及离线核验脚本仅留在 Git 忽略的 output/，不提交私人正文。运行源码/配置/schema均未修改，无部署；开始时 HEAD=a5a5625、工作树干净，本批仅补充运维记录。未登录该作者浏览器验收。保存链路对缺失依赖的增量接受及本地备份清除风险仍需后续修复；缺失初始化数据的具体触发时序尚未复现，不能将本次数据恢复称为根治。
+
+
+## 2026-11-13 · 协作同步完整性修复（发布准备）
+
+用户授权修复后推送和部署。基线 a5a5625；保留前段单篇恢复运维记录。浏览器每次保存发送完整 Yjs 状态，包含初始化依赖；服务端合并后检查 pendingStructs/pendingDs，不完整则409且不提交；客户端对持久状态合并本次提交并比较编码，确认文字和删除均已包含后才清除本地备份，否则保留并重试。沿用现有权限、原子RPC和大小上限，无schema变更。新增25楼缺失初始化、过期确认、删除依赖和并发重传回归；12项文档测试及lint/typecheck通过。真实数据库回归和Linux构建进行中，尚未推送/部署。

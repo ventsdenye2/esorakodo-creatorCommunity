@@ -25,3 +25,8 @@ Yjs可合并更新写入私有编辑文档；PostgreSQL乐观序号与行锁保�
 根因确认：PostgREST对自定义40001无限事务重试，追加202610170002将应用CAS版本冲突改为P0001，应用自己重新取版并合并。官方说明：https://supabase.com/docs/guides/troubleshooting/high-cpu-and-infinite-transaction-retries-when-using-custom-error-codes-in-rpc-functions-77326b 。前一迁移保持历史不改写。
 
 交付状态：2026-10-17已上线，runtime8175c71；19迁移含40001业务冲突修复。真实双账号14项及匿名5项通过，临时账号/作品已清理。详细证据见../engineering/verification.md。
+
+
+## 2026-11-13 保存完整性
+
+HTTP保存发送完整Yjs状态（仍按CRDT合并，不整体覆盖并发内容），手动保存即便无排队增量也重传。服务端必须确认pendingStructs与pendingDs均为空才可调用commit_forum_edit；依赖缺失返回409且不变更持久文档。业务字段暂空与CRDT结构不完整分别处理：前者仍可持久暂存，后者拒绝提交。客户端只有确认服务器返回的持久状态包含提交的全部操作（含删除）才清除本地备份；HTTP200自身不构成确认。失败保留备份及待重试状态。单次完整状态仍受2MB上限约束。

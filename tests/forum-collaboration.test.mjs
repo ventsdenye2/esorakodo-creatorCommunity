@@ -13,3 +13,32 @@ test('first floor deletion is rejected',()=>{const doc=seed();writeFloors(doc,re
 test('partial text remains in shared state while public snapshot validation holds last valid content',()=>{const doc=seed();replaceText(floorText(doc,'root'),'');assert.equal(readForum(doc).floors[0].body,'');assert.equal(publishableSnapshot(readForum(doc)).success,false);replaceText(floorText(doc,'root'),'重新改写');assert.ok(publishableSnapshot(readForum(doc)).success);});
 test('independent shared metadata changes do not overwrite text or other archive links',()=>{const {a,b}=peers();a.getMap('links').set('student:a',{entity_type:'student',entity_id:account});b.getMap('links').set('college:b',{entity_type:'college',entity_id:'00000000-0000-4000-8000-000000000002'});a.getText('title').insert(0,'【约伴】');b.getMap('meta').set('board','clubs');merge(a,b);assert.equal(readForum(a).links.length,2);assert.equal(readForum(a).board,'clubs');assert.match(readForum(a).title,/约伴/);});
 test('emoji substitution never corrupts surrogate pairs across serialized updates',()=>{const doc=seed();replaceText(floorText(doc,'root'),'😀你好');replaceText(floorText(doc,'root'),'😁你好');const peer=new Y.Doc();Y.applyUpdate(peer,Y.encodeStateAsUpdate(doc));assert.equal(floorText(peer,'root').toString(),'😁你好');});
+
+const {isForumDocumentComplete,acknowledgesForumUpdate}=await import('../src/features/forum/collaboration-sync.ts');
+test('missing initialization is detected and full-state retry recovers all floors',()=>{
+ const client=seed(), vector=Y.encodeStateVector(client);replaceText(client.getText('title'),'恢复测试');
+ const floors=readForum(client).floors;for(let i=0;i<22;i++)floors.push(floor('extra-'+i,'第'+i+'条正文'));
+ writeFloors(client,floors);const delta=Y.encodeStateAsUpdate(client,vector),server=new Y.Doc();Y.applyUpdate(server,delta);
+ assert.equal(isForumDocumentComplete(server),false);
+ const sent=Y.encodeStateAsUpdate(client);assert.equal(acknowledgesForumUpdate(Y.encodeStateAsUpdate(server),sent),false);
+ Y.applyUpdate(server,sent);assert.equal(isForumDocumentComplete(server),true);assert.deepEqual(readForum(server),readForum(client));assert.equal(readForum(server).floors.length,25);
+ assert.equal(acknowledgesForumUpdate(Y.encodeStateAsUpdate(server),sent),true);
+});
+test('stale success cannot acknowledge new text or deletions',()=>{
+ const {a,b}=peers();floorText(a,'root').insert(0,'未确认内容');
+ assert.equal(acknowledgesForumUpdate(Y.encodeStateAsUpdate(b),Y.encodeStateAsUpdate(a)),false);
+ Y.applyUpdate(b,Y.encodeStateAsUpdate(a));assert.equal(acknowledgesForumUpdate(Y.encodeStateAsUpdate(b),Y.encodeStateAsUpdate(a)),true);
+ floorText(a,'root').delete(0,2);assert.equal(acknowledgesForumUpdate(Y.encodeStateAsUpdate(b),Y.encodeStateAsUpdate(a)),false);
+ Y.applyUpdate(b,Y.encodeStateAsUpdate(a));assert.equal(acknowledgesForumUpdate(Y.encodeStateAsUpdate(b),Y.encodeStateAsUpdate(a)),true);
+});
+test('full-state retries preserve concurrent server edits and stable replies',()=>{
+ const {a,b}=peers();floorText(a,'second').insert(0,'甲');floorText(b,'root').insert(0,'乙');
+ const sent=Y.encodeStateAsUpdate(a);Y.applyUpdate(b,sent);Y.applyUpdate(b,sent);
+ assert.equal(acknowledgesForumUpdate(Y.encodeStateAsUpdate(b),sent),true);Y.applyUpdate(a,Y.encodeStateAsUpdate(b));
+ assert.deepEqual(readForum(a),readForum(b));assert.equal(readForum(b).floors[2].replyToId,'second');assert.match(floorText(b,'root').toString(),/^乙/);
+});
+test('pending deletion dependencies are also incomplete',()=>{
+ const client=seed(),vector=Y.encodeStateVector(client);floorText(client,'root').delete(0,2);
+ const server=new Y.Doc();Y.applyUpdate(server,Y.encodeStateAsUpdate(client,vector));assert.equal(isForumDocumentComplete(server),false);
+ Y.applyUpdate(server,Y.encodeStateAsUpdate(client));assert.equal(isForumDocumentComplete(server),true);
+});

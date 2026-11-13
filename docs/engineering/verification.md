@@ -587,3 +587,15 @@ Git远端复核官网main=a271a538caa0ce28834c0fd96f714fc59baaf7c8、deploy=8a9e
 真实Chromium（使用本机已有1243浏览器，CLI启动未成功后改同库直驱）验收：本地8页、公网14页，1440×1000和390×1000。官网character.html?id=zhouyan、faculty.html?id=arts、wiki-entry.html?id=zhouyan、wiki.html均可读周延，Wiki搜索可查周延、查旧设定无对应项；校园/wiki/student/zhouyan及周延/旧设定检索亦通过。完整能力/身体代价/被动效果/ADHD自我猜测/高中经历/爱好已核对。各页无横向溢出，pageerror=0；已目视复核手机校园档案和官网桌面Wiki。阻断共享feed仍可读取官网周延存档。
 
 公开/api/wiki/public为48条，当前文本无旧设定，21条官网基线hash/title/summary逐一相符。校园/wiki/article/mark HTTP404；官网wiki-entry.html?id=mark显示未找到条目。生产数据库当前四类实体全文扫描目标文字0，周延college_id关联艺术学院，迁移登记存在。原79条历史修订完整保留，新增后94条；34张无关表指纹不变，未新建测试用户或写入合成内容。验收数据与截图在官网Git忽略的output/playwright/canon-20261024/{local,production}-qa.json及相邻PNG；数据库公开内容备份在校园output/canon-20261024-before.json（11学生/79修订/19其他条目），均未提交。
+
+
+## 2026-11-13 · 单篇论坛草稿恢复
+
+用户明确授权恢复报告中的草稿。仅对该草稿执行恢复：从已备份的 Yjs 暂存识别到缺失的初始化 client clock 0–6，依据既有 seedForum 的默认标题及 meta 初始化补齐依赖；解码得到18楼、原身份、回复关系及3处图片引用。先事务演练 ROLLBACK，再以原 revision/state/作者/status 双重并发保护调用现有 commit_forum_edit，保持 draft、不发布。提交后独立回读：revision=44、public_revision=44、publish_error=null，完整文档无 pendingStructs，18楼正文/身份逐项一致。不能认定恢复了用户记忆中的全部20多楼。
+
+原始备份、恢复前后快照、SQL及离线核验脚本仅留在 Git 忽略的 output/，不提交私人正文。运行源码/配置/schema均未修改，无部署；开始时 HEAD=a5a5625、工作树干净，本批仅补充运维记录。未登录该作者浏览器验收。保存链路对缺失依赖的增量接受及本地备份清除风险仍需后续修复；缺失初始化数据的具体触发时序尚未复现，不能将本次数据恢复称为根治。
+
+
+## 2026-11-13 · 协作同步完整性修复（发布准备）
+
+用户授权修复后推送和部署。基线 a5a5625；保留前段单篇恢复运维记录。浏览器每次保存发送完整 Yjs 状态，包含初始化依赖；服务端合并后检查 pendingStructs/pendingDs，不完整则409且不提交；客户端对持久状态合并本次提交并比较编码，确认文字和删除均已包含后才清除本地备份，否则保留并重试。沿用现有权限、原子RPC和大小上限，无schema变更。新增25楼缺失初始化、过期确认、删除依赖和并发重传回归；12项文档测试及lint/typecheck通过。真实数据库回归和Linux构建进行中，尚未推送/部署。

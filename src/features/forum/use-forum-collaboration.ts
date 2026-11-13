@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import * as Y from "yjs";
+import { acknowledgesForumUpdate } from "./collaboration-sync";
 import type { ForumAccount } from "../../types/database";
 import type { EditEnvelope } from "./collaboration-server";
 import { readForum, REMOTE, type SharedForum } from "./collaboration-document";
@@ -53,17 +54,18 @@ export function useForumCollaboration(topicId: string) {
     async function flush(publish = false) {
       if (publish && sending.current) { while (sending.current && !gone.current) await new Promise(resolve => setTimeout(resolve, 40)); }
       if (!ready || sending.current || accessLost.current || gone.current || composing) return false;
-      const batch = queued.current.splice(0);
-      if (!batch.length && !publish) return true;
-      sending.current = true;
+      queued.current.splice(0);
+      // Include initialization and all dependencies, even for manual save/reconnect.
+      const update = Y.encodeStateAsUpdate(doc);
+      sending.current = true; setDirty(true); keepBackup();
       try {
-        const update = batch.length ? Y.mergeUpdates(batch) : Y.encodeStateAsUpdate(doc);
         const data = await request({ kind: "update", update: encodeUpdate(update), publish });
+        if (!acknowledgesForumUpdate(decodeUpdate(data.document.state), update)) throw new Error("服务器尚未完整保存当前内容，已保留本机备份，请下载备份后重试。");
         receive(data); setError("");
         if (!queued.current.length) { setDirty(false); if (cacheKey.current) localStorage.removeItem(cacheKey.current); }
         return true;
       } catch (cause) {
-        queued.current.unshift(...batch); setError(cause instanceof Error ? cause.message : "连接中断，修改保留在本机，重新连接后继续同步。"); keepBackup();
+        queued.current.unshift(update); setError(cause instanceof Error ? cause.message : "连接中断，修改保留在本机，重新连接后继续同步。"); keepBackup();
         return false;
       } finally {
         sending.current = false;
