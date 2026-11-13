@@ -462,3 +462,7 @@ Browser plugin not available；按frontend-testing-debugging使用已安装Playw
 
 ### 保存弹窗发布前最终验证
 功能源码0d86a18；Windows及Linux lint/typecheck通过，Linux五阶段build、13项保存/CRDT回归、standalone同源/回调冒烟通过。另补充实际Hook并发保存测试：有请求在途时手动保存等待后确认，不误报失败，通过。真实组件浏览器补验发布中→发布成功→延迟跳转通过。目视检查移除非交互状态文字的默认焦点黑框，保留按钮可见焦点；最终桌面/手机复验无控制台错误。正在推送和部署，无数据库迁移。
+
+
+### 2026-11-13 · 保存弹窗已上线
+功能源码0d86a18、补充测试/记录4c5ee1d已推送deploy/backend；runtime ee3a954c476fddd7c1b641ccbd5a9e989481dd96已推送并通过update-runtime.sh上线。7038个Git运行文件SHA256一致，服务active，公网首页/论坛200，匿名私人编辑接口401。原e010494保留回滚。新客户端collaborative-editor-B6fTA1Sq.js校验值3a30e0c00db1cb255dd1e77e34f71ee033741039007b340b8cd96cf552ec40f2。无数据库或既有草稿修改，无待部署项。真实用户账号保存未新建验收，交互证据为真实组件隔离浏览器夹具；此前持久确认/权限数据库证据继续有效。
