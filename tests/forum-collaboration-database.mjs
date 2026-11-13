@@ -48,5 +48,13 @@ try{
  const recovered=await mergeForumEdit(owner,recoveryTopic,ids.owner,Buffer.from(Y.encodeStateAsUpdate(recoveryDoc)).toString('base64'));ok(!recovered.document.publish_error,'complete retry repairs pending dependency state');
  const recoveredRows=(await rt.query(ids.owner,'select body from forum_messages where topic_id=$1 order by floor_no',[recoveryTopic])).rows;
  assert.deepEqual(recoveredRows.map(r=>r.body),Array.from({length:25},(_,i)=>'恢复楼层'+i));ok(true,'complete retry persists all 25 floors in order');
+ const rebuilt=seedForum(readForum(recoveryDoc));rebuilt.getMap('meta').set('recoveryEpoch','recovery-test');
+ await rt.admin.query('update forum_edit_documents set state=$1,revision=revision+1 where topic_id=$2',[Buffer.from(Y.encodeStateAsUpdate(rebuilt)).toString('base64'),recoveryTopic]);
+ const resetBefore=(await owner.from('forum_edit_documents').select('*').eq('topic_id',recoveryTopic)).data[0];
+ await assert.rejects(()=>mergeForumEdit(owner,recoveryTopic,ids.owner,Buffer.from(Y.encodeStateAsUpdate(recoveryDoc)).toString('base64')),e=>e.status===410);ok(true,'actual handler rejects old generation before merging');
+ assert.deepEqual((await owner.from('forum_edit_documents').select('*').eq('topic_id',recoveryTopic)).data[0],resetBefore);ok(true,'stale generation cannot mutate repaired state');
+ floorText(rebuilt,readForum(rebuilt).floors[0].id).insert(0,'修复后');
+ const newSave=await mergeForumEdit(owner,recoveryTopic,ids.owner,Buffer.from(Y.encodeStateAsUpdate(rebuilt)).toString('base64'));ok(!newSave.document.publish_error,'new generation saves through actual handler and database');
+ ok((await rt.query(ids.owner,'select body from forum_messages where topic_id=$1 and floor_no=1',[recoveryTopic])).rows[0].body==='修复后恢复楼层0','new generation content reaches public snapshot');
  console.log('Collaboration database acceptance complete: '+passed+' checks passed.');
 }catch(error){console.error(error.stack);throw error;}finally{await rt.close();}
