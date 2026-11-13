@@ -503,3 +503,7 @@ Windows/Linux lint/typecheck、Linux五阶段构建、24项编辑/同步回归�
 
 ### 点赞交互发布前验收通过
 功能源码d1df000。Windows/Linux lint/typecheck、Linux五阶段build、24项既有编辑/同步测试及standalone同源/回调冒烟通过。Browser plugin not available，使用已有Playwright/Chromium加载真实组件；1440/390/320px验证单击恰好+1、Enter/Space、长按加速、松手/blur/pointercancel停止、上限、只读页无按钮、手机CDP真实touch事件及锁定禁用；实际DraftEditor隐藏保存载荷由7变8且正文不变。0页面异常，390px截图已目视复核。无生产账号写入测试。测试模拟cancel后遗漏释放鼠标导致一次夹具失败，补齐释放后复验通过，无产品更改。产物推送部署进行中。
+
+
+### 2026-11-14 · 点赞直接编辑已上线
+源码d1df000及验证记录58595a8已推送deploy/backend；runtime 8228136283308d02f3ca46abcce59fef6d1ebbf1已推送并经既有update-runtime.sh上线。7038个Git运行文件SHA256一致、服务active，公网首页/论坛/指南200。旧ed53567保留回滚，无数据库迁移和生产内容写入。交互及保存载荷验证范围见上文，未登录真实作者验收；本批无待部署项。
