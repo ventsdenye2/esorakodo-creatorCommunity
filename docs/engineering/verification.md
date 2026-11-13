@@ -644,3 +644,7 @@ Browser plugin not available；按frontend-testing-debugging使用已安装Playw
 功能源码82a8dab、迁移记录7150ac7已推送deploy/backend；runtime ed912c37a0d6f7dc2e8b5019a1d7d59382c57cd3已推送deploy/runtime，经既有update-runtime.sh切换成功。7038个Git运行文件逐个SHA256一致、服务active，旧ee3a954保留回滚。202611130001迁移已独立读回确认。旧账号未合并/删除；本批未创建生产默认身份或临时Auth账号，默认momo由真实作者下次首次使用创建。
 
 默认复用/并发权限由真实本地PostgreSQL16项及协作36项验证，编辑保存24项、Linux构建与桌面/手机真实组件交互通过；未以真实用户凭据执行线上发言，不能将隔离夹具称为生产写入端到端测试。新客户端collaborative-editor-2rVOuyX0.js的SHA256为4ef6d86dee555c85ade57713e5159179eec27eee1be7f8e0dfc43f896a2bf364。无待发布项，工作树最后仅本段文档待提交。
+
+
+## 2026-11-14 · 论坛楼层信息精简（发布准备）
+基线b6fa938。用户要求隐藏@账号与问号气泡，点赞仿贴吧弱化右置。已更新共享ThreadTree（阅读/编辑同时生效），取消问号数值菜单，保留后端原数据与身份标识；指南说明同步。按frontend-design沿用校园配色；Browser plugin not available，使用已有Playwright/Chromium测试真实组件，1440/390/320px覆盖长昵称、大计数、零赞、引用与编辑操作，无溢出/脚本异常。截图位于本会话visualizations/thread-clean-qa，390px已目视复核。lint/typecheck与Linux构建/部署继续进行。无schema变更。

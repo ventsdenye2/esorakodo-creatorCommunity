@@ -24,11 +24,12 @@ export function ThreadTree({ nodes, renderEditor, onReply, onMessage, disabled =
     return <li key={node.id} className="thread-node" id={prefix + "-" + node.id} tabIndex={-1}>
       <article className="thread-message" data-message-id={node.id}>
         <header className="thread-identity"><Avatar key={node.avatarId} assetId={node.avatarId} name={node.name} />
-          <div>{renderEditor || onMessage || node.isDefault ? <strong>{node.name}</strong> : <Link href={"/forum/accounts/" + node.handle}>{node.name}</Link>}<span>{node.isDefault ? "默认路人" : "@" + (node.handle || "未选择身份")}</span>{owner && node.handle === owner && (!node.isDefault || node.id === ordered[0]?.id) && <b className="thread-owner">楼主</b>}</div>
-          {node.time && <time>{node.time}</time>}<span className="thread-floor">{node.floor}楼</span>{onMessage && <button type="button" className="thread-message-action" aria-label={`操作第 ${node.floor} 楼`} aria-haspopup="dialog" disabled={disabled} onClick={() => onMessage(node.id)}>···</button>}
+          <div className="thread-author-name">{renderEditor || onMessage || node.isDefault ? <strong>{node.name}</strong> : <Link href={"/forum/accounts/" + node.handle}>{node.name}</Link>}{owner && node.handle === owner && (!node.isDefault || node.id === ordered[0]?.id) && <b className="thread-owner">楼主</b>}</div>
+          <span className="thread-likes" aria-label={"赞同 " + node.likes.toLocaleString("zh-CN")} title="剧情中的赞同数"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M7 10v11H3V10h4Zm0 0 5-7c2 0 3 1 2 4l-1 3h6a2 2 0 0 1 2 2l-2 7a3 3 0 0 1-3 2H7" /></svg><span>{node.likes ? node.likes.toLocaleString("zh-CN") : "赞"}</span></span>{onMessage && <button type="button" className="thread-message-action" aria-label={`操作第 ${node.floor} 楼`} aria-haspopup="dialog" disabled={disabled} onClick={() => onMessage(node.id)}>···</button>}
         </header>
         {parent && <blockquote className="thread-quote"><a className="thread-parent" href={"#" + prefix + "-" + parent.id} onClick={() => document.getElementById(prefix + "-" + parent.id)?.focus()}>{parent.floor}楼 · {parent.name}</a><ForumBody body={parent.body} quoted /></blockquote>}
-        {renderEditor ? renderEditor(node) : <><ForumBody body={node.body} /><div className="thread-reactions" aria-label="剧情中的反应数量"><span title="赞同这条内容">👍 <b>{node.likes.toLocaleString("zh-CN")}</b></span><span title="感到抽象或不理解"><b className="question-icon">?</b> <b>{node.questions.toLocaleString("zh-CN")}</b></span></div></>}
+        {renderEditor ? renderEditor(node) : <ForumBody body={node.body} />}
+        <div className="thread-post-meta">{node.time && <time>{node.time}</time>}<span>{node.floor}楼</span></div>
         {onReply && <div className="thread-controls"><button type="button" onClick={() => onReply(node.id)}>↳ 添加回复</button></div>}
       </article>
     </li>;

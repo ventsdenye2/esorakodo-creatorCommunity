@@ -143,3 +143,7 @@
 .forum-save-feedback p:focus{outline:none}
 
 .forum-speaker-picker .forum-legacy-toggle{display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--ink-soft,#4f6a80)}.forum-speaker-picker .forum-legacy-toggle input{width:18px;height:18px;margin:0;flex-shrink:0}
+
+/* Quiet BBS identity row: name first, understated likes on the right. */
+.thread-identity{flex-wrap:nowrap;gap:10px}.thread-identity>.thread-author-name{flex:1;min-width:0;overflow-wrap:anywhere}.thread-identity>.thread-likes{display:inline-flex;align-items:center;gap:5px;flex:0 0 auto;color:var(--ink-soft,#4f6a80);font-size:.75rem;font-weight:400;white-space:nowrap}.thread-likes svg{width:18px;height:18px;flex:none}.thread-identity>.thread-message-action{flex:0 0 auto;margin-left:0}.thread-post-meta{display:flex;gap:12px;align-items:baseline;margin-top:10px;color:var(--ink-soft,#4f6a80);font-size:.72rem}.thread-post-meta time{overflow-wrap:anywhere}
+@media(max-width:700px){.thread-identity{gap:8px}.thread-identity .thread-likes{gap:4px;font-size:.72rem}.thread-likes svg{width:16px;height:16px}.thread-identity .profile-avatar{flex-shrink:0}.thread-post-meta{font-size:.7rem}}

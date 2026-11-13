@@ -275,3 +275,7 @@ Campus 首页已新增“创建角色”入口，独立 /create/character 可重
 
 ### 2026-11-13 默认身份去重
 每Creator唯一默认momo，跨帖复用，独立角色优先、旧路人折叠保留。迁移/发布状态见engineering/progress.md。
+
+
+### 2026-11-14 论坛阅读层级
+精简账号/问号展示及点赞样式；发布状态见engineering/progress.md。

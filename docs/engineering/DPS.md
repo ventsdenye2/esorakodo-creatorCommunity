@@ -353,3 +353,7 @@ Windows/Linux 构建、lint/typecheck、124 项隔离数据库检查沿用本批
 
 ### 2026-11-13 默认momo身份
 默认路人由每层新建改为每Creator唯一跨帖复用；角色显式创建，默认隐藏于角色管理，未个性化历史路人折叠且保持数据/引用。需追加202611130001迁移，详细契约见forum-collaboration设计及progress/verification实际状态。
+
+
+### 2026-11-14 楼层展示精简
+隐藏论坛楼层@账号与问号数，赞同数右置并使用低调线框图标；身份及历史数据保留。设计/验证见forum-collaboration、progress、verification。
