@@ -458,3 +458,7 @@ Windows/Linux 最终构建、lint/typecheck、真实产物桌面/390px/无 JS/�
 ## 2026-11-13 · 手动保存状态弹窗（发布准备）
 承接用户要求将不显眼的保存提示改为居中弹窗。使用frontend-design，方案见design/forum-collaboration.md。保存中等待持久确认、成功1.5秒自动消失、失败保留并可重试/下载备份；发布成功后延迟跳转。手动保存等待正在进行的自动同步；非协作表单同样支持。自动同步继续轻提示。
 Browser plugin not available；按frontend-testing-debugging使用已安装Playwright及Chromium，在隔离Vite页面加载实际DraftEditor、AuthorDialog和样式，网络保存响应为受控夹具。1440×1000、390×844、320×844验证保存状态、自动关闭、失败保留/重试、备份入口、Escape锁定/关闭、焦点返回、减少动态效果及旧表单；无控制台错误。截图位于本会话visualizations/save-dialog-qa，已目视桌面成功及320px失败。最初焦点返回缺失已修复；验收配置的依赖映射问题已修复，无生产影响。发布跳转补验与最终构建进行中。
+
+
+### 保存弹窗发布前最终验证
+功能源码0d86a18；Windows及Linux lint/typecheck通过，Linux五阶段build、13项保存/CRDT回归、standalone同源/回调冒烟通过。另补充实际Hook并发保存测试：有请求在途时手动保存等待后确认，不误报失败，通过。真实组件浏览器补验发布中→发布成功→延迟跳转通过。目视检查移除非交互状态文字的默认焦点黑框，保留按钮可见焦点；最终桌面/手机复验无控制台错误。正在推送和部署，无数据库迁移。

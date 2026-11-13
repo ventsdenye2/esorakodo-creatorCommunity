@@ -19,5 +19,10 @@ test('actual save hook sends initialization and retains backup until durable ack
   assert.equal(await session.flush(),false);assert.ok(storage.has('forum-edit:topic:creator'),'HTTP success with stale state must retain backup');
   accept=true;assert.equal(await session.flush(),true);assert.equal(storage.size,0);assert.equal(readForum(server).floors.length,25);
   assert.equal(await session.flush(),true);assert.equal(posts,3,'manual save without queued delta still sends complete state');
+  const fetchBefore=globalThis.fetch;let release,hold=true,secondFinished=false;
+  globalThis.fetch=async(...args)=>{if(args[1]?.body&&JSON.parse(args[1].body).kind==='update'&&hold){hold=false;await new Promise(resolve=>{release=resolve});}return fetchBefore(...args);};
+  const firstSave=session.flush();const manualSave=session.flush().then(result=>{secondFinished=true;return result;});
+  await new Promise(resolve=>setTimeout(resolve,10));assert.equal(secondFinished,false,'manual save waits for the active sync instead of reporting failure');
+  release();assert.equal(await firstSave,true);assert.equal(await manualSave,true);
  }finally{globalThis.cleanupForumHook?.();Object.assign(globalThis,old);server.destroy();}
 });
