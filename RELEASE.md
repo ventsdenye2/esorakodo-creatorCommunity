@@ -1,6 +1,6 @@
-# Direct forum like editing
+# Collaboration recovery generation boundary
 
-Built source: d1df000 (deploy/backend), 2026-11-14.
-Editor likes support click +1 and accelerating pointer holds; cancellation and count cap; shared draft persistence.
-No database migration. Linux lint/typecheck/build, 24 editor/sync regressions and standalone smoke passed; 1440/390/320px click, keyboard, accelerated hold, release/blur/cancel, real touch, cap and actual draft serialization checks passed.
-No production data or environment files included. Previous runtime ed53567 retained for rollback.
+Built source: a229e34 (deploy/backend), 2026-11-14.
+Reject stale pre-recovery submissions, isolate browser backups by recovery generation, and stop live clients before merging rebuilt state.
+No database migration. Linux lint/typecheck/build, 26 editor/sync regressions and standalone smoke passed; Recovery generation and real hook backup isolation/reload tests passed. Single-document recovery separately guarded and backed up.
+No production data or environment files included. Previous runtime 8228136 retained for rollback.
