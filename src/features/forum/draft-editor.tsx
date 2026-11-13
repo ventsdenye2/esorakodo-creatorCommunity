@@ -77,7 +77,7 @@ export function DraftEditor({ topicId, title, board, tags, initialFloors, accoun
   const titleRef = useRef<HTMLInputElement>(null), tagsRef = useRef<HTMLInputElement>(null);
   const titleBinding = useSharedInput(titleRef, live?.doc.getText("title"));
   const tagsBinding = useSharedInput(tagsRef, live?.doc.getText("tags"));
-  const pending = saving || working || uploading || Boolean(live?.revoked);
+  const pending = saving || working || uploading || Boolean(live?.revoked || live?.needsRefresh);
 
   const selected = floors.find(floor => floor.id === selectedId);
   const speaker = accounts.find(account => account.id === composer.accountId);

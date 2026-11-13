@@ -21,7 +21,7 @@ export function CollaborationPanel({ live }: { live: ForumSession }) {
   return <>
     <section className="forum-collaboration" aria-label="共同写作">
       <div className="forum-collaboration-people"><span className="forum-online-avatars">{online.slice(0, 4).map(member => <Avatar key={member.id} assetId={member.avatar_asset_id} name={member.display_name} />)}</span><span><strong>{collaborators.length ? "共同写作" : "我的帖子"}</strong><small>{live.connected ? `${online.length || 1} 人在线` : "正在连接…"}</small></span></div>
-      <p className="forum-sync-state" role="status" data-state={live.revoked || live.error ? "error" : live.dirty ? "syncing" : live.connected ? "synced" : "connecting"}><i aria-hidden="true" />{live.revoked ? "编辑权限已失效" : live.error ? "同步未完成" : live.dirty ? "正在同步改写…" : live.connected ? "改写已同步" : "正在重新连接…"}</p>
+      <p className="forum-sync-state" role="status" data-state={live.revoked || live.error ? "error" : live.dirty ? "syncing" : live.connected ? "synced" : "connecting"}><i aria-hidden="true" />{live.needsRefresh ? "请刷新编辑页" : live.revoked ? "编辑权限已失效" : live.error ? "同步未完成" : live.dirty ? "正在同步改写…" : live.connected ? "改写已同步" : "正在重新连接…"}</p>
       {owner && <button type="button" className="forum-manage-collaborators" aria-haspopup="dialog" onClick={() => setOpen(true)}>管理协作者{collaborators.length ? ` · ${collaborators.length}` : ""}</button>}
     </section>
     {data.status === "published" && <p className="forum-live-publication"><strong>已发布 · 修改将实时公开</strong><span>正文尚未完整时，读者暂时看到最近一次有效内容。</span><a href={`/forum/${data.document.topic_id}`} target="_blank" rel="noreferrer">查看公开帖子 ↗</a></p>}
@@ -31,7 +31,7 @@ export function CollaborationPanel({ live }: { live: ForumSession }) {
       return <p className="forum-collaborator-location" key={member.id}>{member.display_name}{place ? ` 正在编辑${index !== undefined && index >= 0 ? `第 ${index + 1} 楼` : place}` : " 正在查看帖子"}</p>;
     })}
     {data.document.publish_error && <p className="forum-error" role="status">{data.document.publish_error === "FORUM_CONTENT_INCOMPLETE" ? "当前改写尚未完整，已保留在共同编辑中。补全内容后会自动继续公开同步。" : "部分改写暂未公开，请检查空白正文、身份或图片是否可用。共同编辑内容已保留。"}</p>}
-    {live.error && <div className="forum-collaboration-error" role="alert"><p>{live.error}</p><button type="button" className="button button-secondary" onClick={live.reconnect}>重新连接</button><button type="button" className="button button-secondary" onClick={live.download}>下载当前改写</button></div>}
+    {live.error && <div className="forum-collaboration-error" role="alert"><p>{live.error}</p><button type="button" className="button button-secondary" onClick={live.reconnect}>{live.needsRefresh ? "刷新编辑页" : "重新连接"}</button><button type="button" className="button button-secondary" onClick={live.download}>下载当前改写</button></div>}
     {open && <AuthorDialog title="一起写这个帖子" locked={busy} onClose={() => setOpen(false)}>
       <p className="forum-form-hint">邀请后，对方可以在自己的创作中心进入，共同修改这个帖子。发布和成员管理仍由你负责。</p>
       <label>创作者 @账号<input data-dialog-focus value={handle} maxLength={60} placeholder="例如：night_study" disabled={busy} onChange={event => setHandle(event.target.value)} /></label>

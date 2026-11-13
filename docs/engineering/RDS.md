@@ -365,3 +365,7 @@ Windows/Linux 构建、lint/typecheck、124 项隔离数据库检查沿用本批
 
 ### 2026-11-14 点赞直接编辑
 支持编辑时单击+1及长按逐级加速，复用现有协作保存；设计与验证见forum-collaboration、progress、verification。
+
+
+### 2026-11-14 协作文档重建边界
+修复损坏文档后使用恢复epoch拒绝旧编辑状态并隔离本机备份；无帖子ID特判，保留完整性与持久确认约束。用户授权丢弃未同步片段，单篇恢复仅更新同步文档，详见progress/verification。

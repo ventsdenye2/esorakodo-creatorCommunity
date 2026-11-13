@@ -19,3 +19,12 @@ export function acknowledgesForumUpdate(saved: Uint8Array, sent: Uint8Array) {
     return before.length === after.length && before.every((byte, i) => byte === after[i]);
   } finally { doc.destroy(); }
 }
+
+export function forumRecoveryEpoch(doc: Y.Doc) { return String(doc.getMap("meta").get("recoveryEpoch") ?? ""); }
+export function matchesForumRecovery(doc: Y.Doc, update: Uint8Array) {
+  const epoch = forumRecoveryEpoch(doc);
+  if (!epoch) return true;
+  const incoming = new Y.Doc();
+  try { Y.applyUpdate(incoming, update); return forumRecoveryEpoch(incoming) === epoch; }
+  finally { incoming.destroy(); }
+}

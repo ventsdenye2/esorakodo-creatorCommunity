@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import * as Y from "yjs";
-import { acknowledgesForumUpdate } from "./collaboration-sync";
+import { acknowledgesForumUpdate, forumRecoveryEpoch } from "./collaboration-sync";
 import type { ForumAccount } from "../../types/database";
 import type { EditEnvelope } from "./collaboration-server";
 import { readForum, REMOTE, type SharedForum } from "./collaboration-document";
@@ -19,6 +19,8 @@ export function useForumCollaboration(topicId: string) {
   const [error, setError] = useState("");
   const [connected, setConnected] = useState(false);
   const [dirty, setDirty] = useState(false);
+  const [needsRefresh, setNeedsRefresh] = useState(false);
+  const refreshRequired = useRef(false);
   const [revoked, setRevoked] = useState(false);
   const [retry, setRetry] = useState(0);
   const current = useRef<EditEnvelope | null>(null), queued = useRef<Uint8Array[]>([]), sending = useRef(false), gone = useRef(false);
@@ -35,13 +37,24 @@ export function useForumCollaboration(topicId: string) {
       const response = await fetch(`/api/forum/${topicId}/edit`, { method: body ? "POST" : "GET", headers: body ? { "Content-Type": "application/json" } : undefined, body: body ? JSON.stringify(body) : undefined, cache: "no-store", signal: abort.signal });
       const data = await response.json();
       if (!response.ok) {
+        if (response.status === 410) { refreshRequired.current = true; accessLost.current = true; setNeedsRefresh(true); setConnected(false); events?.close(); }
         if (response.status === 401 || response.status === 403) { accessLost.current = true; setRevoked(true); events?.close(); }
         throw new Error(data.error ?? "同步失败，请重试。");
       }
       return data as EditEnvelope;
     }
     function receive(data: EditEnvelope) {
-      if (gone.current) return;
+      if (gone.current || refreshRequired.current) return;
+      if (current.current) {
+        const incoming = new Y.Doc();
+        try {
+          Y.applyUpdate(incoming, decodeUpdate(data.document.state));
+          if (forumRecoveryEpoch(incoming) !== forumRecoveryEpoch(doc)) {
+            refreshRequired.current = true; accessLost.current = true; setNeedsRefresh(true); setConnected(false); events?.close();
+            setError("这篇帖子的同步文档已修复。请先下载当前改写备份，再刷新页面继续编辑。"); return;
+          }
+        } finally { incoming.destroy(); }
+      }
       if (composing) { if (!deferred || data.document.revision >= deferred.document.revision) deferred = data; return; }
       if (current.current && data.document.revision < current.current.document.revision) return;
       Y.applyUpdate(doc, decodeUpdate(data.document.state), REMOTE);
@@ -69,7 +82,7 @@ export function useForumCollaboration(topicId: string) {
         return false;
       } finally {
         sending.current = false;
-        if (queued.current.length && !gone.current) timer = setTimeout(() => void flush(), 1200);
+        if (queued.current.length && !gone.current && !accessLost.current) timer = setTimeout(() => void flush(), 1200);
       }
     }
     flushRef.current = flush;
@@ -94,7 +107,9 @@ export function useForumCollaboration(topicId: string) {
     window.addEventListener("beforeunload", beforeLeave); doc.on("update", changed);
     void request().then(data => {
       if (gone.current) return;
-      receive(data); cacheKey.current = `forum-edit:${topicId}:${data.viewerId}`; ready = true;
+      receive(data); if (refreshRequired.current) return;
+      const epoch = forumRecoveryEpoch(doc);
+      cacheKey.current = `forum-edit:${topicId}:${data.viewerId}` + (epoch ? `:recovery:${epoch}` : ""); ready = true;
       const backup = localStorage.getItem(cacheKey.current);
       if (backup) { const vector = Y.encodeStateVector(doc); Y.applyUpdate(doc, decodeUpdate(backup), REMOTE); const restored = Y.encodeStateAsUpdate(doc, vector); if (restored.length > 2) { queued.current.push(restored); setValue(readForum(doc)); setDirty(true); void flush(); } }
       events = new EventSource(`/api/forum/${topicId}/stream?editing=1`);
@@ -117,6 +132,6 @@ export function useForumCollaboration(topicId: string) {
     const blob = new Blob([JSON.stringify({ work: value, update: encodeUpdate(Y.encodeStateAsUpdate(doc)) }, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob), link = document.createElement("a"); link.href = url; link.download = `forum-${topicId}-改写备份.json`; link.click(); URL.revokeObjectURL(url);
   }
-  return { doc, value, envelope, error, connected, dirty, revoked, accounts, manage, download, flush: (publish = false) => flushRef.current(publish), reconnect: () => { setRevoked(false); setRetry(value => value + 1); } };
+  return { doc, value, envelope, error, connected, dirty, revoked, needsRefresh, accounts, manage, download, flush: (publish = false) => flushRef.current(publish), reconnect: () => { if (refreshRequired.current) { window.location.reload(); return; } setRevoked(false); setRetry(value => value + 1); } };
 }
 export type ForumSession = ReturnType<typeof useForumCollaboration>;

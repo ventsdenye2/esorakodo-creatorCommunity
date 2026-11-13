@@ -283,3 +283,7 @@ Campus 首页已新增“创建角色”入口，独立 /create/character 可重
 
 ### 2026-11-14 论坛点赞直接编辑
 单击加1、长按加速，发布验证见engineering/progress.md。
+
+
+### 2026-11-14 协作恢复协议
+完整状态与重建epoch边界，避免旧页面/备份污染；交付状态见engineering/progress.md。

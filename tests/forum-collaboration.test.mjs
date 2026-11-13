@@ -42,3 +42,13 @@ test('pending deletion dependencies are also incomplete',()=>{
  const server=new Y.Doc();Y.applyUpdate(server,Y.encodeStateAsUpdate(client,vector));assert.equal(isForumDocumentComplete(server),false);
  Y.applyUpdate(server,Y.encodeStateAsUpdate(client));assert.equal(isForumDocumentComplete(server),true);
 });
+
+const {matchesForumRecovery}=await import('../src/features/forum/collaboration-sync.ts');
+test('rebuilt document rejects pre-repair clients and permits edits from its new generation',()=>{
+ const old=seed(),fresh=seedForum(readForum(old));fresh.getMap('meta').set('recoveryEpoch','repair-1');
+ assert.equal(matchesForumRecovery(fresh,Y.encodeStateAsUpdate(old)),false);
+ const editor=new Y.Doc();Y.applyUpdate(editor,Y.encodeStateAsUpdate(fresh));floorText(editor,'root').insert(0,'修复后：');
+ assert.equal(matchesForumRecovery(fresh,Y.encodeStateAsUpdate(editor)),true);Y.applyUpdate(fresh,Y.encodeStateAsUpdate(editor));assert.equal(fresh.store.pendingStructs,null);assert.match(readForum(fresh).floors[0].body,/修复后/);
+ fresh.getMap('meta').set('recoveryEpoch','repair-2');assert.equal(matchesForumRecovery(fresh,Y.encodeStateAsUpdate(editor)),false);
+ assert.equal(matchesForumRecovery(old,Y.encodeStateAsUpdate(old)),true);
+});

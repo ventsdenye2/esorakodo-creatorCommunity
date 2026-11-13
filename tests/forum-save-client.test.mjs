@@ -26,3 +26,17 @@ test('actual save hook sends initialization and retains backup until durable ack
   release();assert.equal(await firstSave,true);assert.equal(await manualSave,true);
  }finally{globalThis.cleanupForumHook?.();Object.assign(globalThis,old);server.destroy();}
 });
+
+test('recovery isolates old backups and stops live stale clients before merging reset state',async()=>{
+ const old={fetch:globalThis.fetch,document:globalThis.document,window:globalThis.window,localStorage:globalThis.localStorage,EventSource:globalThis.EventSource};
+ const abandoned=seedForum({title:'旧备份',board:'campus',tags:'',links:[],floors:[]});
+ const server=seedForum({title:'保留版本',board:'campus',tags:'',links:[],floors:[]});server.getMap('meta').set('recoveryEpoch','one');
+ const storage=new Map([['forum-edit:topic:creator',Buffer.from(Y.encodeStateAsUpdate(abandoned)).toString('base64')]]);let events,posts=0,reloads=0;
+ const envelope=doc=>({document:{state:Buffer.from(Y.encodeStateAsUpdate(doc)).toString('base64'),revision:2},viewerId:'creator',status:'draft',accounts:[],members:[],presence:[]});
+ globalThis.document=new EventTarget();globalThis.window=new EventTarget();window.location={reload:()=>reloads++};globalThis.localStorage={setItem:(k,v)=>storage.set(k,v),getItem:k=>storage.get(k)??null,removeItem:k=>storage.delete(k)};globalThis.EventSource=class{constructor(){events=this;}addEventListener(){}close(){this.closed=true;}};
+ globalThis.fetch=async(url,options={})=>{const body=options.body?JSON.parse(options.body):null;if(body?.kind==='presence')return {ok:true};if(body?.kind==='update'){posts++;Y.applyUpdate(server,Buffer.from(body.update,'base64'));}return {ok:true,json:async()=>envelope(server)};};
+ try{const session=useForumCollaboration('topic');await new Promise(r=>setImmediate(r));assert.equal(readForum(session.doc).title,'保留版本');assert.ok(storage.has('forum-edit:topic:creator'));
+ session.doc.getText('title').insert(0,'新增');assert.ok(storage.has('forum-edit:topic:creator:recovery:one'));assert.equal(await session.flush(),true);
+ const reset=seedForum({title:'第二次修复',board:'campus',tags:'',links:[],floors:[]});reset.getMap('meta').set('recoveryEpoch','two');events.onmessage({data:JSON.stringify(envelope(reset))});assert.equal(readForum(session.doc).title,'新增保留版本');assert.ok(events.closed);const previous=posts;assert.equal(await session.flush(),false);assert.equal(posts,previous);session.reconnect();assert.equal(reloads,1);reset.destroy();
+ }finally{globalThis.cleanupForumHook?.();Object.assign(globalThis,old);server.destroy();abandoned.destroy();}
+});
