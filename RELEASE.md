@@ -1,6 +1,6 @@
-# Forum save progress dialog
+# Reusable momo default identity
 
-Built source: 0d86a18 (deploy/backend), 2026-11-13.
-Centered saving, success auto-close and persistent failure feedback; manual save waits for in-flight synchronization.
-No database migration. Linux lint/typecheck/build, 12 document regressions and standalone smoke passed; desktop/mobile dialog interaction and client backup/wait tests passed.
-No production data or environment files included. Previous runtime e010494 retained for rollback.
+Built source: 82a8dab (deploy/backend), 2026-11-13.
+One default momo identity per Creator across topics; explicit character creation and folded historical placeholders.
+Requires additive migration 202611130001_forum_default_momo (applied with existing-data fingerprint checks). Linux lint/typecheck/build, 24 editor/sync regressions and standalone smoke passed; 16 default-identity database checks, 36 collaboration checks and desktop/mobile picker/list interactions passed.
+No production data or environment files included. Previous runtime ee3a954 retained for rollback.
