@@ -657,3 +657,7 @@ Windows/Linux lint/typecheck、Linux五阶段构建、24项编辑/同步回归�
 
 ## 2026-11-14 · 点赞直接编辑（发布准备）
 基线413a2ca。编辑单击+1/长按加速，阅读保持展示，停止/封顶/键盘操作保护，复用原保存。lint/typecheck通过，真实组件浏览器与Linux构建进行中；无schema变化。详情见design/forum-collaboration。
+
+
+### 点赞交互发布前验收通过
+功能源码d1df000。Windows/Linux lint/typecheck、Linux五阶段build、24项既有编辑/同步测试及standalone同源/回调冒烟通过。Browser plugin not available，使用已有Playwright/Chromium加载真实组件；1440/390/320px验证单击恰好+1、Enter/Space、长按加速、松手/blur/pointercancel停止、上限、只读页无按钮、手机CDP真实touch事件及锁定禁用；实际DraftEditor隐藏保存载荷由7变8且正文不变。0页面异常，390px截图已目视复核。无生产账号写入测试。测试模拟cancel后遗漏释放鼠标导致一次夹具失败，补齐释放后复验通过，无产品更改。产物推送部署进行中。
