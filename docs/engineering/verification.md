@@ -648,3 +648,8 @@ Browser plugin not available；按frontend-testing-debugging使用已安装Playw
 
 ## 2026-11-14 · 论坛楼层信息精简（发布准备）
 基线b6fa938。用户要求隐藏@账号与问号气泡，点赞仿贴吧弱化右置。已更新共享ThreadTree（阅读/编辑同时生效），取消问号数值菜单，保留后端原数据与身份标识；指南说明同步。按frontend-design沿用校园配色；Browser plugin not available，使用已有Playwright/Chromium测试真实组件，1440/390/320px覆盖长昵称、大计数、零赞、引用与编辑操作，无溢出/脚本异常。截图位于本会话visualizations/thread-clean-qa，390px已目视复核。lint/typecheck与Linux构建/部署继续进行。无schema变更。
+
+
+### 2026-11-14 · 楼层信息精简已上线
+功能源码7fcc776、runtime ed53567f2e5a1ba5e08ccea91bf111583175042a均已推送，并经既有update-runtime.sh上线。7038个Git运行文件SHA256逐个一致，服务active；公网首页、论坛、指南均200。旧ed912c37保留回滚；无数据库迁移或历史数据删除。
+Windows/Linux lint/typecheck、Linux五阶段构建、24项编辑/同步回归、standalone同源与回调冒烟通过。1440/390/320px真实组件隔离浏览器验证阅读/编辑均隐藏handle和问号、点赞右置、长昵称和大计数无溢出，编辑操作正常；不将隔离组件验证表述为真实用户登录生产验收。首次远程命令因Shell参数传递未执行，改用直接参数后部署成功。无待发布项，最终文档另行提交。
