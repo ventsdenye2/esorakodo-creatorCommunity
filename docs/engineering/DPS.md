@@ -345,3 +345,7 @@ Windows/Linux 构建、lint/typecheck、124 项隔离数据库检查沿用本批
 
 ### 2026-11-13 · 论坛保存完整性
 用户授权修复并发布。保存须传递完整CRDT依赖、服务端拒绝缺依赖提交、客户端以持久状态包含全部操作为备份清除条件。无schema变更；设计见 ../design/forum-collaboration.md，验证/部署状态见 progress.md 与 verification.md。
+
+
+### 2026-11-13 保存状态弹窗
+手动保存/发布显示居中进度，持久确认后成功1.5秒自动关闭（发布随后跳转），失败保留错误及重试/备份。沿用现有权限及同步机制。设计及验收见forum-collaboration设计文档与progress/verification。

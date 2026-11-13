@@ -134,3 +134,10 @@
 @media(max-width:700px){.forum-collaboration{gap:8px 12px}.forum-collaboration-people{flex:1}.forum-sync-state{font-size:.72rem}.forum-manage-collaborators{width:100%;text-align:center}.forum-live-publication{display:grid;gap:7px}.forum-live-publication a{margin-left:0;justify-self:start}.forum-public-edit{align-items:start;flex-direction:column}.forum-public-edit .button{align-self:stretch}}
 
 .forum-natural-editor[data-live]>.forum-editor-lock>.forum-form-actions{position:static;margin-top:0;border:0;border-top:1px solid var(--rule,#cbd7e6);border-radius:0;background:transparent;padding:18px 0 0}
+
+/* Explicit save feedback stays in the campus paper-and-ink dialog. */
+.forum-save-feedback{display:grid;justify-items:center;gap:14px;padding:10px 0 20px;text-align:center}.forum-save-feedback p{margin:0;max-width:36ch;line-height:1.8;overflow-wrap:anywhere}.forum-save-feedback small{color:var(--ink-soft,#4f6a80)}.forum-save-symbol{display:grid;place-items:center;width:56px;height:56px;border:2px solid var(--rule,#cbd7e6);border-radius:50%;color:var(--ink,#123b5a);font:32px Georgia,serif}.forum-save-feedback[data-phase="saving"] .forum-save-symbol{border-top-color:var(--ink,#123b5a);animation:forum-save-spin 1s linear infinite}.forum-save-feedback[data-phase="success"] .forum-save-symbol{color:#2e8068;border-color:#2e8068}.forum-save-feedback[data-phase="error"] .forum-save-symbol{color:#8b2929;border-color:#8b2929}.forum-save-actions{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:8px}.forum-save-actions .button{min-height:44px}
+@keyframes forum-save-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.forum-save-feedback[data-phase="saving"] .forum-save-symbol{animation:none}}
+
+.forum-save-feedback p:focus{outline:none}

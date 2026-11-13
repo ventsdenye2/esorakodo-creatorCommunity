@@ -52,7 +52,7 @@ export function useForumCollaboration(topicId: string) {
       catch { setError("浏览器备份空间不足，请下载当前改写后继续。"); }
     }
     async function flush(publish = false) {
-      if (publish && sending.current) { while (sending.current && !gone.current) await new Promise(resolve => setTimeout(resolve, 40)); }
+      if (sending.current) { while (sending.current && !gone.current) await new Promise(resolve => setTimeout(resolve, 40)); }
       if (!ready || sending.current || accessLost.current || gone.current || composing) return false;
       queued.current.splice(0);
       // Include initialization and all dependencies, even for manual save/reconnect.

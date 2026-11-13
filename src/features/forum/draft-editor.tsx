@@ -16,6 +16,7 @@ import { ThreadTree } from "./thread-tree";
 import { FloorBodyEditor } from "./floor-body-editor";
 import { ForumBody } from "./body-view";
 import { FloorActionDialog } from "./floor-action-dialog";
+import { SaveFeedbackDialog, type SaveFeedbackPhase } from "./save-feedback-dialog";
 import { AuthorDialog } from "./author-dialog";
 import { SpeakerPicker } from "./speaker-picker";
 import { CollaborationPanel } from "./collaboration-panel";
@@ -45,6 +46,9 @@ export function DraftEditor({ topicId, title, board, tags, initialFloors, accoun
   const [error, setError] = useState("");
   const [working, setWorking] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [saveFeedback, setSaveFeedback] = useState<{ phase: SaveFeedbackPhase; publishing: boolean; error?: string } | null>(null);
+  const formRef = useRef<HTMLFormElement>(null), saveSubmitter = useRef<HTMLButtonElement | null>(null);
+  const [legacyBefore, setLegacyBefore] = useState<unknown>(null);
   const operationLock = useRef(false);
   const uploadLock = useRef(false);
   const bodyRef = useRef<HTMLDivElement>(null);
@@ -123,18 +127,31 @@ export function DraftEditor({ topicId, title, board, tags, initialFloors, accoun
     event.preventDefault();
     const submitter = (event.nativeEvent as SubmitEvent).submitter;
     if (!(submitter instanceof HTMLButtonElement) || submitter.name !== "intent" || pending || selectedId || pickingSpeaker || operationLock.current || uploadLock.current) return;
-    if (composer.body.trim()) { setError("输入框里还有未发出的内容，请先发出这条消息，或清空后再保存、发布。"); focusComposer(); return; }
+    saveSubmitter.current = submitter;
+    const publishing = submitter.value === "publish";
+    if (composer.body.trim()) { setSaveFeedback({ phase: "error", publishing, error: "输入框里还有未发出的内容，请返回编辑，先发出这条消息，再保存或发布。" }); return; }
+    setError(""); setNotice(""); setSaveFeedback({ phase: "saving", publishing });
     if (live) {
       operationLock.current = true; setWorking(true);
-      try { const published = submitter.value === "publish"; if (await live.flush(published)) { setNotice("改写已同步。"); if (published) window.location.assign("/forum/" + topicId); } }
+      try { const saved = await live.flush(publishing); setSaveFeedback({ phase: saved ? "success" : "error", publishing }); }
+      catch { setSaveFeedback({ phase: "error", publishing, error: "保存请求未完成，当前内容仍保留，请重试。" }); }
       finally { operationLock.current = false; setWorking(false); }
       return;
     }
     const formData = new FormData(event.currentTarget, submitter);
     setError(""); setNotice(""); setDirty(false);
+    setLegacyBefore(state);
     startTransition(() => action(formData));
   }
-  return <form onSubmit={submit} noValidate data-live={live ? "true" : undefined} className="forum-form forum-editor forum-natural-editor" onChange={() => setDirty(true)}>
+  const feedbackPhase = saveFeedback?.phase === "saving" && !live && !saving && state !== legacyBefore ? state.saved && !state.error ? "success" : "error" : saveFeedback?.phase;
+  function closeSaveFeedback() {
+    if (feedbackPhase === "saving") return;
+    const published = feedbackPhase === "success" && saveFeedback?.publishing && live;
+    setSaveFeedback(null);
+    if (published) window.location.assign("/forum/" + topicId);
+    else requestAnimationFrame(() => saveSubmitter.current?.focus());
+  }
+  return <form ref={formRef} onSubmit={submit} noValidate data-live={live ? "true" : undefined} className="forum-form forum-editor forum-natural-editor" onChange={() => setDirty(true)}>
     <input type="hidden" name="title" value={draftTitle} /><input type="hidden" name="board" value={draftBoard} /><input type="hidden" name="tags" value={draftTags} />
     <input type="hidden" name="links" value={JSON.stringify(links)} /><input type="hidden" name="messages" value={JSON.stringify(serializeFloors(floors))} />
     {state.error && <p className="forum-error" role="alert">{state.error}</p>}
@@ -185,6 +202,7 @@ export function DraftEditor({ topicId, title, board, tags, initialFloors, accoun
       <p className="forum-form-hint">{live ? "改写会自动同步。已发布作品的有效修改将实时公开；未发出的新回复仍留在输入框中。" : "发言先加入当前草稿，保存后再离开。作者发布后仍可进入编辑。"}</p>
       <GuideLink section="forum">查看论坛创作说明</GuideLink>
     </fieldset>
+    {saveFeedback && feedbackPhase && <SaveFeedbackDialog phase={feedbackPhase} publishing={saveFeedback.publishing} error={saveFeedback.error || (live ? live.error : state.error) || undefined} onClose={closeSaveFeedback} onRetry={() => { if (saveSubmitter.current) formRef.current?.requestSubmit(saveSubmitter.current); }} onDownload={live?.download} />}
     {selected && <FloorActionDialog key={selected.id} floor={selected} number={floors.indexOf(selected) + 1} affectedReplies={floors.filter(floor => floor.replyToId === selected.id).length} topicId={topicId} accounts={accounts} locked={pending} onBusy={busy} sharedText={live ? floorText(live.doc, selected.id) : undefined} viewerId={live?.envelope?.viewerId} onClose={() => setSelectedId(null)} onAccount={rememberAccount} onUpdate={patch => patchFloor(selected.id, patch)} onReply={() => context(selected.id)} onInsert={() => { if (floors[0]?.id !== selected.id) context(null, selected.id); }} onOwner={() => { if (floors[0]) patchFloor(selected.id, { forum_account_id: floors[0].forum_account_id }); }} onRemove={() => {
       if (floors[0]?.id === selected.id) return;
       const affected = floors.filter(floor => floor.replyToId === selected.id).length;
