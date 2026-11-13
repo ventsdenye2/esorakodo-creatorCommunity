@@ -361,3 +361,7 @@ Windows/Linux 构建、lint/typecheck、124 项隔离数据库检查沿用本批
 
 ### 2026-11-14 楼层展示精简
 隐藏论坛楼层@账号与问号数，赞同数右置并使用低调线框图标；身份及历史数据保留。设计/验证见forum-collaboration、progress、verification。
+
+
+### 2026-11-14 点赞直接编辑
+支持编辑时单击+1及长按逐级加速，复用现有协作保存；设计与验证见forum-collaboration、progress、verification。

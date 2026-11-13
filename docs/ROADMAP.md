@@ -279,3 +279,7 @@ Campus 首页已新增“创建角色”入口，独立 /create/character 可重
 
 ### 2026-11-14 论坛阅读层级
 精简账号/问号展示及点赞样式；发布状态见engineering/progress.md。
+
+
+### 2026-11-14 论坛点赞直接编辑
+单击加1、长按加速，发布验证见engineering/progress.md。

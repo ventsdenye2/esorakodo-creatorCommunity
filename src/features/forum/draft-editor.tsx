@@ -97,6 +97,15 @@ export function DraftEditor({ topicId, title, board, tags, initialFloors, accoun
     setFloors(current => current.map(floor => floor.id === id ? { ...floor, ...patch } : floor));
     setDirty(true); setSelectedId(null);
   }
+  function increaseLikes(id: string, amount: number) {
+    if (pending) return;
+    if (live) {
+      const row = live.doc.getMap<import("yjs").Map<unknown>>("floors").get(id);
+      if (!row || row.get("deleted")) return;
+      row.set("like_count", Math.min(999999999, Number(row.get("like_count") ?? 0) + amount));
+    } else setLocalFloors(current => current.map(floor => floor.id === id ? { ...floor, like_count: Math.min(999999999, floor.like_count + amount) } : floor));
+    setDirty(true);
+  }
   async function send() {
     if (pending || operationLock.current || uploadLock.current) return;
     const body = composer.body.trim();
@@ -167,7 +176,7 @@ export function DraftEditor({ topicId, title, board, tags, initialFloors, accoun
       <ThreadTree prefix="draft" disabled={pending} nodes={floors.map((floor, index) => {
         const account = accounts.find(item => item.id === floor.forum_account_id);
         return { id: floor.id, parentId: floor.replyToId, floor: index + 1, body: floor.body, time: floor.in_world_time, name: account?.display_name ?? "校园路人", handle: account?.handle ?? "", isDefault: account?.is_default, avatarId: account?.avatar_asset_id, likes: floor.like_count, questions: floor.question_count };
-      })} onMessage={id => { if (!pending) setSelectedId(id); }} />
+      })} onLike={increaseLikes} onMessage={id => { if (!pending) setSelectedId(id); }} />
       <section className="forum-composer" ref={bodyRef} aria-labelledby="forum-composer-title">
         <h2 id="forum-composer-title">{!floors.length ? "先写下楼主的第一条消息" : composer.beforeId ? "插入一条发言" : composer.replyToId ? "回复这条消息" : "接着说点什么"}</h2>
         {target && <div className="forum-compose-context"><span>{composer.beforeId ? "插入到" : "回复"}第 {targetNumber} 楼 · {accounts.find(account => account.id === target.forum_account_id)?.display_name}</span><p>{target.body.slice(0, 120)}</p><button type="button" onClick={() => context(null)}>取消{composer.beforeId ? "插入" : "引用"}</button></div>}

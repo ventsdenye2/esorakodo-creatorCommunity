@@ -653,3 +653,7 @@ Browser plugin not available；按frontend-testing-debugging使用已安装Playw
 ### 2026-11-14 · 楼层信息精简已上线
 功能源码7fcc776、runtime ed53567f2e5a1ba5e08ccea91bf111583175042a均已推送，并经既有update-runtime.sh上线。7038个Git运行文件SHA256逐个一致，服务active；公网首页、论坛、指南均200。旧ed912c37保留回滚；无数据库迁移或历史数据删除。
 Windows/Linux lint/typecheck、Linux五阶段构建、24项编辑/同步回归、standalone同源与回调冒烟通过。1440/390/320px真实组件隔离浏览器验证阅读/编辑均隐藏handle和问号、点赞右置、长昵称和大计数无溢出，编辑操作正常；不将隔离组件验证表述为真实用户登录生产验收。首次远程命令因Shell参数传递未执行，改用直接参数后部署成功。无待发布项，最终文档另行提交。
+
+
+## 2026-11-14 · 点赞直接编辑（发布准备）
+基线413a2ca。编辑单击+1/长按加速，阅读保持展示，停止/封顶/键盘操作保护，复用原保存。lint/typecheck通过，真实组件浏览器与Linux构建进行中；无schema变化。详情见design/forum-collaboration。
