@@ -480,3 +480,9 @@ Browser plugin not available；按frontend-testing-debugging使用已安装Playw
 
 ### momo迁移与构建完成
 源码82a8dab。202611130001正式迁移已提交，38张既有表指纹与演练一致、24个账号保留、未创建默认身份（首次实际使用才创建）；匿名无执行权，authenticated有权但RPC内校验当前作品编辑权限，唯一索引存在。Linux lint/typecheck、五阶段构建、24项回归及standalone同源/回调冒烟通过。运行包推送与部署进行中；无旧角色合并删除。
+
+
+### 2026-11-13 · 默认momo已上线
+功能源码82a8dab、迁移记录7150ac7已推送deploy/backend；runtime ed912c37a0d6f7dc2e8b5019a1d7d59382c57cd3已推送deploy/runtime，经既有update-runtime.sh切换成功。7038个Git运行文件逐个SHA256一致、服务active，旧ee3a954保留回滚。202611130001迁移已独立读回确认。旧账号未合并/删除；本批未创建生产默认身份或临时Auth账号，默认momo由真实作者下次首次使用创建。
+
+默认复用/并发权限由真实本地PostgreSQL16项及协作36项验证，编辑保存24项、Linux构建与桌面/手机真实组件交互通过；未以真实用户凭据执行线上发言，不能将隔离夹具称为生产写入端到端测试。新客户端collaborative-editor-2rVOuyX0.js的SHA256为4ef6d86dee555c85ade57713e5159179eec27eee1be7f8e0dfc43f896a2bf364。无待发布项，工作树最后仅本段文档待提交。
