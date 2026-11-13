@@ -513,3 +513,8 @@ Windows/Linux lint/typecheck、Linux五阶段构建、24项编辑/同步回归�
 用户报告主教312无法同步，确认服务器/数据库健康，近一小时92次409。后台revision13包含缺失client3413998595 clock0依赖，pending引用其clock19，原触发时序未复现。用户明确允许丢弃未同步内容并要求从协议修复，不做帖子ID特判。完整提交/服务端完整性/持久确认约束继续保留；新增重建epoch隔离：服务端合并前拒绝旧epoch(410)，客户端备份按epoch分区，SSE检测重建后不合并、停止写入并提示备份刷新。旧备份不删除。
 单篇恢复使用readForum提取4楼可读已保存内容，逐项比对公开快照，seedForum创建完整文档并保留编辑楼层稳定ID。只更新协作文档，不改公开帖子/楼层/身份。双重revision/state及topic version锁保护，事务演练ROLLBACK通过。初次演练因PowerShell时间时区序列化导致比较误报，改为数据库原生字段类型比较后通过。备份及SQL在Git忽略output/sync-health-20261114，不提交私人内容。
 lint/typecheck及15项同步/实际Hook回归通过，包括旧备份隔离、重建版本不互相合并、新代正常改写。构建、部署和正式恢复待完成。
+
+
+### 2026-11-14 · 同步版本边界上线及主教312修复完成
+源码f0f0b90/a229e34已推送；runtime069d1f0900678ab36d1530abd17c372fd1c82956经update-runtime.sh上线，7038个运行文件SHA256一致、active、首页/论坛/指南200，旧8228136保留回滚。Linux lint/typecheck/build、26项编辑/同步测试、40项真实隔离PostgreSQL/实际merge handler验证全部通过（旧代410且状态不变、新代保存并更新公开快照）。首轮Linux lint发现测试this别名规则，修正后全流程重跑通过。
+用户授权丢弃未同步内容后，以topic version62和document revision13/state双锁保护更新单篇同步文档，revision/public_revision=14、publish_error=null。新文档完整无pendingStructs/pendingDs，四楼已保存正文/身份/回复、公开topic整行和messages整行独立回读与备份完全一致；稳定编辑ID保留。只废弃未能合并的历史CRDT片段，旧原始状态已备份，用户本机下载备份仍保留。后续离线编辑可合并；真实作者生产保存需刷新编辑页后操作，未冒充已完成其账号端到端验收。最初初始化丢失时序仍未复现，已修复的是完整性接收与重建版本边界两项确定缺陷，不宣称排除了所有同步问题。本批无待部署/数据修复步骤。
