@@ -5,7 +5,7 @@ import type { ForumEntityReference } from "./schemas";
 
 export type ForumTopic = Database["public"]["Tables"]["forum_topics"]["Row"];
 export type ForumMessage = Database["public"]["Tables"]["forum_messages"]["Row"];
-export type ForumTopicView = ForumTopic & { floorCount: number; tags: string[] };
+export type ForumTopicView = ForumTopic & { floorCount: number; tags: string[]; firstBody: string };
 export type ForumFloor = ForumMessage & { account: ForumAccount; replyFloor: number | null };
 
 export async function getWikiEntityById(id: string): Promise<Student | null> {
@@ -38,14 +38,16 @@ async function enrichTopics(topics: ForumTopic[]): Promise<ForumTopicView[]> {
   if (!topics.length) return [];
   const supabase = await createClient();
   const ids = topics.map((topic) => topic.id);
-  const [messages, links] = await Promise.all([
+  const [messages, links, firsts] = await Promise.all([
     supabase.from("forum_messages").select("topic_id").in("topic_id", ids),
     supabase.from("forum_topic_hashtags").select("topic_id, hashtags(name)").in("topic_id", ids),
+    supabase.from("forum_messages").select("topic_id,body").in("topic_id", ids).eq("floor_no", 1),
   ]);
-  if (messages.error || links.error) throw new Error(messages.error?.message ?? links.error?.message);
+  if (messages.error || links.error || firsts.error) throw new Error(messages.error?.message ?? links.error?.message ?? firsts.error?.message);
   return topics.map((topic) => ({
     ...topic,
     floorCount: (messages.data ?? []).filter((message) => message.topic_id === topic.id).length,
+    firstBody: (firsts.data ?? []).find(message => message.topic_id === topic.id)?.body ?? "",
     tags: (links.data ?? []).filter((link) => link.topic_id === topic.id)
       .map((link) => link.hashtags?.name).filter((name): name is string => Boolean(name)),
   }));
@@ -68,7 +70,7 @@ export async function listPublishedTopics(board?: string, tag?: string): Promise
     if (!taggedIds.length) return [];
   }
   let query = supabase.from("forum_topics").select("*").eq("status", "published")
-    .order("published_at", { ascending: false }).limit(50);
+    .order("published_at", { ascending: false }).order("id", { ascending: false }).limit(50);
   if (board) query = query.eq("board", board);
   if (taggedIds) query = query.in("id", taggedIds);
   const { data, error } = await query;

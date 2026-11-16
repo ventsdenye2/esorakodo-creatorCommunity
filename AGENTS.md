@@ -43,6 +43,7 @@
 - Preserve distinct structures: Forum as a BBS with ordered in-world floors, Press as an editorial publication, Events as an archive/timeline, Wiki as a revisioned record. Real Creator operations and fictional Forum Account speech must remain visibly separate.
 - Keep visual decisions behind CSS custom properties, semantic component names and layout primitives. The v2 token values are proposals, not a completed visual migration.
 - Before creating or substantially reshaping user-facing UI, invoke the `frontend-design` skill. Record the page subject, audience, single job, compact token/type/layout plan, one justified signature element, and a critique against generic templates before implementation.
+- User requirement (2026-11-16): the forum discovery list specifically uses a Xiaohongshu-like masonry feed with an image and the complete first-post body, not a summary. This overrides the earlier no-waterfall guidance for this list only; keep the campus palette and other media distinct. Forum invitations support both existing-user search and revocable links; restoring a checkpoint retains later branches.
 - Implement the v2 guide in bounded stages. Every UI batch must cover responsive behavior, keyboard/touch access, focus return, reduced motion, and loading/empty/error/unauthorized/conflict states. Verify representative desktop and mobile renders before marking the stage complete.
 
 ## Security and delivery

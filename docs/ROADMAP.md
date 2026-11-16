@@ -287,3 +287,6 @@ Campus 首页已新增“创建角色”入口，独立 /create/character 可重
 
 ### 2026-11-14 协作恢复协议
 完整状态与重建epoch边界，避免旧页面/备份污染；交付状态见engineering/progress.md。
+## 2026-11-16 · 论坛阅读与共创升级（本地）
+
+用户确认完整主楼瀑布流、保留版本分支、站内搜索及链接邀请；新增真实评论侧栏、长图、人物立绘与下一篇入口。当前实现与新增迁移尚未上线；验收状态以 engineering/progress.md 和 verification.md 本日条目为准。设计见 [forum-reader-upgrade](design/forum-reader-upgrade.md)。

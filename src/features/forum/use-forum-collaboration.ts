@@ -51,7 +51,7 @@ export function useForumCollaboration(topicId: string) {
           Y.applyUpdate(incoming, decodeUpdate(data.document.state));
           if (forumRecoveryEpoch(incoming) !== forumRecoveryEpoch(doc)) {
             refreshRequired.current = true; accessLost.current = true; setNeedsRefresh(true); setConnected(false); events?.close();
-            setError("这篇帖子的同步文档已修复。请先下载当前改写备份，再刷新页面继续编辑。"); return;
+            setError("这篇帖子的版本已回退或同步文档已重建。请先下载当前改写备份，再刷新页面继续编辑。"); return;
           }
         } finally { incoming.destroy(); }
       }
@@ -132,6 +132,6 @@ export function useForumCollaboration(topicId: string) {
     const blob = new Blob([JSON.stringify({ work: value, update: encodeUpdate(Y.encodeStateAsUpdate(doc)) }, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob), link = document.createElement("a"); link.href = url; link.download = `forum-${topicId}-改写备份.json`; link.click(); URL.revokeObjectURL(url);
   }
-  return { doc, value, envelope, error, connected, dirty, revoked, needsRefresh, accounts, manage, download, flush: (publish = false) => flushRef.current(publish), reconnect: () => { if (refreshRequired.current) { window.location.reload(); return; } setRevoked(false); setRetry(value => value + 1); } };
+  return { doc, value, envelope, error, connected, dirty, revoked, needsRefresh, accounts, manage, download, getRevision: () => current.current?.document.revision, flush: (publish = false) => flushRef.current(publish), reconnect: () => { if (refreshRequired.current) { window.location.reload(); return; } setRevoked(false); setRetry(value => value + 1); } };
 }
 export type ForumSession = ReturnType<typeof useForumCollaboration>;

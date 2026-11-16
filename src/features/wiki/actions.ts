@@ -16,6 +16,7 @@ function withMessage(path: string, key: "error" | "message", message: string): n
 }
 
 function wikiErrorMessage(error: { code?: string; message: string }) {
+  if (error.message.includes("WIKI_PORTRAIT_INVALID")) return "图片尚未上传完成或无权使用，请重新上传后重试。";
   if (error.code === "23505") return "Slug 已被使用，请选择另一个稳定地址。";
   if (error.message.includes("WIKI_VERSION_CONFLICT")) return "档案已被其他人更新，请重新载入后再编辑。";
   if (error.message.includes("AUTH_REQUIRED")) return "请先登录 Creator 账号。";

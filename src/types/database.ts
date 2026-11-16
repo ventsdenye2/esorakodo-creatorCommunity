@@ -9,6 +9,8 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      forum_edit_settings: { Row: { topic_id: string; mode: "owner" | "invited" | "everyone"; head_id: string | null }; Insert: { topic_id: string; mode?: string; head_id?: string | null }; Update: { mode?: string; head_id?: string | null }; Relationships: [] };
+      forum_checkpoints: { Row: { id: string; topic_id: string; parent_id: string | null; label: string; state: string; document_revision: number; created_by: string; created_at: string }; Insert: { topic_id: string; label: string; state: string; document_revision: number; created_by: string }; Update: never; Relationships: [] };
       student_character_cards: {
         Row: { student_id: string; creator_id: string; request_id: string; portrait_asset_id: string; card_asset_id: string; appearance: Json; student_number: string; created_at: string };
         Insert: { student_id: string; creator_id: string; request_id: string; portrait_asset_id: string; card_asset_id: string; appearance?: Json; student_number: string; created_at?: string };
@@ -1467,6 +1469,13 @@ forum_topic_edit_media: { Row: { topic_id: string; asset_id: string }; Insert: {
       [_ in never]: never
     }
     Functions: {
+      forum_topic_neighbors: { Args: { p_topic_id: string; p_board?: string; p_tag?: string }; Returns: { previous_id: string | null; previous_title: string | null; next_id: string | null; next_title: string | null }[] };
+      set_forum_edit_mode: { Args: { p_topic_id: string; p_mode: string }; Returns: undefined };
+      rotate_forum_invite: { Args: { p_topic_id: string; p_revoke: boolean }; Returns: string | null };
+      accept_forum_invite: { Args: { p_token: string }; Returns: string };
+      search_forum_creators: { Args: { p_topic_id: string; p_query: string }; Returns: { id: string; handle: string; display_name: string; avatar_asset_id: string | null }[] };
+      create_forum_checkpoint: { Args: { p_topic_id: string; p_expected_revision: number; p_label: string }; Returns: string };
+      restore_forum_checkpoint: { Args: { p_topic_id: string; p_checkpoint_id: string; p_expected_revision: number; p_state: string; p_first_id: string | null; p_snapshot: Json }; Returns: undefined };
       get_or_create_default_forum_account: { Args: { p_topic_id: string }; Returns: ForumAccount };
       create_student_character: { Args: { p_request_id: string; p_portrait_asset_id: string; p_card_asset_id: string; p_name?: string; p_college_id?: string | null; p_ability?: string; p_traits?: string; p_appearance?: Json }; Returns: Json };
 can_edit_forum: { Args: { p_topic_id: string }; Returns: boolean };

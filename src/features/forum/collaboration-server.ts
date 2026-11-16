@@ -10,7 +10,7 @@ type DB = SupabaseClient<Database>;
 export class ForumAccessError extends Error { constructor(message: string, public status = 403) { super(message); } }
 export type EditDocument = Database["public"]["Tables"]["forum_edit_documents"]["Row"];
 export type Collaborator = { id: string; handle: string; display_name: string; avatar_asset_id: string | null };
-export type EditEnvelope = { document: EditDocument; ownerId: string; viewerId: string; status: string; version: number; accounts: ForumAccount[]; members: Collaborator[]; presence: { session_id: string; creator_id: string; field: string; seen_at: string }[] };
+export type EditEnvelope = { document: EditDocument; ownerId: string; viewerId: string; status: string; version: number; mode: "owner" | "invited" | "everyone"; accounts: ForumAccount[]; collaboratorIds: string[]; members: Collaborator[]; presence: { session_id: string; creator_id: string; field: string; seen_at: string }[] };
 
 export async function requireForumEditor(db: DB, id: string) {
   const { data: { user } } = await db.auth.getUser();
@@ -22,14 +22,15 @@ export async function requireForumEditor(db: DB, id: string) {
 }
 
 export async function readEditEnvelope(db: DB, id: string, viewerId: string): Promise<EditEnvelope> {
-  const [topic, saved, accounts, members, presence] = await Promise.all([
+  const [topic, saved, accounts, members, presence, settings] = await Promise.all([
     db.from("forum_topics").select("creator_id,status,version").eq("id", id).single(),
     db.from("forum_edit_documents").select("*").eq("topic_id", id).maybeSingle(),
     db.rpc("list_forum_edit_accounts", { p_topic_id: id }),
     db.from("forum_collaborators").select("creator_id").eq("topic_id", id),
     db.from("forum_edit_presence").select("session_id,creator_id,field,seen_at").eq("topic_id", id).gt("seen_at", new Date(Date.now() - 45000).toISOString()),
+    db.from("forum_edit_settings").select("mode").eq("topic_id", id).maybeSingle(),
   ]);
-  if (topic.error || !topic.data || saved.error || accounts.error || members.error || presence.error) throw new ForumAccessError("无法读取协作内容，请保留输入后重试。", 503);
+  if (topic.error || !topic.data || saved.error || accounts.error || members.error || presence.error || settings.error) throw new ForumAccessError("无法读取协作内容，请保留输入后重试。", 503);
   let document = saved.data;
   if (!document) {
     const result = await getForumTopic(id, true);
@@ -44,7 +45,7 @@ export async function readEditEnvelope(db: DB, id: string, viewerId: string): Pr
   const ids = [...new Set([topic.data.creator_id, viewerId, ...(members.data ?? []).map(member => member.creator_id), ...(presence.data ?? []).map(member => member.creator_id)])];
   const profiles = await db.from("profiles").select("id,handle,display_name,avatar_asset_id").in("id", ids);
   if (profiles.error) throw new ForumAccessError("无法读取协作成员。", 503);
-  return { document, ownerId: topic.data.creator_id, viewerId, status: topic.data.status, version: topic.data.version, accounts: accounts.data ?? [], members: profiles.data ?? [], presence: presence.data ?? [] };
+  return { document, ownerId: topic.data.creator_id, viewerId, status: topic.data.status, version: topic.data.version, mode: settings.data?.mode ?? "invited", accounts: accounts.data ?? [], collaboratorIds: (members.data ?? []).map(member => member.creator_id), members: profiles.data ?? [], presence: presence.data ?? [] };
 }
 
 export async function mergeForumEdit(db: DB, id: string, viewerId: string, update: string, publish = false) {
@@ -55,7 +56,7 @@ export async function mergeForumEdit(db: DB, id: string, viewerId: string, updat
     const doc = new Y.Doc();
     try {
       Y.applyUpdate(doc, Buffer.from(current.document.state, "base64"));
-      if (!matchesForumRecovery(doc, bytes)) throw new ForumAccessError("这篇帖子的同步文档已修复。请先下载当前改写备份，再刷新页面继续编辑。", 410);
+      if (!matchesForumRecovery(doc, bytes)) throw new ForumAccessError("这篇帖子的版本已回退或同步文档已重建。请先下载当前改写备份，再刷新页面继续编辑。", 410);
       Y.applyUpdate(doc, bytes);
       if (!isForumDocumentComplete(doc)) throw new ForumAccessError("同步数据不完整，修改尚未保存。请保留当前页面并下载改写备份，再重新连接重试。", 409);
       if (current.document.first_id) doc.getMap("meta").set("firstId", current.document.first_id);

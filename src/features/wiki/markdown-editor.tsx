@@ -2,6 +2,7 @@
 
 import { useId, useRef, useState } from "react";
 import { Markdown } from "./markdown";
+import { PortraitEditor } from "./portrait-editor";
 
 const formats = [
   { label: "标题", before: "\n## ", after: "\n", sample: "小节标题" },
@@ -15,7 +16,7 @@ const formats = [
   { label: "表格", before: "\n", after: "\n", sample: "| 项目 | 说明 |\n| --- | --- |\n| 内容 | 内容 |\n| 内容 | 内容 |" },
 ];
 
-export function MarkdownEditor({ initialValue = "" }: { initialValue?: string }) {
+export function MarkdownEditor({ initialValue = "", portraits = false }: { initialValue?: string; portraits?: boolean }) {
   const [value, setValue] = useState(initialValue);
   const [mode, setMode] = useState("split");
   const ref = useRef<HTMLTextAreaElement>(null);
@@ -32,6 +33,7 @@ export function MarkdownEditor({ initialValue = "" }: { initialValue?: string })
     requestAnimationFrame(() => { ref.current?.focus(); ref.current?.setSelectionRange(start + format.before.length, start + format.before.length + content.length); });
   }
   return <section className="markdown-editor" aria-label="档案正文编辑器">
+    {portraits && <PortraitEditor value={value} onChange={setValue} />}
     <div className="markdown-editor-heading"><label htmlFor={id}>档案正文</label><div className="markdown-modes" aria-label="编辑视图">{[["edit", "编辑"], ["split", "分栏"], ["preview", "预览"]].map(([key, label]) => <button key={key} type="button" aria-pressed={mode === key} onClick={() => setMode(key)}>{label}</button>)}</div></div>
     <div className="markdown-toolbar" aria-label="插入格式">{formats.map(format => <button key={format.label} type="button" onClick={() => insert(format)}>{format.label}</button>)}</div>
     <div className={`markdown-panes markdown-mode-${mode}`}>

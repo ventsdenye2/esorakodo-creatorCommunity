@@ -5,7 +5,7 @@ import EmbeddedPostgres from '../../output/pg-check/node_modules/embedded-postgr
 export const authContext=new AsyncLocalStorage();globalThis.forumTestContext=authContext;
 registerHooks({resolve(s,c,n){if(s.endsWith('/lib/supabase/server'))return {url:'data:text/javascript,export const createClient=async()=>globalThis.forumTestContext.getStore()',shortCircuit:true};if(s.startsWith('.')&&c.parentURL?.endsWith('.ts')){const u=new URL(s+'.ts',c.parentURL);if(existsSync(u))return {url:u.href,shortCircuit:true};}return n(s,c);},load(u,c,n){if(u.endsWith('.ts'))return {format:'module',source:ts.transpileModule(readFileSync(new URL(u),'utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText,shortCircuit:true};return n(u,c);}});
 export async function createForumTestRuntime(port=55459){
- const cluster=new EmbeddedPostgres({databaseDir:path.resolve('output/pg-check/collaboration-'+Date.now()),user:'postgres',password:randomUUID(),port,persistent:true,initdbFlags:['--encoding=UTF8','--locale=C'],postgresFlags:['-h','127.0.0.1'],onLog(){},onError(){}});
+ const cluster=new EmbeddedPostgres({databaseDir:path.resolve('output/pg-check/collaboration-'+Date.now()),user:'postgres',password:randomUUID(),port,persistent:true,initdbFlags:['--encoding=UTF8','--locale=C'],postgresFlags:['-h','127.0.0.1'],onLog(message){if(process.env.KTU_TEST_PG_DEBUG==='1')console.log(message);},onError(message){if(process.env.KTU_TEST_PG_DEBUG==='1')console.error(message);}});
  console.log('collaboration db: initializing');await cluster.initialise();await cluster.start();
  const admin=cluster.getPgClient('postgres','127.0.0.1');await admin.connect();
  try{

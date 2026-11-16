@@ -676,3 +676,27 @@ lint/typecheck及15项同步/实际Hook回归通过，包括旧备份隔离、�
 ### 2026-11-14 · 同步版本边界上线及主教312修复完成
 源码f0f0b90/a229e34已推送；runtime069d1f0900678ab36d1530abd17c372fd1c82956经update-runtime.sh上线，7038个运行文件SHA256一致、active、首页/论坛/指南200，旧8228136保留回滚。Linux lint/typecheck/build、26项编辑/同步测试、40项真实隔离PostgreSQL/实际merge handler验证全部通过（旧代410且状态不变、新代保存并更新公开快照）。首轮Linux lint发现测试this别名规则，修正后全流程重跑通过。
 用户授权丢弃未同步内容后，以topic version62和document revision13/state双锁保护更新单篇同步文档，revision/public_revision=14、publish_error=null。新文档完整无pendingStructs/pendingDs，四楼已保存正文/身份/回复、公开topic整行和messages整行独立回读与备份完全一致；稳定编辑ID保留。只废弃未能合并的历史CRDT片段，旧原始状态已备份，用户本机下载备份仍保留。后续离线编辑可合并；真实作者生产保存需刷新编辑页后操作，未冒充已完成其账号端到端验收。最初初始化丢失时序仍未复现，已修复的是完整性接收与重建版本边界两项确定缺陷，不宣称排除了所有同步问题。本批无待部署/数据修复步骤。
+## 2026-11-16 · 阅读与共创升级验证
+
+- 既有本地真实 PostgreSQL 协作验收 40 项通过；编辑/同步与实际客户端 Hook 回归 26 项通过。
+- 新增真实 PostgreSQL 验收首轮 31 项通过：三档权限、匿名和非作者越权、开放编辑自身媒体、链接哈希/撤销/过期/幂等加入、搜索权限、A-B-C / A-D 分支、回退前自动备份、CAS 失败整体回滚、旧 epoch 拒绝、Wiki 立绘保存/恢复/私图拒绝。新增跨 50 条连读与隐藏帖检查待最终复验记录。
+- lint/typecheck/build 首轮通过（Windows Vinext 五阶段 + standalone）。旧 middleware 命名与代理提示为既有工具提示，不是本次新增错误。
+- Browser plugin not available；使用本机已有 Playwright + Chromium。受限浏览器进程访问被拒后，经工具升级权限运行无头测试。真实组件隔离服务 http://127.0.0.1:3051，1440/390/320px：30 项检查通过，0 JS 页面异常，正文完整、评论侧栏/手机入口、PNG 导出和超长分图、图片移除、搜索邀请、链接生成/撤销、Esc 焦点返回、版本树选择/显式回退确认。
+- 截图及测试脚本在本会话 visualizations 目录；示例内容和 API 返回为隔离夹具，不是生产投稿。http://127.0.0.1:3050 实际站点显示临时不可用，原因是 .env.local 指向未运行的本地 Supabase 54321；不计作成功。Docker daemon 未启动。本批没有生产迁移、部署、真实账号/R2端到端验证。
+
+### 最终增量复验
+
+新增 PostgreSQL 检查最终 **33/33**，包括超过50条列表的前后篇和隐藏帖排除；原有40项与26项同步回归仍见本批记录。重复测试库启动在受限环境未给出有效错误，增加仅测试用可选启动日志和独立端口；工具升级权限后使用55464端口完成全套33项并退出0，不涉及生产库。
+
+真实组件浏览器最终 **33/33**：1440/390/320px均无横向溢出；390px双列、320px单列；长图单图/超长分图均可解码，图片逐张释放内存；邀请令牌不进入登录URL，当前标签页sessionStorage保留邀请，登录返回恢复，无效链接显示错误；0页面JS异常。邀请/存档调用为隔离HTTP返回，权限和事务由上述真实PostgreSQL独立验证。未覆盖真实登录、实际R2下载/上传、Safari或生产迁移。
+
+截图根目录：`C:/Users/VENTSDENYE5/.codex/visualizations/2026/11/16/01a1e35e-f1c6-7531-8294-3323494df65a/`。`component-list-{1440,390,320}.png`、`component-read-1440.png`、`component-invite-390.png`、`component-history-390.png`及`export-sample.png`已生成并目视检查；截图使用校园示例图和测试文字。最终lint/typecheck/build及指南同步完成情况见progress。
+
+最终门禁全部通过：npm run lint、npm run typecheck、npm run build；指南最后文案另行 eslint，最终产物含新指南。git diff --check 通过。源码无新依赖。构建仅有既有 middleware/proxy 提示；未将本地后端离线视作测试通过。
+
+
+## 2026-11-16 · 用户授权测试后上线
+
+用户明确要求测试本地优化，无阻断问题后部署。此轮独立复跑 Windows/Linux npm run lint、typecheck、build 全部通过；Linux standalone 同源/回调冒烟通过。新增真实 PostgreSQL 33项、既有协作40项、编辑同步26项、真实组件浏览器33项通过，桌面1440及390/320px无溢出，已查看桌面阅读与手机列表截图。Browser plugin not available，使用既有Playwright/Chromium；组件接口仍为隔离夹具，不作为真实账号生产写入证据。首次受限终端、数据库和浏览器连接失败，经权限升级重跑通过。
+
+生产当前runtime069d1f0、active；22条既有迁移与本地一致。两项新迁移事务ROLLBACK演练通过，38张既有表整行指纹不变，未创建存档或改写历史内容。准备正式应用202611160001/002、推送源码和匹配Linux产物；真实线上浏览器与媒体复验待部署后完成。

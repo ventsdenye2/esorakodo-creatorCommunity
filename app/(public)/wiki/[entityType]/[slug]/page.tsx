@@ -11,6 +11,8 @@ import { getWikiEntityBySlug, listColleges } from "../../../../../src/features/w
 import { getWikiEntityLabel, isWikiEntityType } from "../../../../../src/features/wiki/types";
 import { EntityTraces } from "../../../../../src/features/entities/entity-traces";
 import "../../../../../src/features/forum/forum.css";
+import { parseForumBody } from "../../../../../src/features/forum/body";
+import { ForumBody } from "../../../../../src/features/forum/body-view";
 
 export const dynamic = "force-dynamic";
 
@@ -28,6 +30,7 @@ export default async function WikiDetailPage({ params, searchParams }: PageProps
     searchParams,
   ]);
   if (!entity) notFound();
+  const portraitBody = entity.type === "student" ? parseForumBody(entity.body) : null;
   const college = colleges.find((item) => item.id === entity.collegeId);
   const [forumTopics, characterCard] = entity.type === "student" ? await Promise.all([listPublishedTopicsForStudent(entity.id), getStudentCard(entity.id)]) : [[], null];
 
@@ -58,9 +61,10 @@ export default async function WikiDetailPage({ params, searchParams }: PageProps
           <article>
             <h2>档案摘要</h2>
             <p>{entity.summary ?? "这份档案还没有摘要。"}</p>
-            {entity.body && <Markdown>{entity.body}</Markdown>}
+            {(portraitBody?.text ?? entity.body) && <Markdown>{portraitBody?.text ?? entity.body}</Markdown>}
           </article>
           <aside>
+            {entity.type === "student" && <section className="student-portrait-gallery" aria-label="人物图片与立绘"><h2>人物图片 / 立绘</h2>{portraitBody?.images.length ? <ForumBody body={portraitBody.images.map(image => `![${image.alt}](${image.url})`).join("\n")} /> : <p>还没有人物图片。</p>}<Link href={`/wiki/student/${entity.slug}/edit`}>添加或管理图片 ↗</Link></section>}
             {characterCard ? <figure className="student-character-card"><Image unoptimized src={`/api/media/${characterCard.card_asset_id}`} width={1016} height={638} alt={`${entity.name}创建时的学生证`} /><figcaption>创建时的学生证 · {characterCard.student_number}<br />档案之后的修订以正文为准。</figcaption><Link href="/create/character">再创建一位角色 ↗</Link></figure> : null}
             <dl>
               <div><dt>类型</dt><dd>{getWikiEntityLabel(entity.type)}</dd></div>
