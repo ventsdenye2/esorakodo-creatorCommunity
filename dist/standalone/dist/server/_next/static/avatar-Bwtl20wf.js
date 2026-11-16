@@ -1,0 +1,1 @@
+import{a as e}from"./rsc-pg_lPraY.js";var t=e(()=>{throw Error(`Unexpectedly client reference export 'Avatar' is called on server`)},`935eb7629191`,`Avatar`);export{t};

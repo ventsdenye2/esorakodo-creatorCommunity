@@ -1,6 +1,7 @@
-# Collaboration recovery generation boundary
+# Forum reading and collaboration upgrade
 
-Built source: a229e34 (deploy/backend), 2026-11-14.
-Reject stale pre-recovery submissions, isolate browser backups by recovery generation, and stop live clients before merging rebuilt state.
-No database migration. Linux lint/typecheck/build, 26 editor/sync regressions and standalone smoke passed; Recovery generation and real hook backup isolation/reload tests passed. Single-document recovery separately guarded and backed up.
-No production data or environment files included. Previous runtime 8228136 retained for rollback.
+Source: 71cb75cd8176f45306029263719b6ac1f22c8dff, deploy/backend.
+Linux lint/typecheck/build and standalone smoke passed. 33 new database, 40 collaboration, 26 sync, 33 component browser checks passed.
+Requires migrations 202611160001 and 202611160002 (applied with 38 existing tables unchanged).
+Masonry full first posts, reader comments, invitations/edit permissions, branch checkpoints, PNG exports and student portraits.
+No credentials, environment files or test data included. Previous runtime 069d1f0 retained for rollback.
