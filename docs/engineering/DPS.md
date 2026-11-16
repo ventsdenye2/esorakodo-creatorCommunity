@@ -371,3 +371,6 @@ Windows/Linux 构建、lint/typecheck、124 项隔离数据库检查沿用本批
 
 
 2026-11-16 阅读与共创升级已上线：源码71cb75c，runtime3abaca7，两项迁移已应用且38张旧表内容不变；本地门禁及线上19项公开检查通过。真实账号写入/R2生产验收限制见 engineering/verification.md（本目录见verification.md）。
+
+
+2026-11-16 校园近况：七类公开创作统一按最近更新时间展示最新6条；新建与旧作更新均可进入。无需迁移，过滤/排序与验证记录见设计campus-view-stack及工程progress/verification。

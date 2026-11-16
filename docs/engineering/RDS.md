@@ -374,3 +374,6 @@ Windows/Linux 构建、lint/typecheck、124 项隔离数据库检查沿用本批
 新增 forum_edit_settings / forum_invite_links / forum_checkpoints，RLS 和 RPC 强制权限，旧帖子默认 invited 保留既有协作关系。链接随机 256-bit、只存 SHA-256、7 天有效，轮换与撤销对同一帖子加锁；接受链接需登录并确认，不在 GET 自动授予权限。邀请令牌放 URL fragment，避免普通链接访问日志和 Referer 暴露。
 
 存档持久保存 DB 当前完整 Yjs 状态及 parent_id；回退先原子保存当前状态，再重建 recoveryEpoch 并替换公开快照，CAS 冲突整体回滚，旧客户端 410 后停止同步。回退只改 head，不删除旧分支。人物立绘使用原 Wiki body 的图片标记，新增 student_portrait_media 保留历史媒体引用，继续通过 apply_wiki_revision 事务修改。完整设计见 ../design/forum-reader-upgrade.md。
+
+
+2026-11-16 校园近况：七类公开创作统一按最近更新时间展示最新6条；新建与旧作更新均可进入。无需迁移，过滤/排序与验证记录见设计campus-view-stack及工程progress/verification。
