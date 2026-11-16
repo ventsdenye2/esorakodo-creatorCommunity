@@ -720,3 +720,7 @@ lint/typecheck及15项同步/实际Hook回归通过，包括旧备份隔离、�
 新增实际聚合函数的隔离查询回归覆盖七类来源、新建/旧作更新、跨源顺序、来源限额前过滤、隐藏父事件、稳定同刻排序及局部失败。验证和发布进行中，源码基线56d303d，原有debug.log保留。
 
 发布前门禁通过：Windows/Linux npm run lint、typecheck、build，3项实际聚合函数隔离查询回归以及Linux standalone同源/回调冒烟通过。测试夹具初版括号和同步then语义修正后复验通过，无产品额外变更。公开数据库独立UNION查询已准备最新6条对照，待线上浏览器核对。
+
+
+### 校园近况最新活动已上线
+源码9364bb089ea362241bfb6c0cfaeba33c26cddc3c、runtimeccf8be3c63b9cc8c9f4e469a122825f98e8e56e8均已推送并部署。7048运行文件SHA256一致，service active，首页/论坛/Wiki/指南200；无数据库迁移或生产内容改写。线上Playwright匿名首页六张卡片标题、排序、时间与独立数据库公开内容UNION查询完全一致，手动下一张通过，1440/390/320px无横向溢出，0页面异常；已目视390px截图。Browser plugin not available，沿用已安装Playwright。证据campus-news-check.json与campus-news-{1440,390,320}.png位于本会话visualizations目录。新增/旧作改写行为使用隔离查询数据回归，未修改生产作品制造验收数据；页面重新加载获取最新资讯，不新增实时推送。旧runtime3abaca7保留回滚。无待部署项；原debug.log未纳入提交。
