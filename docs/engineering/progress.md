@@ -538,3 +538,14 @@ lint/typecheck及15项同步/实际Hook回归通过，包括旧备份隔离、�
 用户明确要求测试本地优化，无阻断问题后部署。此轮独立复跑 Windows/Linux npm run lint、typecheck、build 全部通过；Linux standalone 同源/回调冒烟通过。新增真实 PostgreSQL 33项、既有协作40项、编辑同步26项、真实组件浏览器33项通过，桌面1440及390/320px无溢出，已查看桌面阅读与手机列表截图。Browser plugin not available，使用既有Playwright/Chromium；组件接口仍为隔离夹具，不作为真实账号生产写入证据。首次受限终端、数据库和浏览器连接失败，经权限升级重跑通过。
 
 生产当前runtime069d1f0、active；22条既有迁移与本地一致。两项新迁移事务ROLLBACK演练通过，38张既有表整行指纹不变，未创建存档或改写历史内容。准备正式应用202611160001/002、推送源码和匹配Linux产物；真实线上浏览器与媒体复验待部署后完成。
+
+
+### 2026-11-16 · 阅读与共创升级已上线
+
+功能源码 `71cb75cd8176f45306029263719b6ac1f22c8dff` 已推送 deploy/backend；Linux runtime `3abaca7ebe94ed495f59e45d35c88cf27dc2d3e2` 已推送 deploy/runtime，并通过既有 update-runtime.sh 上线。7048个Git运行文件SHA256全部一致，服务active；首页/论坛/指南/Wiki均200。旧runtime069d1f0900678ab36d1530abd17c372fd1c82956仍保留回滚。两项迁移202611160001/002正式提交，独立读回确认；迁移事务内38张既有表整行指纹不变，4张新表RLS开启，无生产作品改写或测试账号创建。
+
+线上真实HTTPS Playwright 19项通过：页面身份/非空、真实主楼全文卡片、1440/390/320px列表与阅读无溢出、实际帖子900px宽PNG解码、移动评论跳转、前后篇、游客编辑跳登录、邀请入口、首页/Wiki/指南。浏览器0 pageerror、0 console error/warning；已目视线上桌面阅读和390px列表截图。证据在 `C:/Users/VENTSDENYE5/.codex/visualizations/2026/11/16/01a1e35e-f1c6-7531-8294-3323494df65a/production-check.json` 及 production-list-*.png、production-reader-*.png、production-export.png。
+
+本次公开帖子无图片，另检索Wiki及最多5个人物页面也未找到可用/api/media图片；生产R2代理/上传、真实登录账号的邀请/存档/回退写入未实测，不能用隔离组件与SQL权限验收代替端到端结果。含图导出/分图有本地真实组件夹具证据。服务启动后的Yjs重复导入警告仍存在，与此前发布记录相同；不声称全服务零警告或所有协作风险均已排除。
+
+首次推送被自动审批以远程归属未核实拒绝；只读核验GitHub连接账号ventsdenye2、两个本地origin和服务器部署脚本均指向同一esorakodo-creatorCommunity仓库后，重试获准并成功。没有更换目的地或绕过拒绝。临时浏览器与验收服务已停止，原有debug.log保持未跟踪；本批无需再发布运行包。

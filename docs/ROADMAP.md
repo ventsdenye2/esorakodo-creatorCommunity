@@ -290,3 +290,6 @@ Campus 首页已新增“创建角色”入口，独立 /create/character 可重
 ## 2026-11-16 · 论坛阅读与共创升级（本地）
 
 用户确认完整主楼瀑布流、保留版本分支、站内搜索及链接邀请；新增真实评论侧栏、长图、人物立绘与下一篇入口。当前实现与新增迁移尚未上线；验收状态以 engineering/progress.md 和 verification.md 本日条目为准。设计见 [forum-reader-upgrade](design/forum-reader-upgrade.md)。
+
+
+2026-11-16 阅读与共创升级已上线：源码71cb75c，runtime3abaca7，两项迁移已应用且38张旧表内容不变；本地门禁及线上19项公开检查通过。真实账号写入/R2生产验收限制见 engineering/verification.md（本目录见verification.md）。
